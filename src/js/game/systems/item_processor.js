@@ -24,19 +24,22 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
             const processorComp = entity.components.ItemProcessor;
             const ejectorComp = entity.components.ItemEjector;
 
-            // First of all, process the current recipe
-            processorComp.secondsUntilEject = Math.max(
-                0,
-                processorComp.secondsUntilEject - this.root.dynamicTickrate.deltaSeconds
-            );
+            if (processorComp.secondsUntilEject > 0) {
+                // First of all, process the current recipe
+                processorComp.secondsUntilEject =
+                    processorComp.secondsUntilEject - this.root.dynamicTickrate.deltaSeconds;
 
-            if (G_IS_DEV && globalConfig.debug.instantProcessors) {
+                if (G_IS_DEV && globalConfig.debug.instantProcessors) {
+                    processorComp.secondsUntilEject = 0;
+                }
+            } else {
+                // Remove time carryover if processing is not continuous
                 processorComp.secondsUntilEject = 0;
             }
 
             // Check if we have any finished items we can eject
             if (
-                processorComp.secondsUntilEject === 0 && // it was processed in time
+                processorComp.secondsUntilEject <= 0 && // it was processed in time
                 processorComp.itemsToEject.length > 0 // we have some items left to eject
             ) {
                 for (let itemIndex = 0; itemIndex < processorComp.itemsToEject.length; ++itemIndex) {
@@ -233,7 +236,7 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
         }
 
         const baseSpeed = this.root.hubGoals.getProcessorBaseSpeed(processorComp.type);
-        processorComp.secondsUntilEject = 1 / baseSpeed;
+        processorComp.secondsUntilEject += 1 / baseSpeed;
 
         /** @type {Array<{item: BaseItem, requiredSlot?: number, preferredSlot?: number}>} */
         const outItems = [];
