@@ -58,6 +58,40 @@ export class Blueprint {
     }
 
     /**
+     * Creates a new blueprint from the given entities
+     * @param {GameRoot} root
+     * @param {Array<Entity>} entities
+     */
+    static fromEntities(root, entities) {
+        const newEntities = [];
+
+        let averagePosition = new Vector();
+
+        // First, create a copy
+        for (let i = 0; i < entities.length; ++i) {
+			
+            const entity = entities[i];//root.entityMgr.findByUid(uids[i]);
+            // assert(entity, "Entity for blueprint not found:" + uids[i]);
+
+            const clone = entity.clone();
+            newEntities.push(clone);
+
+            const pos = entity.components.StaticMapEntity.getTileSpaceBounds().getCenter();
+            averagePosition.addInplace(pos);
+        }
+
+        averagePosition.divideScalarInplace(entities.length);
+        const blueprintOrigin = averagePosition.subScalars(0.5, 0.5).floor();
+
+        for (let i = 0; i < entities.length; ++i) {
+            newEntities[i].components.StaticMapEntity.origin.subInplace(blueprintOrigin);
+        }
+
+        // Now, make sure the origin is 0,0
+        return new Blueprint(newEntities);
+    }
+
+    /**
      * Returns the cost of this blueprint in shapes
      */
     getCost() {

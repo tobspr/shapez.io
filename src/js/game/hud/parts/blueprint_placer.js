@@ -7,6 +7,7 @@ import { SOUNDS } from "../../../platform/sound";
 import { T } from "../../../translations";
 import { Blueprint } from "../../blueprint";
 import { enumMouseButton } from "../../camera";
+import { Entity } from "../../entity";
 import { KEYMAPPINGS } from "../../key_action_mapper";
 import { BaseHUDPart } from "../base_hud_part";
 import { DynamicDomAttach } from "../dynamic_dom_attach";
@@ -141,13 +142,13 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
 
     /**
      * Called when an array of bulidings was selected
-     * @param {Array<number>} uids
+     * @param {Array<Entity>} entities
      */
-    createBlueprintFromBuildings(uids) {
-        if (uids.length === 0) {
+    createBlueprintFromBuildings(entities) {
+        if (entities.length === 0) {
             return;
         }
-        this.currentBlueprint.set(Blueprint.fromUids(this.root, uids));
+        this.currentBlueprint.set(Blueprint.fromEntities(this.root, entities));
     }
 
     /**
@@ -174,7 +175,8 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
                 return;
             }
 
-            this.root.hud.signals.pasteBlueprintRequested.dispatch();
+			this.root.hud.signals.pasteBlueprintRequested.dispatch();
+			
             this.currentBlueprint.set(this.lastBlueprintUsed);
         } else {
             this.root.soundProxy.playUiError();

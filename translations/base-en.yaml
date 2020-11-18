@@ -1174,6 +1174,7 @@ keybindings:
             Wires: Copy value below cursor
         massSelectStart: Hold and drag to start
         massSelectSelectMultiple: Select multiple areas
+        massSelectSelectMultiLayer: Select multiple Layers
         massSelectCopy: Copy area
         massSelectCut: Cut area
 

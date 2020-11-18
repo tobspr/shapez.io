@@ -48,6 +48,7 @@ import { HUDBetaOverlay } from "./parts/beta_overlay";
 import { HUDStandaloneAdvantages } from "./parts/standalone_advantages";
 import { HUDCatMemes } from "./parts/cat_memes";
 import { HUDTutorialVideoOffer } from "./parts/tutorial_video_offer";
+import { Entity } from "../entity";
 
 export class GameHUD {
     /**
@@ -67,7 +68,7 @@ export class GameHUD {
             shapePinRequested: /** @type {TypedSignal<[ShapeDefinition]>} */ (new Signal()),
             shapeUnpinRequested: /** @type {TypedSignal<[string]>} */ (new Signal()),
             notification: /** @type {TypedSignal<[string, enumNotificationType]>} */ (new Signal()),
-            buildingsSelectedForCopy: /** @type {TypedSignal<[Array<number>]>} */ (new Signal()),
+            buildingsSelectedForCopy: /** @type {TypedSignal<[Array<Entity>]>} */ (new Signal()),
             pasteBlueprintRequested: /** @type {TypedSignal<[]>} */ (new Signal()),
             viewShapeDetailsRequested: /** @type {TypedSignal<[ShapeDefinition]>} */ (new Signal()),
             unlockNotificationFinished: /** @type {TypedSignal<[]>} */ (new Signal()),
