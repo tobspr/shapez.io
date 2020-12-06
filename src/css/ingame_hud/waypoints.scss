@@ -41,6 +41,7 @@
     @include S(padding-right, 5px);
     @include S(padding-bottom, 5px);
     @include S(padding-top, 5px);
+    @include S(padding-left, 5px);
 
     // Scrollbar
     &::-webkit-scrollbar {
@@ -54,8 +55,7 @@
         cursor: pointer;
         color: #333438;
         @include S(padding-left, 11px);
-        display: grid;
-        grid-template-columns: 1fr auto;
+        display: flex;
         align-items: center;
         & {
             /* @load-async */
@@ -64,9 +64,14 @@
         opacity: 0.7;
         @include S(margin-bottom, 1px);
         font-weight: bold;
+        white-space: pre-wrap;
 
         &:hover {
             opacity: 0.8;
+        }
+
+        .editMargin {
+            margin: auto;
         }
 
         .editButton {
@@ -88,28 +93,26 @@
             }
         }
 
-        &.hub {
+        &.hasCompass {
             // Transform because there is a canvas before
             @include S(margin-left, -2px);
 
-            grid-template-columns: auto 1fr;
             background: none !important;
             @include S(padding-left, 0);
-            canvas {
+            canvas.compass {
                 @include S(width, 12px);
                 @include S(height, 12px);
                 @include S(margin-right, 1px);
+                pointer-events: none;
             }
         }
 
-        &.shapeIcon {
-            canvas {
-                @include S(width, 15px);
-                @include S(height, 15px);
-                pointer-events: none;
-                // Double invert, to make sure it has the right color
-                @include DarkThemeInvert();
-            }
+        canvas.shapeIcon {
+            @include S(width, 15px);
+            @include S(height, 15px);
+            pointer-events: none;
+            // Double invert, to make sure it has the right color
+            @include DarkThemeInvert();
         }
     }
 }

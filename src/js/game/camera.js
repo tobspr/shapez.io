@@ -958,9 +958,9 @@ export class Camera extends BasicSerializableObject {
         if (!this.currentlyMoving && this.desiredCenter !== null) {
             const diff = this.center.direction(this.desiredCenter);
             const length = diff.length();
-            const tolerance = 1 / this.zoomLevel;
-            if (length > tolerance) {
-                const movement = diff.multiplyScalar(Math.min(1, dt * 0.008));
+            if (length > 0) {
+                const tolerance = 32 / globalConfig.tileSize;
+                const movement = diff.multiplyScalar(Math.min(1, dt * 0.008 * (1 + tolerance / length)));
                 this.center.x += movement.x;
                 this.center.y += movement.y;
             } else {
