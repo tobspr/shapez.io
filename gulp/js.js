@@ -6,7 +6,6 @@ function requireUncached(module) {
 }
 
 function gulptasksJS($, gulp, buildFolder, browserSync) {
-
     //// DEV
 
     gulp.task("js.dev.watch", () => {

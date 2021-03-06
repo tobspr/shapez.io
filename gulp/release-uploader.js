@@ -24,7 +24,7 @@ function gulptasksReleaseUploader($, gulp, buildFolder) {
         const currentTag = buildutils.getTag();
 
         const octokit = new Octokit({
-            auth: process.env.SHAPEZ_CLI_GITHUB_TOKEN
+            auth: process.env.SHAPEZ_CLI_GITHUB_TOKEN,
         });
 
         const createdRelease = await octokit.request("POST /repos/{owner}/{repo}/releases", {
@@ -32,10 +32,12 @@ function gulptasksReleaseUploader($, gulp, buildFolder) {
             repo: "shapez.io",
             tag_name: currentTag,
             name: currentTag,
-            draft: true
+            draft: true,
         });
 
-        const { data: { id, upload_url } } = createdRelease;
+        const {
+            data: { id, upload_url },
+        } = createdRelease;
         console.log(`Created release ${id} for tag ${currentTag}`);
 
         const dmgContents = fs.readFileSync(dmgPath);
@@ -46,21 +48,23 @@ function gulptasksReleaseUploader($, gulp, buildFolder) {
             method: "POST",
             url: upload_url,
             headers: {
-                "content-type": "application/x-apple-diskimage"
+                "content-type": "application/x-apple-diskimage",
             },
             name: dmgName,
-            data: dmgContents
+            data: dmgContents,
         });
 
         cb();
     });
 
-    gulp.task("standalone.uploadRelease.darwin64",
+    gulp.task(
+        "standalone.uploadRelease.darwin64",
         gulp.series(
             "standalone.uploadRelease.darwin64.cleanup",
             "standalone.uploadRelease.darwin64.compress",
             "standalone.uploadRelease.darwin64.upload"
-        ));
+        )
+    );
 }
 
 module.exports = { gulptasksReleaseUploader };

@@ -7,10 +7,11 @@
     "license": "MIT",
     "private": true,
     "scripts": {
+        "postinstall": "cd gulp && yarn install",
         "dev": "cd gulp && yarn gulp main.serveDev",
         "tslint": "cd src/js && tsc",
         "lint": "eslint src/js",
-        "prettier-all": "prettier --write src/**/*.* && prettier --write gulp/**/*.*",
+        "prettier-all": "prettier src/ gulp/ --write --ignore-unknown",
         "publishOnItchWindows": "butler push tmp_standalone_files/shapez.io-standalone-win32-x64 tobspr/shapezio:windows --userversion-file version",
         "publishOnItchLinux": "butler push tmp_standalone_files/shapez.io-standalone-linux-x64 tobspr/shapezio:linux --userversion-file version",
         "publishOnItch": "yarn publishOnItchWindows && yarn publishOnItchLinux",
@@ -94,10 +95,21 @@
         "postcss-preset-env": "^6.5.0",
         "postcss-round-subpixels": "^1.2.0",
         "postcss-unprefix": "^2.1.3",
-        "prettier": "^2.0.4",
+        "prettier": "^2.2.1",
         "sass-unused": "^0.3.0",
         "strip-json-comments": "^3.0.1",
-        "trim": "^0.0.1",
-        "yarn": "^1.22.4"
+        "trim": "^0.0.1"
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": false,
+        "printWidth": 110,
+        "useTabs": false,
+        "quoteProps": "consistent",
+        "bracketSpacing": true,
+        "arrowParens": "avoid",
+        "endOfLine": "auto"
     }
 }

@@ -23,11 +23,10 @@ Your goal is to produce shapes by cutting, rotating, merging and painting parts 
 ## Building
 
 -   Make sure `ffmpeg` is on your path
--   Install Node.js and Yarn
+-   Install [Node.js LTS](https://nodejs.org/en/download/) and [Yarn v1](https://classic.yarnpkg.com/en/docs/install)
 -   Install Java (required for textures)
 -   Run `yarn` in the root folder
--   Cd into `gulp` folder
--   Run `yarn` and then `yarn gulp` - it should now open in your browser
+-   Then `yarn dev` - it should now open in your browser
 
 **Notice**: This will produce a debug build with several debugging flags enabled. If you want to disable them, modify [`src/js/core/config.js`](src/js/core/config.js).
 

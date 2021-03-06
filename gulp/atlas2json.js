@@ -4,7 +4,7 @@ const { readFileSync, readdirSync, writeFileSync } = require("fs");
 const suffixToScale = {
     lq: "0.25",
     mq: "0.5",
-    hq: "0.75"
+    hq: "0.75",
 };
 
 function convert(srcDir) {
@@ -65,7 +65,7 @@ function convert(srcDir) {
                             x: xy[0],
                             y: xy[1],
                             w: size[0],
-                            h: size[1]
+                            h: size[1],
                         },
 
                         // Whether image was rotated
@@ -75,21 +75,21 @@ function convert(srcDir) {
                         // How is the image trimmed
                         spriteSourceSize: {
                             x: offset[0],
-                            y: (orig[1] - size[1]) - offset[1],
+                            y: orig[1] - size[1] - offset[1],
                             w: size[0],
-                            h: size[1]
+                            h: size[1],
                         },
-                        
+
                         sourceSize: {
                             w: orig[0],
-                            h: orig[1]
-                        }
-                    }
+                            h: orig[1],
+                        },
+                    };
                 }
 
                 // Simple object that will hold other metadata
                 current = {
-                    name: line
+                    name: line,
                 };
             } else {
                 // Read and set current image metadata
@@ -108,14 +108,14 @@ function convert(srcDir) {
                 format: srcMeta.format,
                 size: {
                     w: atlasSize[0],
-                    h: atlasSize[1]
+                    h: atlasSize[1],
                 },
-                scale: atlasScale.toString()
-            }
+                scale: atlasScale.toString(),
+            },
         });
 
         writeFileSync(atlas.replace(".atlas", ".json"), result, {
-            encoding: "utf-8"
+            encoding: "utf-8",
         });
     }
 }
