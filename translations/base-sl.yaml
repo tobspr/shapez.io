@@ -24,7 +24,7 @@ steamPage:
         - Unlimited Savegames
         - Unlimited Markers
         - Support me! ❤️
-    title_future: Planned Content
+    title_future: Načrtovana vsebina
     planned:
         - Blueprint Library (Standalone Exclusive)
         - Steam Achievements
@@ -48,8 +48,8 @@ steamPage:
 
         Be sure to check out my trello board for the full roadmap!
 global:
-    loading: Loading
-    error: Error
+    loading: Nalaganje
+    error: Napaka
     thousandsDivider: ","
     decimalSeparator: .
     suffix:
@@ -59,18 +59,18 @@ global:
         trillions: T
     infinite: inf
     time:
-        oneSecondAgo: one second ago
-        xSecondsAgo: <x> seconds ago
-        oneMinuteAgo: one minute ago
-        xMinutesAgo: <x> minutes ago
-        oneHourAgo: one hour ago
-        xHoursAgo: <x> hours ago
-        oneDayAgo: one day ago
-        xDaysAgo: <x> days ago
+        oneSecondAgo: eno sekundo nazaj
+        xSecondsAgo: <x> sekund nazaj 
+        oneMinuteAgo: eno minuto nazaj
+        xMinutesAgo: <x> minut nazaj
+        oneHourAgo: eno uro nazaj
+        xHoursAgo: <x> ur nazaj
+        oneDayAgo: en dan nazaj
+        xDaysAgo: <x> dni nazaj
         secondsShort: <seconds>s
         minutesAndSecondsShort: <minutes>m <seconds>s
         hoursAndMinutesShort: <hours>h <minutes>m
-        xMinutes: <x> minutes
+        xMinutes: <x> minut
     keys:
         tab: TAB
         control: CTRL
@@ -79,24 +79,23 @@ global:
         shift: SHIFT
         space: SPACE
 demoBanners:
-    title: Demo Version
-    intro: Get the standalone to unlock all features!
+    title: Demo različica
+    intro: Pridobi samostojno verzijo, za dostop do vseh funkcij!
 mainMenu:
-    play: Play
-    continue: Continue
-    newGame: New Game
+    play: Igraj
+    continue: Nadaljuj
+    newGame: Nova igra
     changelog: Changelog
     subreddit: Reddit
-    importSavegame: Import
-    openSourceHint: This game is open source!
+    importSavegame: Uvozi
+    openSourceHint: To je odprtokodna igra!
     discordLink: Official Discord Server
-    helpTranslate: Help translate!
-    madeBy: Made by <author-link>
-    browserWarning: Sorry, but the game is known to run slow on your browser! Get
-        the standalone version or download chrome for the full experience.
-    savegameLevel: Level <x>
-    savegameLevelUnknown: Unknown Level
-    savegameUnnamed: Unnamed
+    helpTranslate: Pomagaj pri prevajanju!
+    madeBy: Naredil <author-link>
+    browserWarning: Oprostite, ampak znano je, da igra v vašem brskalniku deluje počasi! Pridobite samostojno različico, ali pa prenesite brskalnik Chrome za popolno izkušnjo.
+    savegameLevel: Stopnja <x>
+    savegameLevelUnknown: Neznana stopnja
+    savegameUnnamed: Neimenovan
 dialogs:
     buttons:
         ok: OK
