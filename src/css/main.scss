@@ -55,6 +55,7 @@
 @import "ingame_hud/sandbox_controller";
 @import "ingame_hud/standalone_advantages";
 @import "ingame_hud/cat_memes";
+@import "ingame_hud/web_viewer";
 
 // prettier-ignore
 $elements:
@@ -84,6 +85,7 @@ ingame_HUD_WatermarkClicker,
 ingame_HUD_Watermark,
 ingame_HUD_ColorBlindBelowTileHelper,
 ingame_HUD_SandboxController,
+ingame_HUD_Web,
 
 // Overlays
 ingame_HUD_BetaOverlay,

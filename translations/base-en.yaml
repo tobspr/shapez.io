@@ -1102,6 +1102,7 @@ keybindings:
         toggleFPSInfo: Toggle FPS and Debug Info
         switchLayers: Switch layers
         exportScreenshot: Export whole Base as Image
+        shapeViewer: Open shape viewer ingame
 
         # --- Do not translate the values in this section
         belt: *belt
