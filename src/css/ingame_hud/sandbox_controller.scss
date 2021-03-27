@@ -21,7 +21,7 @@
     .plusMinus {
         @include S(margin-top, 4px);
         display: grid;
-        grid-template-columns: 1fr auto auto;
+        grid-template-columns: 1fr auto auto auto;
         align-items: center;
         @include S(grid-gap, 4px);
 
@@ -45,6 +45,16 @@
             @include S(margin-bottom, 2px);
             @include IncreasedClickArea(0px);
             @include SuperSmallText;
+        }
+        .bigPlusMinus {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            @include S(grid-gap, 2px);
+            button {
+                @include S(margin-bottom, 2px);
+                @include IncreasedClickArea(0px);
+                @include SuperSmallText;
+            }
         }
     }
 }
