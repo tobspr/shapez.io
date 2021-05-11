@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const { ipcMain } = require("electron");
 
 let greenworks = null;
@@ -14,7 +14,7 @@ try {
     // throw err;
 }
 
-function init (isDev) {
+function init(isDev) {
     if (!greenworks) {
         return;
     }
@@ -34,7 +34,7 @@ function init (isDev) {
     initialized = true;
 }
 
-function listen () {
+function listen() {
     ipcMain.handle("steam:is-initialized", isInitialized);
 
     if (!greenworks || !initialized) {
@@ -53,7 +53,7 @@ function isInitialized(event) {
 function getAchievementNames(event) {
     return new Promise((resolve, reject) => {
         try {
-            const achievements = greenworks.getAchievementNames()
+            const achievements = greenworks.getAchievementNames();
             resolve(achievements);
         } catch (err) {
             reject(err);
@@ -63,11 +63,15 @@ function getAchievementNames(event) {
 
 function activateAchievement(event, id) {
     return new Promise((resolve, reject) => {
-        greenworks.activateAchievement(id, () => resolve(), err => reject(err))
+        greenworks.activateAchievement(
+            id,
+            () => resolve(),
+            err => reject(err)
+        );
     });
 }
 
 module.exports = {
     init,
-    listen
+    listen,
 };

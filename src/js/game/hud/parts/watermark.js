@@ -53,7 +53,7 @@ export class HUDWatermark extends BaseHUDPart {
 
     /**
      *
-     * @param {import("../../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../../core/draw_parameters").DrawParameters} parameters
      */
     drawOverlays(parameters) {
         const w = this.root.gameWidth;

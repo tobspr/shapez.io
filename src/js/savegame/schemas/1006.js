@@ -1,20 +1,17 @@
 import { gMetaBuildingRegistry } from "../../core/global_registries.js";
 import { createLogger } from "../../core/logging.js";
-import { enumBalancerVariants, MetaBalancerBuilding } from "../../game/buildings/balancer.js";
+import { MetaBalancerBuilding } from "../../game/buildings/balancer.js";
 import { MetaBeltBuilding } from "../../game/buildings/belt.js";
-import { enumCutterVariants, MetaCutterBuilding } from "../../game/buildings/cutter.js";
+import { MetaCutterBuilding } from "../../game/buildings/cutter.js";
 import { MetaHubBuilding } from "../../game/buildings/hub.js";
-import { enumMinerVariants, MetaMinerBuilding } from "../../game/buildings/miner.js";
+import { MetaMinerBuilding } from "../../game/buildings/miner.js";
 import { MetaMixerBuilding } from "../../game/buildings/mixer.js";
-import { enumPainterVariants, MetaPainterBuilding } from "../../game/buildings/painter.js";
-import { enumRotaterVariants, MetaRotaterBuilding } from "../../game/buildings/rotater.js";
+import { MetaPainterBuilding } from "../../game/buildings/painter.js";
+import { MetaRotaterBuilding } from "../../game/buildings/rotater.js";
 import { MetaStackerBuilding } from "../../game/buildings/stacker.js";
 import { MetaStorageBuilding } from "../../game/buildings/storage.js";
 import { MetaTrashBuilding } from "../../game/buildings/trash.js";
-import {
-    enumUndergroundBeltVariants,
-    MetaUndergroundBeltBuilding,
-} from "../../game/buildings/underground_belt.js";
+import { MetaUndergroundBeltBuilding } from "../../game/buildings/underground_belt.js";
 import { getCodeFromBuildingData } from "../../game/building_codes.js";
 import { StaticMapEntityComponent } from "../../game/components/static_map_entity.js";
 import { Entity } from "../../game/entity.js";
@@ -63,11 +60,11 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
             "sprites/blueprints/splitter.png": findCode(MetaBalancerBuilding),
             "sprites/blueprints/splitter-compact.png": findCode(
                 MetaBalancerBuilding,
-                enumBalancerVariants.merger
+                MetaBalancerBuilding.variants.merger
             ),
             "sprites/blueprints/splitter-compact-inverse.png": findCode(
                 MetaBalancerBuilding,
-                enumBalancerVariants.mergerInverse
+                MetaBalancerBuilding.variants.mergerInverse
             ),
 
             // Underground belt
@@ -84,12 +81,12 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
 
             "sprites/blueprints/underground_belt_entry-tier2.png": findCode(
                 MetaUndergroundBeltBuilding,
-                enumUndergroundBeltVariants.tier2,
+                MetaUndergroundBeltBuilding.variants.tier2,
                 0
             ),
             "sprites/blueprints/underground_belt_exit-tier2.png": findCode(
                 MetaUndergroundBeltBuilding,
-                enumUndergroundBeltVariants.tier2,
+                MetaUndergroundBeltBuilding.variants.tier2,
                 1
             ),
 
@@ -97,17 +94,23 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
             "sprites/blueprints/miner.png": findCode(MetaMinerBuilding),
             "sprites/blueprints/miner-chainable.png": findCode(
                 MetaMinerBuilding,
-                enumMinerVariants.chainable,
+                MetaMinerBuilding.variants.chainable,
                 0
             ),
 
             // Cutter
             "sprites/blueprints/cutter.png": findCode(MetaCutterBuilding),
-            "sprites/blueprints/cutter-quad.png": findCode(MetaCutterBuilding, enumCutterVariants.quad),
+            "sprites/blueprints/cutter-quad.png": findCode(
+                MetaCutterBuilding,
+                MetaCutterBuilding.variants.quad
+            ),
 
             // Rotater
             "sprites/blueprints/rotater.png": findCode(MetaRotaterBuilding),
-            "sprites/blueprints/rotater-ccw.png": findCode(MetaRotaterBuilding, enumRotaterVariants.ccw),
+            "sprites/blueprints/rotater-ccw.png": findCode(
+                MetaRotaterBuilding,
+                MetaRotaterBuilding.variants.ccw
+            ),
 
             // Stacker
             "sprites/blueprints/stacker.png": findCode(MetaStackerBuilding),
@@ -119,13 +122,16 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
             "sprites/blueprints/painter.png": findCode(MetaPainterBuilding),
             "sprites/blueprints/painter-mirrored.png": findCode(
                 MetaPainterBuilding,
-                enumPainterVariants.mirrored
+                MetaPainterBuilding.variants.mirrored
             ),
             "sprites/blueprints/painter-double.png": findCode(
                 MetaPainterBuilding,
-                enumPainterVariants.double
+                MetaPainterBuilding.variants.double
             ),
-            "sprites/blueprints/painter-quad.png": findCode(MetaPainterBuilding, enumPainterVariants.quad),
+            "sprites/blueprints/painter-quad.png": findCode(
+                MetaPainterBuilding,
+                MetaPainterBuilding.variants.quad
+            ),
 
             // Trash
             "sprites/blueprints/trash.png": findCode(MetaTrashBuilding),

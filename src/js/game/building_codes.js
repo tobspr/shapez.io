@@ -26,24 +26,18 @@ export const gBuildingVariants = {
 };
 
 /**
- * Mapping from 'metaBuildingId/variant/rotationVariant' to building code
- * @type {Map<string, number>}
- */
-const variantsCache = new Map();
-
-/**
  * Registers a new variant
- * @param {number} code
  * @param {typeof MetaBuilding} meta
  * @param {string} variant
  * @param {number} rotationVariant
  */
 export function registerBuildingVariant(
-    code,
     meta,
     variant = "default" /* @TODO: Circular dependency, actually its defaultBuildingVariant */,
     rotationVariant = 0
 ) {
+    // @ts-ignore
+    let code = getCodeFromBuildingData(new meta(), variant, rotationVariant);
     assert(!gBuildingVariants[code], "Duplicate id: " + code);
     gBuildingVariants[code] = {
         metaClass: meta,
@@ -56,7 +50,7 @@ export function registerBuildingVariant(
 
 /**
  *
- * @param {number} code
+ * @param {String} code
  * @returns {BuildingVariantIdentifier}
  */
 export function getBuildingDataFromCode(code) {
@@ -65,31 +59,12 @@ export function getBuildingDataFromCode(code) {
 }
 
 /**
- * Builds the cache for the codes
- */
-export function buildBuildingCodeCache() {
-    for (const code in gBuildingVariants) {
-        const data = gBuildingVariants[code];
-        const hash = data.metaInstance.getId() + "/" + data.variant + "/" + data.rotationVariant;
-        variantsCache.set(hash, +code);
-    }
-}
-
-/**
  * Finds the code for a given variant
  * @param {MetaBuilding} metaBuilding
  * @param {string} variant
  * @param {number} rotationVariant
- * @returns {number}
+ * @returns {String}
  */
-export function getCodeFromBuildingData(metaBuilding, variant, rotationVariant) {
-    const hash = metaBuilding.getId() + "/" + variant + "/" + rotationVariant;
-    const result = variantsCache.get(hash);
-    if (G_IS_DEV) {
-        if (!result) {
-            console.warn("Known hashes:", Array.from(variantsCache.keys()));
-            assertAlways(false, "Building not found by data: " + hash);
-        }
-    }
-    return result;
+export function getCodeFromBuildingData(metaBuilding, variant, rotationVariant = 0) {
+    return metaBuilding.getId() + "/" + variant + "/" + rotationVariant;
 }

@@ -21,6 +21,10 @@ export class HubSystem extends GameSystemWithFilter {
         this.hubSprite = Loader.getSprite("sprites/buildings/hub.png");
     }
 
+    static getId() {
+        return "hub";
+    }
+
     /**
      * @param {DrawParameters} parameters
      */

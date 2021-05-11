@@ -16,27 +16,33 @@ import { MetaStorageBuilding } from "../../buildings/storage";
 export class HUDWiresToolbar extends HUDBaseToolbar {
     constructor(root) {
         super(root, {
-            primaryBuildings: [
-                MetaWireBuilding,
-                MetaWireTunnelBuilding,
-                MetaConstantSignalBuilding,
-                MetaLogicGateBuilding,
-                MetaVirtualProcessorBuilding,
-                MetaAnalyzerBuilding,
-                MetaComparatorBuilding,
-                MetaTransistorBuilding,
-            ],
-            secondaryBuildings: [
-                MetaStorageBuilding,
-                MetaReaderBuilding,
-                MetaLeverBuilding,
-                MetaFilterBuilding,
-                MetaDisplayBuilding,
-            ],
+            primaryBuildings: HUDWiresToolbar.bar.primaryBuildings,
+            secondaryBuildings: HUDWiresToolbar.bar.secondaryBuildings,
             visibilityCondition: () =>
                 !this.root.camera.getIsMapOverlayActive() && this.root.currentLayer === "wires",
-            htmlElementId: "ingame_HUD_wires_toolbar",
+            htmlElementId: HUDWiresToolbar.bar.htmlElementId,
             layer: "wires",
         });
     }
 }
+
+HUDWiresToolbar.bar = {
+    primaryBuildings: [
+        MetaWireBuilding,
+        MetaWireTunnelBuilding,
+        MetaConstantSignalBuilding,
+        MetaLogicGateBuilding,
+        MetaVirtualProcessorBuilding,
+        MetaAnalyzerBuilding,
+        MetaComparatorBuilding,
+        MetaTransistorBuilding,
+    ],
+    secondaryBuildings: [
+        MetaStorageBuilding,
+        MetaReaderBuilding,
+        MetaLeverBuilding,
+        MetaFilterBuilding,
+        MetaDisplayBuilding,
+    ],
+    htmlElementId: "ingame_HUD_wires_toolbar",
+};

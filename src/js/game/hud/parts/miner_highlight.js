@@ -11,7 +11,7 @@ export class HUDMinerHighlight extends BaseHUDPart {
 
     /**
      *
-     * @param {import("../../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../../core/draw_parameters").DrawParameters} parameters
      */
     draw(parameters) {
         const mousePos = this.root.app.mousePosition;

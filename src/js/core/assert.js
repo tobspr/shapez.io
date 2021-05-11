@@ -1,16 +1,25 @@
+// @ts-nocheck
 import { createLogger } from "./logging";
 
+/**
+ * Logger for assert function
+ */
 const logger = createLogger("assert");
 
+/**
+ * Is assertion error shown
+ */
 let assertionErrorShown = false;
 
+/**
+ * Adds the assert function to the window
+ */
 function initAssert() {
     /**
      * Expects a given condition to be true
      * @param {Boolean} condition
      * @param  {...String} failureMessage
      */
-    // @ts-ignore
     window.assert = function (condition, ...failureMessage) {
         if (!condition) {
             logger.error("assertion failed:", ...failureMessage);

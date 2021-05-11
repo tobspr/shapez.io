@@ -4,7 +4,7 @@ import { enumLogicGateType, LogicGateComponent } from "../components/logic_gate"
 import { enumPinSlotType } from "../components/wired_pins";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { BOOL_FALSE_SINGLETON, BOOL_TRUE_SINGLETON, BooleanItem, isTruthyItem } from "../items/boolean_item";
-import { ColorItem, COLOR_ITEM_SINGLETONS } from "../items/color_item";
+import { ColorItem } from "../items/color_item";
 import { ShapeItem } from "../items/shape_item";
 import { ShapeDefinition } from "../shape_definition";
 
@@ -27,6 +27,10 @@ export class LogicGateSystem extends GameSystemWithFilter {
             [enumLogicGateType.stacker]: this.compute_STACKER.bind(this),
             [enumLogicGateType.painter]: this.compute_PAINTER.bind(this),
         };
+    }
+
+    static getId() {
+        return "logicGate";
     }
 
     update() {
@@ -203,7 +207,7 @@ export class LogicGateSystem extends GameSystemWithFilter {
         });
 
         return [
-            COLOR_ITEM_SINGLETONS[topRightContent.color],
+            ColorItem.ITEM_SINGLETONS[topRightContent.color],
             this.root.shapeDefinitionMgr.getShapeItemFromDefinition(newDefinition),
         ];
     }
@@ -280,8 +284,10 @@ export class LogicGateSystem extends GameSystemWithFilter {
         }
 
         const stackedShape = this.root.shapeDefinitionMgr.shapeActionStack(
-            /** @type {ShapeItem} */ (lowerItem).definition,
-            /** @type {ShapeItem} */ (upperItem).definition
+            /** @type {ShapeItem} */
+            (lowerItem).definition,
+            /** @type {ShapeItem} */
+            (upperItem).definition
         );
 
         return this.root.shapeDefinitionMgr.getShapeItemFromDefinition(stackedShape);
@@ -306,8 +312,10 @@ export class LogicGateSystem extends GameSystemWithFilter {
         }
 
         const coloredShape = this.root.shapeDefinitionMgr.shapeActionPaintWith(
-            /** @type {ShapeItem} */ (shape).definition,
-            /** @type {ColorItem} */ (color).color
+            /** @type {ShapeItem} */
+            (shape).definition,
+            /** @type {ColorItem} */
+            (color).color
         );
 
         return this.root.shapeDefinitionMgr.getShapeItemFromDefinition(coloredShape);
@@ -334,7 +342,8 @@ export class LogicGateSystem extends GameSystemWithFilter {
         switch (itemA.getItemType()) {
             case "shape": {
                 return /** @type {ShapeItem} */ (itemA).definition.getHash() ===
-                    /** @type {ShapeItem} */ (itemB).definition.getHash()
+                    /** @type {ShapeItem} */
+                    (itemB).definition.getHash()
                     ? BOOL_TRUE_SINGLETON
                     : BOOL_FALSE_SINGLETON;
             }

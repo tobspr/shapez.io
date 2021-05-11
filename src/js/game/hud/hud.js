@@ -77,6 +77,7 @@ export class GameHUD {
         this.parts = {
             buildingsToolbar: new HUDBuildingsToolbar(this.root),
             wiresToolbar: new HUDWiresToolbar(this.root),
+            layerToolbars: [],
             blueprintPlacer: new HUDBlueprintPlacer(this.root),
             buildingPlacer: new HUDBuildingPlacer(this.root),
             unlockNotification: new HUDUnlockNotification(this.root),
@@ -110,6 +111,17 @@ export class GameHUD {
             changesDebugger: null,
             /* typehints:end */
         };
+
+        for (const partKey in shapezAPI.ingame.hudParts) {
+            if (!shapezAPI.ingame.hudParts.hasOwnProperty(partKey)) continue;
+            this.parts[partKey] = shapezAPI.ingame.hudParts[partKey];
+        }
+
+        for (let i = 0; i < shapezAPI.ingame.layers.length; i++) {
+            const layer = shapezAPI.ingame.layers[i];
+            if (shapezAPI.toolbars[layer])
+                this.parts.layerToolbars.push(new shapezAPI.toolbars[layer](this.root));
+        }
 
         if (!IS_MOBILE) {
             this.parts.keybindingOverlay = new HUDKeybindingOverlay(this.root);
@@ -152,13 +164,25 @@ export class GameHUD {
 
         const frag = document.createDocumentFragment();
         for (const key in this.parts) {
-            this.parts[key].createElements(frag);
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    this.parts[key][i].createElements(frag);
+                }
+            } else {
+                this.parts[key].createElements(frag);
+            }
         }
 
         document.body.appendChild(frag);
 
         for (const key in this.parts) {
-            this.parts[key].initialize();
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    this.parts[key][i].initialize();
+                }
+            } else {
+                this.parts[key].initialize();
+            }
         }
 
         this.root.keyMapper.getBinding(KEYMAPPINGS.ingame.toggleHud).add(this.toggleUi, this);
@@ -184,8 +208,16 @@ export class GameHUD {
      */
     shouldPauseGame() {
         for (const key in this.parts) {
-            if (this.parts[key].shouldPauseGame()) {
-                return true;
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    if (this.parts[key][i].shouldPauseGame()) {
+                        return true;
+                    }
+                }
+            } else {
+                if (this.parts[key].shouldPauseGame()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -196,8 +228,16 @@ export class GameHUD {
      */
     shouldPauseRendering() {
         for (const key in this.parts) {
-            if (this.parts[key].shouldPauseRendering()) {
-                return true;
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    if (this.parts[key][i].shouldPauseRendering()) {
+                        return true;
+                    }
+                }
+            } else {
+                if (this.parts[key].shouldPauseRendering()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -208,8 +248,16 @@ export class GameHUD {
      */
     hasBlockingOverlayOpen() {
         for (const key in this.parts) {
-            if (this.parts[key].isBlockingOverlay()) {
-                return true;
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    if (this.parts[key][i].isBlockingOverlay()) {
+                        return true;
+                    }
+                }
+            } else {
+                if (this.parts[key].isBlockingOverlay()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -229,9 +277,14 @@ export class GameHUD {
         if (!this.root.gameInitialized) {
             return;
         }
-
         for (const key in this.parts) {
-            this.parts[key].update();
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    this.parts[key][i].update();
+                }
+            } else {
+                this.parts[key].update();
+            }
         }
 
         /* dev:start */
@@ -281,7 +334,13 @@ export class GameHUD {
      */
     cleanup() {
         for (const key in this.parts) {
-            this.parts[key].cleanup();
+            if (Array.isArray(this.parts[key])) {
+                for (let i = 0; i < this.parts[key].length; i++) {
+                    this.parts[key][i].cleanup();
+                }
+            } else {
+                this.parts[key].cleanup();
+            }
         }
 
         for (const key in this.signals) {

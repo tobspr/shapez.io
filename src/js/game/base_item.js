@@ -2,9 +2,6 @@ import { globalConfig } from "../core/config";
 import { DrawParameters } from "../core/draw_parameters";
 import { BasicSerializableObject } from "../savegame/serialization";
 
-/** @type {ItemType[]} **/
-export const itemTypes = ["shape", "color", "boolean"];
-
 /**
  * Class for items on belts etc. Not an entity for performance reasons
  */
@@ -76,9 +73,15 @@ export class BaseItem extends BasicSerializableObject {
      * @param {DrawParameters} parameters
      * @param {number=} diameter
      */
-    drawItemCenteredClipped(x, y, parameters, diameter = globalConfig.defaultItemDiameter) {
+    drawItemCenteredClipped(
+        x,
+        y,
+        parameters,
+        diameter = globalConfig.defaultItemDiameter,
+        background = true
+    ) {
         if (parameters.visibleRect.containsCircle(x, y, diameter / 2)) {
-            this.drawItemCenteredImpl(x, y, parameters, diameter);
+            this.drawItemCenteredImpl(x, y, parameters, diameter, background);
         }
     }
 
@@ -89,7 +92,7 @@ export class BaseItem extends BasicSerializableObject {
      * @param {DrawParameters} parameters
      * @param {number=} diameter
      */
-    drawItemCenteredImpl(x, y, parameters, diameter = globalConfig.defaultItemDiameter) {
+    drawItemCenteredImpl(x, y, parameters, diameter = globalConfig.defaultItemDiameter, background = true) {
         abstract;
     }
 

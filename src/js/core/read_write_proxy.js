@@ -11,6 +11,7 @@ import { ExplainedResult } from "./explained_result";
 import { decompressX64, compressX64 } from "./lzstring";
 import { asyncCompressor, compressionPrefix } from "./async_compression";
 import { compressObject, decompressObject } from "../savegame/savegame_compressor";
+import { savegameInterfaces } from "../savegame/savegame_interface_registry";
 
 const debounce = require("debounce-promise");
 
@@ -317,7 +318,7 @@ export class ReadWriteProxy {
         if (!data) {
             return ExplainedResult.bad("Data is empty");
         }
-        if (!Number.isInteger(data.version) || data.version < 0) {
+        if (!savegameInterfaces[data.version] && data.version !== this.getCurrentVersion()) {
             return ExplainedResult.bad(
                 `Data has invalid version: ${data.version} (expected ${this.getCurrentVersion()})`
             );

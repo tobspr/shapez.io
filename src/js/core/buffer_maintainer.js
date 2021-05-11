@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { GameRoot } from "../game/root";
 import { clearBufferBacklog, freeCanvas, getBufferStats, makeOffscreenBuffer } from "./buffer_utils";
 import { createLogger } from "./logging";

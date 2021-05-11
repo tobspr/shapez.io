@@ -49,7 +49,7 @@ export class HUDLayerPreview extends BaseHUDPart {
      * @param {Vector} worldPos
      * @param {number} scale 1 / zoomLevel
      */
-    prepareCanvasForPreview(worldPos, scale) {
+    prepareCanvasForPreview(worldPos, scale, layer) {
         this.context.clearRect(0, 0, this.previewSize, this.previewSize);
         this.context.fillStyle = THEME.map.wires.previewColor;
         this.context.fillRect(0, 0, this.previewSize, this.previewSize);
@@ -73,11 +73,11 @@ export class HUDLayerPreview extends BaseHUDPart {
         for (let dx = 0; dx < tileDimensions; ++dx) {
             for (let dy = 0; dy < tileDimensions; ++dy) {
                 const tileX = dx + startTileX;
-                const tileY = dy + startTileY;
+                const tileY = dy + startTileY; // you labed it as what is this on map_chunk I already said I am trying to make tiles use string instead of BaseItem on discord
 
-                const content = this.root.map.getLayerContentXY(tileX, tileY, "wires");
+                const content = this.root.map.getLayerContentXY(tileX, tileY, layer);
                 if (content) {
-                    MapChunkView.drawSingleWiresOverviewTile({
+                    MapChunkView.drawSingleOverviewTile({
                         context: this.context,
                         x: dx * globalConfig.tileSize,
                         y: dy * globalConfig.tileSize,
@@ -98,17 +98,17 @@ export class HUDLayerPreview extends BaseHUDPart {
 
     /**
      * Renders the preview at the given position
-     * @param {import("../../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../../core/draw_parameters").DrawParameters} parameters
      * @param {Vector} worldPos
      * @param {number} scale 1 / zoomLevel
      */
-    renderPreview(parameters, worldPos, scale) {
+    renderPreview(parameters, worldPos, scale, layer) {
         if (this.root.currentLayer !== "regular") {
             // Only supporting wires right now
             return;
         }
 
-        const canvas = this.prepareCanvasForPreview(worldPos, scale);
+        const canvas = this.prepareCanvasForPreview(worldPos, scale, layer);
 
         parameters.context.globalAlpha = 0.3;
         parameters.context.drawImage(

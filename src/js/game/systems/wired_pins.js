@@ -8,6 +8,7 @@ import { enumPinSlotType, WiredPinsComponent } from "../components/wired_pins";
 import { Entity } from "../entity";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { MapChunkView } from "../map_chunk_view";
+import { getBuildingDataFromCode } from "../building_codes";
 
 /** @type {Object<ItemType, number>} */
 const enumTypeToSize = {
@@ -27,6 +28,10 @@ export class WiredPinsSystem extends GameSystemWithFilter {
 
         this.root.signals.prePlacementCheck.add(this.prePlacementCheck, this);
         this.root.signals.freeEntityAreaBeforeBuild.add(this.freeEntityAreaBeforeBuild, this);
+    }
+
+    static getId() {
+        return "wiredPins";
     }
 
     /**
@@ -55,11 +60,12 @@ export class WiredPinsSystem extends GameSystemWithFilter {
                         // Check if entity has a wired component
                         const pinComponent = otherEntity.components.WiredPins;
                         const staticComp = otherEntity.components.StaticMapEntity;
+                        const data = getBuildingDataFromCode(staticComp.code);
                         if (!pinComponent) {
                             continue;
                         }
 
-                        if (staticComp.getMetaBuilding().getIsReplaceable()) {
+                        if (staticComp.getMetaBuilding().getIsReplaceable(data.variant)) {
                             // Don't mind here, even if there would be a collision we
                             // could replace it
                             continue;
@@ -113,7 +119,13 @@ export class WiredPinsSystem extends GameSystemWithFilter {
 
             // If there's an entity, and it can't get removed -> That's a collision
             if (collidingEntity) {
-                if (!collidingEntity.components.StaticMapEntity.getMetaBuilding().getIsReplaceable()) {
+                const staticComp = collidingEntity.components.StaticMapEntity;
+                const data = getBuildingDataFromCode(staticComp.code);
+                if (
+                    !collidingEntity.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(
+                        data.variant
+                    )
+                ) {
                     return true;
                 }
             }
@@ -138,8 +150,12 @@ export class WiredPinsSystem extends GameSystemWithFilter {
             const worldPos = entity.components.StaticMapEntity.localTileToWorld(slot.pos);
             const collidingEntity = this.root.map.getLayerContentXY(worldPos.x, worldPos.y, "wires");
             if (collidingEntity) {
+                const staticComp = collidingEntity.components.StaticMapEntity;
+                const data = getBuildingDataFromCode(staticComp.code);
                 assertAlways(
-                    collidingEntity.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(),
+                    collidingEntity.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(
+                        data.variant
+                    ),
                     "Tried to replace non-repleaceable entity for pins"
                 );
                 if (!this.root.logic.tryDeleteBuilding(collidingEntity)) {
@@ -154,7 +170,7 @@ export class WiredPinsSystem extends GameSystemWithFilter {
      * @param {DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_WiresForegroundLayer(parameters, chunk) {
         const contents = chunk.containedEntities;
 
         for (let i = 0; i < contents.length; ++i) {
@@ -165,6 +181,7 @@ export class WiredPinsSystem extends GameSystemWithFilter {
             }
 
             const staticComp = entity.components.StaticMapEntity;
+            const data = getBuildingDataFromCode(staticComp.code);
             const slots = pinsComp.slots;
 
             for (let j = 0; j < slots.length; ++j) {
@@ -188,7 +205,7 @@ export class WiredPinsSystem extends GameSystemWithFilter {
                     staticComp.rotation + enumDirectionToAngle[slot.direction]
                 );
 
-                if (staticComp.getMetaBuilding().getRenderPins()) {
+                if (staticComp.getMetaBuilding().getRenderPins(data.variant)) {
                     drawRotatedSprite({
                         parameters,
                         sprite: this.pinSprites[slot.type],

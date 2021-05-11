@@ -62,15 +62,18 @@ export class TextualGameState extends GameState {
     /**
      * Goes to a new state, telling him to go back to this state later
      * @param {string} stateId
+     * @param {object} payload
      */
-    moveToStateAddGoBack(stateId) {
-        this.moveToState(stateId, {
+    moveToStateAddGoBack(stateId, payload = undefined) {
+        let statePayload = {
             backToStateId: this.key,
             backToStatePayload: {
                 backToStateId: this.backToStateId,
                 backToStatePayload: this.backToStatePayload,
             },
-        });
+        };
+        payload = payload ? Object.assign({}, payload, statePayload) : statePayload;
+        this.moveToState(stateId, payload);
     }
 
     /**
@@ -97,7 +100,7 @@ export class TextualGameState extends GameState {
         if (this.getStateHeaderTitle()) {
             headerHtml = `
             <div class="headerBar">
-            
+
                 <h1><button class="backButton"></button> ${this.getStateHeaderTitle()}</h1>
             </div>`;
         }

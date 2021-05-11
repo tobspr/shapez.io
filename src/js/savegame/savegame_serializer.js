@@ -3,14 +3,6 @@ import { createLogger } from "../core/logging";
 import { gComponentRegistry } from "../core/global_registries";
 import { SerializerInternal } from "./serializer_internal";
 
-/**
- * @typedef {import("../game/component").Component} Component
- * @typedef {import("../game/component").StaticComponent} StaticComponent
- * @typedef {import("../game/entity").Entity} Entity
- * @typedef {import("../game/root").GameRoot} GameRoot
- * @typedef {import("../savegame/savegame_typedefs").SerializedGame} SerializedGame
- */
-
 const logger = createLogger("savegame_serializer");
 
 /**
@@ -23,12 +15,12 @@ export class SavegameSerializer {
 
     /**
      * Serializes the game root into a dump
-     * @param {GameRoot} root
+     * @param {import("../game/root").GameRoot} root
      * @param {boolean=} sanityChecks Whether to check for validity
      * @returns {object}
      */
     generateDumpFromGameRoot(root, sanityChecks = true) {
-        /** @type {SerializedGame} */
+        /** @type {import("../savegame/savegame_typedefs").SerializedGame} */
         const data = {
             camera: root.camera.serialize(),
             time: root.time.serialize(),
@@ -56,7 +48,7 @@ export class SavegameSerializer {
 
     /**
      * Verifies if there are logical errors in the savegame
-     * @param {SerializedGame} savegame
+     * @param {import("../savegame/savegame_typedefs").SerializedGame} savegame
      * @returns {ExplainedResult}
      */
     verifyLogicalErrors(savegame) {
@@ -68,7 +60,7 @@ export class SavegameSerializer {
 
         // Check for duplicate UIDS
         for (let i = 0; i < savegame.entities.length; ++i) {
-            /** @type {Entity} */
+            /** @type {import("../game/entity").Entity} */
             const entity = savegame.entities[i];
 
             const uid = entity.uid;
@@ -87,16 +79,23 @@ export class SavegameSerializer {
 
             const components = entity.components;
             for (const componentId in components) {
-                const componentClass = gComponentRegistry.findById(componentId);
-
+                var componentClass;
                 // Check component id is known
-                if (!componentClass) {
-                    return ExplainedResult.bad("Unknown component id: " + componentId);
+                try {
+                    componentClass = gComponentRegistry.findById(componentId);
+                } catch (error) {
+                    return ExplainedResult.bad(
+                        JSON.stringify({
+                            type: "component",
+                            status: "missing",
+                            id: componentId,
+                        })
+                    );
                 }
 
                 // Verify component data
                 const componentData = components[componentId];
-                const componentVerifyError = /** @type {StaticComponent} */ (componentClass).verify(
+                const componentVerifyError = /** @type {import("../game/component").StaticComponent} */ (componentClass).verify(
                     componentData
                 );
 
@@ -114,8 +113,8 @@ export class SavegameSerializer {
 
     /**
      * Tries to load the savegame from a given dump
-     * @param {SerializedGame} savegame
-     * @param {GameRoot} root
+     * @param {import("../savegame/savegame_typedefs").SerializedGame} savegame
+     * @param {import("../game/root").GameRoot} root
      * @returns {ExplainedResult}
      */
     deserialize(savegame, root) {

@@ -1,8 +1,3 @@
-/**
- * @typedef {import("./sprites").AtlasSprite} AtlasSprite
- * @typedef {import("./draw_parameters").DrawParameters} DrawParameters
- */
-
 import { globalConfig } from "./config";
 import { createLogger } from "./logging";
 import { Rectangle } from "./rectangle";
@@ -48,8 +43,8 @@ export function initDrawUtils() {
 /**
  *
  * @param {object} param0
- * @param {DrawParameters} param0.parameters
- * @param {AtlasSprite} param0.sprite
+ * @param {import("./draw_parameters").DrawParameters} param0.parameters
+ * @param {import("./sprites").AtlasSprite} param0.sprite
  * @param {number} param0.x
  * @param {number} param0.y
  * @param {number} param0.angle
@@ -75,7 +70,7 @@ let warningsShown = 0;
 /**
  * Draws a sprite with clipping
  * @param {object} param0
- * @param {DrawParameters} param0.parameters
+ * @param {import("./draw_parameters").DrawParameters} param0.parameters
  * @param {HTMLCanvasElement} param0.sprite
  * @param {number} param0.x
  * @param {number} param0.y

@@ -11,7 +11,8 @@ import {
 import { globalConfig } from "../core/config";
 import { getDeviceDPI, resizeHighDPICanvas } from "../core/dpi_manager";
 import { DrawParameters } from "../core/draw_parameters";
-import { gMetaBuildingRegistry } from "../core/global_registries";
+import { ExplainedResult } from "../core/explained_result";
+import { gGameModeRegistry, gMetaBuildingRegistry } from "../core/global_registries";
 import { createLogger } from "../core/logging";
 import { Rectangle } from "../core/rectangle";
 import { ORIGINAL_SPRITE_SCALE } from "../core/sprites";
@@ -104,7 +105,9 @@ export class GameCore {
         root.dynamicTickrate = new DynamicTickrate(root);
 
         // Init game mode
-        root.gameMode = new RegularGameMode(root);
+        if (!savegame.currentData.gamemode) root.gameMode = new RegularGameMode(root);
+        else if (shapezAPI.ingame.gamemodes[savegame.currentData.gamemode])
+            root.gameMode = new shapezAPI.ingame.gamemodes[savegame.currentData.gamemode](root);
 
         // Init classes
         root.camera = new Camera(root);
@@ -116,6 +119,12 @@ export class GameCore {
         root.automaticSave = new AutomaticSave(root);
         root.soundProxy = new SoundProxy(root);
 
+        //Call mod for root classes
+        for (let i = 0; i < shapezAPI.modOrder.length; i++) {
+            const modId = shapezAPI.modOrder[i];
+            shapezAPI.mods.get(modId).gameInitializedRootClasses(this.root);
+        }
+
         // Init managers
         root.entityMgr = new EntityManager(root);
         root.systemMgr = new GameSystemManager(root);
@@ -126,6 +135,12 @@ export class GameCore {
 
         // Initialize the hud once everything is loaded
         this.root.hud.initialize();
+
+        //Call mod for root managers
+        for (let i = 0; i < shapezAPI.modOrder.length; i++) {
+            const modId = shapezAPI.modOrder[i];
+            shapezAPI.mods.get(modId).gameInitializedRootManagers(this.root);
+        }
 
         // Initial resize event, it might be possible that the screen
         // resized later during init tho, which is why will emit it later
@@ -193,14 +208,19 @@ export class GameCore {
             const status = serializer.deserialize(this.root.savegame.getCurrentDump(), this.root);
             if (!status.isGood()) {
                 logger.error("savegame-deserialize-failed:" + status.reason);
-                return false;
+                return ExplainedResult.bad(status.reason);
             }
         } catch (ex) {
             logger.error("Exception during deserialization:", ex);
-            return false;
+            return ExplainedResult.bad("Exception during deserialization:", ex);
+        }
+        if (!this.root.gameMode) {
+            logger.error("gamemode missing");
+            return ExplainedResult.bad("Gamemode missing");
         }
         this.root.gameIsFresh = false;
-        return true;
+
+        return ExplainedResult.good();
     }
 
     /**
@@ -452,6 +472,8 @@ export class GameCore {
             if (this.root.currentLayer === "wires") {
                 // Static map entities
                 root.map.drawWiresForegroundLayer(params);
+            } else if (this.root.currentLayer !== "regular") {
+                root.map.drawForegroundLayer(params, this.root.currentLayer);
             }
         }
 

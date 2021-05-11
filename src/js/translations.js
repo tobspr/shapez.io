@@ -6,7 +6,6 @@ const logger = createLogger("translations");
 
 // @ts-ignore
 const baseTranslations = require("./built-temp/base-en.json");
-
 export let T = baseTranslations;
 
 if (G_IS_DEV && globalConfig.debug.testTranslations) {
@@ -118,6 +117,26 @@ function matchDataRecursive(dest, src) {
     }
 }
 
+export function matchOverwriteRecursive(dest, src) {
+    if (typeof dest !== "object" || typeof src !== "object") {
+        return;
+    }
+
+    for (const key in src) {
+        //console.log("copy", key);
+        const data = src[key];
+        if (typeof data === "object") {
+            if (!dest[key]) dest[key] = {};
+            matchOverwriteRecursive(dest[key], src[key]);
+        } else if (typeof data === "string" || typeof data === "number") {
+            // console.log("match string", key);
+            dest[key] = src[key];
+        } else {
+            logger.log("Unknown type:", typeof data, "in key", key);
+        }
+    }
+}
+
 export function updateApplicationLanguage(id) {
     logger.log("Setting application language:", id);
 
@@ -130,6 +149,16 @@ export function updateApplicationLanguage(id) {
 
     if (data.data) {
         logger.log("Applying translations ...");
-        matchDataRecursive(T, data.data);
+        matchDataRecursive(shapezAPI.translations, data.data);
+        for (let i = 0; i < shapezAPI.modOrder.length; i++) {
+            const mod = shapezAPI.mods.get(shapezAPI.modOrder[i]);
+            const language = mod.translations[id];
+            if (!language) continue;
+            matchOverwriteRecursive(shapezAPI.translations, language);
+        }
+        for (let i = 0; i < shapezAPI.modOrder.length; i++) {
+            const mod = shapezAPI.mods.get(shapezAPI.modOrder[i]);
+            mod.updateStaticTranslations(id);
+        }
     }
 }

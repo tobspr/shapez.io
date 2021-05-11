@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* typehints:start */
 import { Application } from "../application";
 import { InputReceiver } from "./input_receiver";
@@ -20,7 +21,7 @@ export class InputDistributor {
         /** @type {Array<InputReceiver>} */
         this.recieverStack = [];
 
-        /** @type {Array<function(any) : boolean>} */
+        /** @type {Array<function(eventId: any) : boolean>} */
         this.filters = [];
 
         /**
@@ -33,7 +34,7 @@ export class InputDistributor {
 
     /**
      * Attaches a new filter which can filter and reject events
-     * @param {function(any): boolean} filter
+     * @param {function(eventId: any): boolean} filter
      */
     installFilter(filter) {
         this.filters.push(filter);
@@ -41,7 +42,7 @@ export class InputDistributor {
 
     /**
      * Removes an attached filter
-     * @param {function(any) : boolean} filter
+     * @param {function(eventId: any) : boolean} filter
      */
     dismountFilter(filter) {
         fastArrayDeleteValue(this.filters, filter);

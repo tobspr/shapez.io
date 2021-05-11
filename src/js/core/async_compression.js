@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-ignore
 import CompressionWorker from "../webworkers/compression.worker";
 
@@ -29,8 +30,8 @@ if (!checkCryptPrefix(compressionPrefix)) {
 
 /**
  * @typedef {{
- *   errorHandler: function(any) : void,
- *   resolver: function(any) : void,
+ *   errorHandler: function(message: any) : void,
+ *   resolver: function(message: any) : void,
  *   startTime: number
  * }} JobEntry
  */

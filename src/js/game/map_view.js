@@ -135,8 +135,9 @@ export class MapView extends BaseMap {
      * Calls a given method on all given chunks
      * @param {DrawParameters} parameters
      * @param {function} method
+     * @param {string=} layer
      */
-    drawVisibleChunks(parameters, method) {
+    drawVisibleChunks(parameters, method, layer) {
         const cullRange = parameters.visibleRect.allScaled(1 / globalConfig.tileSize);
         const top = cullRange.top();
         const right = cullRange.right();
@@ -159,7 +160,8 @@ export class MapView extends BaseMap {
         for (let chunkX = chunkStartX; chunkX <= chunkEndX; ++chunkX) {
             for (let chunkY = chunkStartY; chunkY <= chunkEndY; ++chunkY) {
                 const chunk = this.root.map.getChunk(chunkX, chunkY, true);
-                method.call(chunk, parameters);
+                if (layer) method.call(chunk, parameters, layer);
+                else method.call(chunk, parameters);
             }
         }
     }
@@ -170,6 +172,15 @@ export class MapView extends BaseMap {
      */
     drawWiresForegroundLayer(parameters) {
         this.drawVisibleChunks(parameters, MapChunkView.prototype.drawWiresForegroundLayer);
+    }
+
+    /**
+     * Draws the layer foreground
+     * @param {DrawParameters} parameters
+     * @param {Layer} layer
+     */
+    drawForegroundLayer(parameters, layer) {
+        this.drawVisibleChunks(parameters, MapChunkView.prototype.drawForegroundLayer, layer);
     }
 
     /**

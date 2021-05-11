@@ -21,6 +21,10 @@ export class StorageSystem extends GameSystemWithFilter {
         this.root.signals.gameFrameStarted.add(this.clearDrawnUids, this);
     }
 
+    static getId() {
+        return "storage";
+    }
+
     clearDrawnUids() {
         this.drawnUids.clear();
     }
@@ -59,7 +63,7 @@ export class StorageSystem extends GameSystemWithFilter {
      * @param {DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundStaticLayer(parameters, chunk) {
         const contents = chunk.containedEntitiesByLayer.regular;
         for (let i = 0; i < contents.length; ++i) {
             const entity = contents[i];

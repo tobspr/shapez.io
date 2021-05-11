@@ -138,6 +138,15 @@ function gulptasksStandalone($, gulp) {
                 overwrite: true,
                 appBundleId: "io.shapez.standalone",
                 appCategoryType: "public.app-category.games",
+                //TODO: build for macOS was removed
+                // ...(platform === "darwin" && {
+                //     protocols: [
+                //         {
+                //             name: "shapezio",
+                //             schemes: ["shapezio"],
+                //         },
+                //     ],
+                // }),
             }).then(
                 appPaths => {
                     console.log("Packages created:", appPaths);

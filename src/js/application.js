@@ -1,7 +1,6 @@
 import { AnimationFrame } from "./core/animation_frame";
 import { BackgroundResourcesLoader } from "./core/background_resources_loader";
 import { IS_MOBILE } from "./core/config";
-import { GameState } from "./core/game_state";
 import { GLOBAL_APP, setGlobalApp } from "./core/globals";
 import { InputDistributor } from "./core/input_distributor";
 import { Loader } from "./core/loader";
@@ -31,13 +30,7 @@ import { PreloadState } from "./states/preload";
 import { SettingsState } from "./states/settings";
 import { ShapezGameAnalytics } from "./platform/browser/game_analytics";
 import { RestrictionManager } from "./core/restriction_manager";
-
-/**
- * @typedef {import("./platform/achievement_provider").AchievementProviderInterface} AchievementProviderInterface
- * @typedef {import("./platform/game_analytics").GameAnalyticsInterface} GameAnalyticsInterface
- * @typedef {import("./platform/sound").SoundInterface} SoundInterface
- * @typedef {import("./platform/storage").StorageInterface} StorageInterface
- */
+import { AchievementProviderInterface } from "./platform/achievement_provider";
 
 const logger = createLogger("application");
 
@@ -78,10 +71,10 @@ export class Application {
 
         // Platform dependent stuff
 
-        /** @type {StorageInterface} */
+        /** @type {import("./platform/storage").StorageInterface} */
         this.storage = null;
 
-        /** @type {SoundInterface} */
+        /** @type {import("./platform/sound").SoundInterface} */
         this.sound = null;
 
         /** @type {PlatformWrapperInterface} */
@@ -96,7 +89,7 @@ export class Application {
         /** @type {AnalyticsInterface} */
         this.analytics = null;
 
-        /** @type {GameAnalyticsInterface} */
+        /** @type {import("./platform/game_analytics").GameAnalyticsInterface} */
         this.gameAnalytics = null;
 
         this.initPlatformDependentInstances();
@@ -149,20 +142,9 @@ export class Application {
      * Registers all game states
      */
     registerStates() {
-        /** @type {Array<typeof GameState>} */
-        const states = [
-            PreloadState,
-            MobileWarningState,
-            MainMenuState,
-            InGameState,
-            SettingsState,
-            KeybindingsState,
-            AboutState,
-            ChangelogState,
-        ];
-
-        for (let i = 0; i < states.length; ++i) {
-            this.stateMgr.register(states[i]);
+        for (const stateKey in Application.states) {
+            if (!Object.hasOwnProperty.call(Application.states, stateKey)) continue;
+            this.stateMgr.register(Application.states[stateKey]);
         }
     }
 
@@ -317,8 +299,9 @@ export class Application {
     /**
      * Boots the application
      */
-    boot() {
+    async boot() {
         console.log("Booting ...");
+
         this.registerStates();
         this.registerEventListeners();
 
@@ -419,3 +402,16 @@ export class Application {
         this.checkResize(true);
     }
 }
+
+Application.trackClicks = undefined;
+Application.getMainContentHTML = undefined;
+Application.states = {
+    PreloadState,
+    MobileWarningState,
+    MainMenuState,
+    InGameState,
+    SettingsState,
+    KeybindingsState,
+    AboutState,
+    ChangelogState,
+};

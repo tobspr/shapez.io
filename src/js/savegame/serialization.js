@@ -194,19 +194,21 @@ export class BasicSerializableObject {
     serialize() {
         return serializeSchema(
             this,
-            /** @type {typeof BasicSerializableObject} */ (this.constructor).getCachedSchema()
+            /** @type {typeof BasicSerializableObject} */
+            (this.constructor).getCachedSchema()
         );
     }
 
     /**
      * @param {any} data
-     * @param {import("./savegame_serializer").GameRoot} root
+     * @param {import("../game/root").GameRoot} root
      * @returns {string|void}
      */
     deserialize(data, root = null) {
         return deserializeSchema(
             this,
-            /** @type {typeof BasicSerializableObject} */ (this.constructor).getCachedSchema(),
+            /** @type {typeof BasicSerializableObject} */
+            (this.constructor).getCachedSchema(),
             data,
             null,
             root

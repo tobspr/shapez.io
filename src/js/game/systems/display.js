@@ -5,22 +5,28 @@ import { enumColors } from "../colors";
 import { DisplayComponent } from "../components/display";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { isTrueItem } from "../items/boolean_item";
-import { ColorItem, COLOR_ITEM_SINGLETONS } from "../items/color_item";
+import { ColorItem } from "../items/color_item";
 import { MapChunkView } from "../map_chunk_view";
 
 export class DisplaySystem extends GameSystemWithFilter {
     constructor(root) {
         super(root, [DisplayComponent]);
 
-        /** @type {Object<string, import("../../core/draw_utils").AtlasSprite>} */
+        /** @type {Object<string, import("../../core/sprites").AtlasSprite>} */
         this.displaySprites = {};
 
         for (const colorId in enumColors) {
             if (colorId === enumColors.uncolored) {
                 continue;
             }
-            this.displaySprites[colorId] = Loader.getSprite("sprites/wires/display/" + colorId + ".png");
+            DisplaySystem.displaySprites[colorId] = Loader.getSprite(
+                "sprites/wires/display/" + colorId + ".png"
+            );
         }
+    }
+
+    static getId() {
+        return "display";
     }
 
     /**
@@ -33,31 +39,15 @@ export class DisplaySystem extends GameSystemWithFilter {
             return null;
         }
 
-        switch (value.getItemType()) {
-            case "boolean": {
-                return isTrueItem(value) ? COLOR_ITEM_SINGLETONS[enumColors.white] : null;
-            }
-
-            case "color": {
-                const item = /**@type {ColorItem} */ (value);
-                return item.color === enumColors.uncolored ? null : item;
-            }
-
-            case "shape": {
-                return value;
-            }
-
-            default:
-                assertAlways(false, "Unknown item type: " + value.getItemType());
-        }
+        return DisplaySystem.displayItemType[value.getItemType()](value);
     }
 
     /**
      * Draws a given chunk
-     * @param {import("../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../core/draw_parameters").DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundStaticLayer(parameters, chunk) {
         const contents = chunk.containedEntitiesByLayer.regular;
         for (let i = 0; i < contents.length; ++i) {
             const entity = contents[i];
@@ -76,22 +66,41 @@ export class DisplaySystem extends GameSystemWithFilter {
                 }
 
                 const origin = entity.components.StaticMapEntity.origin;
-                if (value.getItemType() === "color") {
-                    this.displaySprites[/** @type {ColorItem} */ (value).color].drawCachedCentered(
-                        parameters,
-                        (origin.x + 0.5) * globalConfig.tileSize,
-                        (origin.y + 0.5) * globalConfig.tileSize,
-                        globalConfig.tileSize
-                    );
-                } else if (value.getItemType() === "shape") {
-                    value.drawItemCenteredClipped(
-                        (origin.x + 0.5) * globalConfig.tileSize,
-                        (origin.y + 0.5) * globalConfig.tileSize,
-                        parameters,
-                        30
-                    );
-                }
+                DisplaySystem.displayItem[value.getItemType()](parameters, value, origin, globalConfig);
             }
         }
     }
 }
+
+DisplaySystem.displaySprites = [];
+DisplaySystem.displayItemType = {
+    boolean: value => (isTrueItem(value) ? ColorItem.ITEM_SINGLETONS[enumColors.white] : null),
+
+    color: value =>
+        /**@type {ColorItem} */
+        (value).color === enumColors.uncolored ? null : /**@type {ColorItem} */ (value),
+
+    shape: value => value,
+};
+
+DisplaySystem.displayItem = {
+    color: (parameters, value, origin, globalConfig) =>
+        DisplaySystem.displaySprites[/** @type {ColorItem} */ (value).color].drawCachedCentered(
+            parameters,
+            (origin.x + 0.5) * globalConfig.tileSize,
+            (origin.y + 0.5) * globalConfig.tileSize,
+            globalConfig.tileSize
+        ),
+
+    shape: (parameters, value, origin, globalConfig) =>
+        value.drawItemCenteredClipped(
+            (origin.x + 0.5) * globalConfig.tileSize,
+            (origin.y + 0.5) * globalConfig.tileSize,
+            parameters,
+            DisplaySystem.shapeRadius(),
+            DisplaySystem.shapeBackground()
+        ),
+};
+
+DisplaySystem.shapeRadius = () => 30;
+DisplaySystem.shapeBackground = () => true;

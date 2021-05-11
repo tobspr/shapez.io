@@ -871,6 +871,7 @@ settings:
         userInterface: User Interface
         advanced: Advanced
         performance: Performance
+        debug: debug
 
     versionBadges:
         dev: Development
@@ -932,6 +933,9 @@ settings:
             title: Language
             description: >-
                 Change the language. All translations are user-contributed and might be incomplete!
+
+        gamemodes:
+            title: Gamemodes
 
         enableColorBlindHelper:
             title: Color Blind Mode

@@ -33,6 +33,10 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
         this.root.signals.postLoadHook.add(this.recomputeCacheFull, this);
     }
 
+    static getId() {
+        return "itemEjector";
+    }
+
     /**
      * Recomputes an area after it changed
      * @param {Rectangle} area
@@ -228,67 +232,17 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
         // Try figuring out how what to do with the item
         // @TODO: Kinda hacky. How to solve this properly? Don't want to go through inheritance hell.
 
-        const beltComp = receiver.components.Belt;
-        if (beltComp) {
-            const path = beltComp.assignedPath;
-            assert(path, "belt has no path");
-            if (path.tryAcceptItem(item)) {
-                return true;
-            }
-            // Belt can have nothing else
-            return false;
-        }
+        for (const compId in ItemEjectorSystem.tryPassOverItemComponents) {
+            if (!ItemEjectorSystem.tryPassOverItemComponents.hasOwnProperty(compId)) continue;
+            if (!receiver.components[compId]) continue;
 
-        const itemProcessorComp = receiver.components.ItemProcessor;
-        if (itemProcessorComp) {
-            // Check for potential filters
-            if (!this.root.systemMgr.systems.itemProcessor.checkRequirements(receiver, item, slotIndex)) {
-                return false;
-            }
-
-            // Its an item processor ..
-            if (itemProcessorComp.tryTakeItem(item, slotIndex)) {
-                return true;
-            }
-            // Item processor can have nothing else
-            return false;
-        }
-
-        const undergroundBeltComp = receiver.components.UndergroundBelt;
-        if (undergroundBeltComp) {
-            // Its an underground belt. yay.
-            if (
-                undergroundBeltComp.tryAcceptExternalItem(
-                    item,
-                    this.root.hubGoals.getUndergroundBeltBaseSpeed()
-                )
-            ) {
-                return true;
-            }
-
-            // Underground belt can have nothing else
-            return false;
-        }
-
-        const storageComp = receiver.components.Storage;
-        if (storageComp) {
-            // It's a storage
-            if (storageComp.canAcceptItem(item)) {
-                storageComp.takeItem(item);
-                return true;
-            }
-
-            // Storage can't have anything else
-            return false;
-        }
-
-        const filterComp = receiver.components.Filter;
-        if (filterComp) {
-            // It's a filter! Unfortunately the filter has to know a lot about it's
-            // surrounding state and components, so it can't be within the component itself.
-            if (this.root.systemMgr.systems.filter.tryAcceptItem(receiver, slotIndex, item)) {
-                return true;
-            }
+            return ItemEjectorSystem.tryPassOverItemComponents[compId](
+                receiver.components[compId],
+                item,
+                receiver,
+                slotIndex,
+                this
+            );
         }
 
         return false;
@@ -298,7 +252,7 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
      * @param {DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundDynamicLayer(parameters, chunk) {
         if (this.root.app.settings.getAllSettings().simplifiedBelts) {
             // Disabled in potato mode
             return;
@@ -412,3 +366,58 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
         }
     }
 }
+
+ItemEjectorSystem.tryPassOverItemComponents = {
+    Belt: (comp, item, receiver, slotIndex, itemEjector) => {
+        const path = comp.assignedPath;
+        assert(path, "belt has no path");
+        if (path.tryAcceptItem(item)) {
+            return true;
+        }
+        // Belt can have nothing else
+        return false;
+    },
+
+    ItemProcessor: (comp, item, receiver, slotIndex, itemEjector) => {
+        // Check for potential filters
+        if (!itemEjector.root.systemMgr.systems.itemProcessor.checkRequirements(receiver, item, slotIndex)) {
+            return false;
+        }
+
+        // Its an item processor ..
+        if (comp.tryTakeItem(item, slotIndex)) {
+            return true;
+        }
+        // Item processor can have nothing else
+        return false;
+    },
+
+    UndergroundBelt: (comp, item, receiver, slotIndex, itemEjector) => {
+        // Its an underground belt. yay.
+        if (comp.tryAcceptExternalItem(item, itemEjector.root.hubGoals.getUndergroundBeltBaseSpeed())) {
+            return true;
+        }
+
+        // Underground belt can have nothing else
+        return false;
+    },
+
+    Storage: (comp, item, receiver, slotIndex, itemEjector) => {
+        // It's a storage
+        if (comp.canAcceptItem(item)) {
+            comp.takeItem(item);
+            return true;
+        }
+
+        // Storage can't have anything else
+        return false;
+    },
+
+    Filter: (comp, item, receiver, slotIndex, itemEjector) => {
+        // It's a filter! Unfortunately the filter has to know a lot about it's
+        // surrounding state and components, so it can't be within the component itself.
+        if (itemEjector.root.systemMgr.systems.filter.tryAcceptItem(receiver, slotIndex, item)) {
+            return true;
+        }
+    },
+};

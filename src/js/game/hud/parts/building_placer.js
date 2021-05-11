@@ -216,8 +216,10 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
             const dimensions = metaBuilding.getDimensions(variant);
             const sprite = metaBuilding.getPreviewSprite(0, variant);
             const spriteWrapper = makeDiv(element, null, ["iconWrap"]);
-            spriteWrapper.setAttribute("data-tile-w", String(dimensions.x));
-            spriteWrapper.setAttribute("data-tile-h", String(dimensions.y));
+            // @ts-ignore
+            spriteWrapper.setAttribute("data-tile-w", dimensions.x);
+            // @ts-ignore
+            spriteWrapper.setAttribute("data-tile-h", dimensions.y);
 
             spriteWrapper.innerHTML = sprite.getAsHTML(iconSize * dimensions.x, iconSize * dimensions.y);
 
@@ -256,8 +258,10 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
             this.drawRegularPlacement(parameters);
         }
 
-        if (metaBuilding.getShowWiresLayerPreview()) {
-            this.drawLayerPeek(parameters);
+        const layer = metaBuilding.getShowLayerPreview(this.currentVariant.get());
+
+        if (layer && layer != this.root.currentLayer) {
+            this.drawLayerPeek(parameters, layer);
         }
     }
 
@@ -265,7 +269,7 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
      *
      * @param {DrawParameters} parameters
      */
-    drawLayerPeek(parameters) {
+    drawLayerPeek(parameters, layer) {
         const mousePosition = this.root.app.mousePosition;
         if (!mousePosition) {
             // Not on screen
@@ -278,7 +282,8 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
         this.root.hud.parts.layerPreview.renderPreview(
             parameters,
             worldPosition,
-            1 / this.root.camera.zoomLevel
+            1 / this.root.camera.zoomLevel,
+            layer
         );
     }
 
@@ -307,7 +312,7 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
             tile: mouseTile,
             rotation: this.currentBaseRotation,
             variant: this.currentVariant.get(),
-            layer: metaBuilding.getLayer(),
+            layer: metaBuilding.getLayer(this.root, this.currentVariant.get()),
         });
 
         // Check if there are connected entities
@@ -342,7 +347,7 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
         }
 
         // Synchronize rotation and origin
-        this.fakeEntity.layer = metaBuilding.getLayer();
+        this.fakeEntity.layer = metaBuilding.getLayer(this.root, this.currentVariant.get());
         const staticComp = this.fakeEntity.components.StaticMapEntity;
         staticComp.origin = mouseTile;
         staticComp.rotation = rotation;

@@ -35,9 +35,9 @@ Your goal is to produce shapes by cutting, rotating, merging and painting parts 
 
 You can use [Gitpod](https://www.gitpod.io/) (an Online Open Source VS Code-like IDE which is free for Open Source) for working on issues and making PRs to this project. With a single click it will start a workspace and automatically:
 
-- clone the `shapez.io` repo.
-- install all of the dependencies.
-- start `gulp` in `gulp/` directory.
+-   clone the `shapez.io` repo.
+-   install all of the dependencies.
+-   start `gulp` in `gulp/` directory.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/from-referrer/)
 
@@ -130,3 +130,9 @@ For most assets I use Adobe Photoshop, you can find them <a href="//github.com/t
 All assets will be automatically rebuilt into the atlas once changed (Thanks to dengr1065!)
 
 <img src="https://i.imgur.com/W25Fkl0.png" alt="shapez.io Screenshot">
+
+### Generating documentation:
+
+1. Replace `name.replace('*', '\\*')` with `name.replace('*', '\\*').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)')` in node_modules\esdoc-publish-html-plugin\out\src\Builder\DocBuilder.js:116:20)
+2. Replace `autoPrivate && doc.name.charAt(0) === '\_'` with `autoPrivate && doc.name && doc.name.charAt(0) === '\_'` in node_modules\esdoc-accessor-plugin\src\Plugin.js:16
+3. npm run esdoc

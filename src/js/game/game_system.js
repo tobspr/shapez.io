@@ -18,6 +18,14 @@ export class GameSystem {
     ///// PUBLIC API /////
 
     /**
+     * Returns static id
+     */
+    static getId() {
+        abstract;
+        return "unknown-system";
+    }
+
+    /**
      * Updates the game system, override to perform logic
      */
     update() {}

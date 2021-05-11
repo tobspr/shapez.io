@@ -220,7 +220,7 @@ export class PreloadState extends GameState {
             .then(() => this.setStatus("Launching"))
             .then(
                 () => {
-                    this.moveToState("MainMenuState");
+                    this.moveToState(shapezAPI.firstState);
                 },
                 err => {
                     this.showFailMessage(err);

@@ -19,37 +19,54 @@ import { DisplayComponent } from "./components/display";
 import { BeltReaderComponent } from "./components/belt_reader";
 import { FilterComponent } from "./components/filter";
 import { ItemProducerComponent } from "./components/item_producer";
+import { Component } from "./component";
+
+export function addVanillaComponentsToAPI() {
+    const components = shapezAPI.ingame["components"];
+
+    /** @typedef {typeof Component[]}*/
+    const vanillaComponents = [
+        StaticMapEntityComponent,
+        BeltComponent,
+        ItemEjectorComponent,
+        ItemAcceptorComponent,
+        MinerComponent,
+        ItemProcessorComponent,
+        UndergroundBeltComponent,
+        HubComponent,
+        StorageComponent,
+        WiredPinsComponent,
+        BeltUnderlaysComponent,
+        WireComponent,
+        ConstantSignalComponent,
+        LogicGateComponent,
+        LeverComponent,
+        WireTunnelComponent,
+        DisplayComponent,
+        BeltReaderComponent,
+        FilterComponent,
+        ItemProducerComponent,
+    ];
+    // IMPORTANT ^^^^^ UPDATE ENTITY COMPONENT STORAGE AFTERWARDS
+
+    for (let i = 0; i < vanillaComponents.length; i++) {
+        components[vanillaComponents[i].getId()] = vanillaComponents[i];
+    }
+}
 
 export function initComponentRegistry() {
-    gComponentRegistry.register(StaticMapEntityComponent);
-    gComponentRegistry.register(BeltComponent);
-    gComponentRegistry.register(ItemEjectorComponent);
-    gComponentRegistry.register(ItemAcceptorComponent);
-    gComponentRegistry.register(MinerComponent);
-    gComponentRegistry.register(ItemProcessorComponent);
-    gComponentRegistry.register(UndergroundBeltComponent);
-    gComponentRegistry.register(HubComponent);
-    gComponentRegistry.register(StorageComponent);
-    gComponentRegistry.register(WiredPinsComponent);
-    gComponentRegistry.register(BeltUnderlaysComponent);
-    gComponentRegistry.register(WireComponent);
-    gComponentRegistry.register(ConstantSignalComponent);
-    gComponentRegistry.register(LogicGateComponent);
-    gComponentRegistry.register(LeverComponent);
-    gComponentRegistry.register(WireTunnelComponent);
-    gComponentRegistry.register(DisplayComponent);
-    gComponentRegistry.register(BeltReaderComponent);
-    gComponentRegistry.register(FilterComponent);
-    gComponentRegistry.register(ItemProducerComponent);
-
-    // IMPORTANT ^^^^^ UPDATE ENTITY COMPONENT STORAGE AFTERWARDS
+    const components = shapezAPI.ingame["components"];
+    for (const componentId in components) {
+        if (!components.hasOwnProperty(componentId)) continue;
+        const component = components[componentId];
+        gComponentRegistry.register(component);
+    }
 
     // Sanity check - If this is thrown, you (=me, lol) forgot to add a new component here
 
     assert(
         // @ts-ignore
-        require.context("./components", false, /.*\.js/i).keys().length ===
-            gComponentRegistry.getNumEntries(),
+        require.context("./components", false, /.*\.js/i).keys().length <= gComponentRegistry.getNumEntries(),
         "Not all components are registered"
     );
 

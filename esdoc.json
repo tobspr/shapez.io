@@ -1,0 +1,33 @@
+{
+    "source": "./src/js",
+    "destination": "./docs",
+    "plugins": [
+        { "name": "esdoc-standard-plugin" },
+        {
+            "name": "esdoc-brand-plugin",
+            "option": {
+                "title": "Shapez.io - Mods",
+                "description": "The shapez.io mods theme for esdoc",
+                "author": "DJ1TJOO"
+            }
+        },
+        {
+            "name": "esdoc-publish-html-plugin",
+            "option": {
+                "template": "./docs_template"
+            }
+        },
+        {
+            "name": "esdoc-standard-plugin",
+            "option": {
+                "coverage": {
+                    "enable": true
+                },
+                "accessor": {
+                    "access": ["public"],
+                    "autoPrivate": true
+                }
+            }
+        }
+    ]
+}

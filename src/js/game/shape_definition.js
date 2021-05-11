@@ -278,7 +278,7 @@ export class ShapeDefinition extends BasicSerializableObject {
      * @param {DrawParameters} parameters
      * @param {number=} diameter
      */
-    drawCentered(x, y, parameters, diameter = 20) {
+    drawCentered(x, y, parameters, diameter = 20, background = true) {
         const dpi = smoothenDpi(globalConfig.shapesSharpness * parameters.zoomLevel);
 
         if (!this.bufferGenerator) {
@@ -293,6 +293,7 @@ export class ShapeDefinition extends BasicSerializableObject {
             h: diameter,
             dpi,
             redrawMethod: this.bufferGenerator,
+            additionalParams: background,
         });
         parameters.context.drawImage(canvas, x - diameter / 2, y - diameter / 2, diameter, diameter);
     }
@@ -302,22 +303,22 @@ export class ShapeDefinition extends BasicSerializableObject {
      * @param {CanvasRenderingContext2D} context
      * @param {number} size
      */
-    drawFullSizeOnCanvas(context, size) {
-        this.internalGenerateShapeBuffer(null, context, size, size, 1);
+    drawFullSizeOnCanvas(context, size, background = true) {
+        this.internalGenerateShapeBuffer(null, context, size, size, 1, background);
     }
 
     /**
      * Generates this shape as a canvas
      * @param {number} size
      */
-    generateAsCanvas(size = 120) {
+    generateAsCanvas(size = 120, background = true) {
         const [canvas, context] = makeOffscreenBuffer(size, size, {
             smooth: true,
             label: "definition-canvas-cache-" + this.getHash(),
             reusable: false,
         });
 
-        this.internalGenerateShapeBuffer(canvas, context, size, size, 1);
+        this.internalGenerateShapeBuffer(canvas, context, size, size, 1, background);
         return canvas;
     }
 
@@ -329,7 +330,7 @@ export class ShapeDefinition extends BasicSerializableObject {
      * @param {number} h
      * @param {number} dpi
      */
-    internalGenerateShapeBuffer(canvas, context, w, h, dpi) {
+    internalGenerateShapeBuffer(canvas, context, w, h, dpi, background = true) {
         context.translate((w * dpi) / 2, (h * dpi) / 2);
         context.scale((dpi * w) / 23, (dpi * h) / 23);
 
@@ -338,9 +339,11 @@ export class ShapeDefinition extends BasicSerializableObject {
         const quadrantSize = 10;
         const quadrantHalfSize = quadrantSize / 2;
 
-        context.fillStyle = THEME.items.circleBackground;
-        context.beginCircle(0, 0, quadrantSize * 1.15);
-        context.fill();
+        if (background) {
+            context.fillStyle = THEME.items.circleBackground;
+            context.beginCircle(0, 0, quadrantSize * 1.15);
+            context.fill();
+        }
 
         for (let layerIndex = 0; layerIndex < this.layers.length; ++layerIndex) {
             const quadrants = this.layers[layerIndex];
@@ -368,67 +371,16 @@ export class ShapeDefinition extends BasicSerializableObject {
 
                 const insetPadding = 0.0;
 
-                switch (subShape) {
-                    case enumSubShape.rect: {
-                        context.beginPath();
-                        const dims = quadrantSize * layerScale;
-                        context.rect(
-                            insetPadding + -quadrantHalfSize,
-                            -insetPadding + quadrantHalfSize - dims,
-                            dims,
-                            dims
-                        );
-
-                        break;
-                    }
-                    case enumSubShape.star: {
-                        context.beginPath();
-                        const dims = quadrantSize * layerScale;
-
-                        let originX = insetPadding - quadrantHalfSize;
-                        let originY = -insetPadding + quadrantHalfSize - dims;
-
-                        const moveInwards = dims * 0.4;
-                        context.moveTo(originX, originY + moveInwards);
-                        context.lineTo(originX + dims, originY);
-                        context.lineTo(originX + dims - moveInwards, originY + dims);
-                        context.lineTo(originX, originY + dims);
-                        context.closePath();
-                        break;
-                    }
-
-                    case enumSubShape.windmill: {
-                        context.beginPath();
-                        const dims = quadrantSize * layerScale;
-
-                        let originX = insetPadding - quadrantHalfSize;
-                        let originY = -insetPadding + quadrantHalfSize - dims;
-                        const moveInwards = dims * 0.4;
-                        context.moveTo(originX, originY + moveInwards);
-                        context.lineTo(originX + dims, originY);
-                        context.lineTo(originX + dims, originY + dims);
-                        context.lineTo(originX, originY + dims);
-                        context.closePath();
-                        break;
-                    }
-
-                    case enumSubShape.circle: {
-                        context.beginPath();
-                        context.moveTo(insetPadding + -quadrantHalfSize, -insetPadding + quadrantHalfSize);
-                        context.arc(
-                            insetPadding + -quadrantHalfSize,
-                            -insetPadding + quadrantHalfSize,
-                            quadrantSize * layerScale,
-                            -Math.PI * 0.5,
-                            0
-                        );
-                        context.closePath();
-                        break;
-                    }
-
-                    default: {
-                        assertAlways(false, "Unkown sub shape: " + subShape);
-                    }
+                if (typeof ShapeDefinition.renderQuad[subShape] === "function") {
+                    ShapeDefinition.renderQuad[subShape].bind(this)(
+                        context,
+                        quadrantSize,
+                        quadrantHalfSize,
+                        layerScale,
+                        insetPadding
+                    );
+                } else {
+                    assertAlways(false, "Unkown sub shape: " + subShape);
                 }
 
                 context.fill();
@@ -617,3 +569,49 @@ export class ShapeDefinition extends BasicSerializableObject {
         return new ShapeDefinition({ layers: newLayers });
     }
 }
+ShapeDefinition.renderQuad = {
+    [enumSubShape.rect]: (context, quadrantSize, quadrantHalfSize, layerScale, insetPadding) => {
+        context.beginPath();
+        const dims = quadrantSize * layerScale;
+        context.rect(insetPadding + -quadrantHalfSize, -insetPadding + quadrantHalfSize - dims, dims, dims);
+    },
+    [enumSubShape.star]: (context, quadrantSize, quadrantHalfSize, layerScale, insetPadding) => {
+        context.beginPath();
+        const dims = quadrantSize * layerScale;
+
+        let originX = insetPadding - quadrantHalfSize;
+        let originY = -insetPadding + quadrantHalfSize - dims;
+
+        const moveInwards = dims * 0.4;
+        context.moveTo(originX, originY + moveInwards);
+        context.lineTo(originX + dims, originY);
+        context.lineTo(originX + dims - moveInwards, originY + dims);
+        context.lineTo(originX, originY + dims);
+        context.closePath();
+    },
+    [enumSubShape.windmill]: (context, quadrantSize, quadrantHalfSize, layerScale, insetPadding) => {
+        context.beginPath();
+        const dims = quadrantSize * layerScale;
+
+        let originX = insetPadding - quadrantHalfSize;
+        let originY = -insetPadding + quadrantHalfSize - dims;
+        const moveInwards = dims * 0.4;
+        context.moveTo(originX, originY + moveInwards);
+        context.lineTo(originX + dims, originY);
+        context.lineTo(originX + dims, originY + dims);
+        context.lineTo(originX, originY + dims);
+        context.closePath();
+    },
+    [enumSubShape.circle]: (context, quadrantSize, quadrantHalfSize, layerScale, insetPadding) => {
+        context.beginPath();
+        context.moveTo(insetPadding + -quadrantHalfSize, -insetPadding + quadrantHalfSize);
+        context.arc(
+            insetPadding + -quadrantHalfSize,
+            -insetPadding + quadrantHalfSize,
+            quadrantSize * layerScale,
+            -Math.PI * 0.5,
+            0
+        );
+        context.closePath();
+    },
+};

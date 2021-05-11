@@ -141,7 +141,7 @@ export class GameRoot {
         this.signals = {
             // Entities
             entityManuallyPlaced: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
-            entityAdded: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
+            entityAdded: /** @type {TypedSignal<[Entity, Boolean]>} */ (new Signal()),
             entityChanged: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
             entityGotNewComponent: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
             entityComponentRemoved: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
@@ -174,7 +174,7 @@ export class GameRoot {
 
             // Called to check if an entity can be placed, second parameter is an additional offset.
             // Use to introduce additional placement checks
-            prePlacementCheck: /** @type {TypedSignal<[Entity, Vector]>} */ (new Signal()),
+            prePlacementCheck: /** @type {TypedSignal<[Entity, Vector, Boolean]>} */ (new Signal()),
 
             // Called before actually placing an entity, use to perform additional logic
             // for freeing space before actually placing.

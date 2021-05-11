@@ -8,6 +8,10 @@ export class BeltReaderSystem extends GameSystemWithFilter {
         super(root, [BeltReaderComponent]);
     }
 
+    static getId() {
+        return "beltReader";
+    }
+
     update() {
         const now = this.root.time.now();
         const minimumTime = now - globalConfig.readerAnalyzeIntervalSeconds;

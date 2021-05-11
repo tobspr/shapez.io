@@ -53,7 +53,7 @@ export class ProductionAnalytics extends BasicSerializableObject {
      * @param {BaseItem} item
      */
     onItemProduced(item) {
-        if (item.getItemType() === "shape") {
+        if (item.getItemType && item.getItemType() === "shape") {
             const definition = /** @type {ShapeItem} */ (item).definition;
             const key = definition.getHash();
             const entry = this.history[enumAnalyticsDataSource.produced];

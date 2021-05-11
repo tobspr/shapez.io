@@ -1,10 +1,6 @@
-/**
- * @typedef {import("../application").Application} Application
- */
-
 export class GameAnalyticsInterface {
     constructor(app) {
-        /** @type {Application} */
+        /** @type {import("../application").Application} */
         this.app = app;
     }
 

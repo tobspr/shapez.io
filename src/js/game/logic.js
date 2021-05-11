@@ -3,8 +3,8 @@ import { createLogger } from "../core/logging";
 import { STOP_PROPAGATION } from "../core/signal";
 import { round2Digits } from "../core/utils";
 import { enumDirection, enumDirectionToVector, enumInvertedDirections, Vector } from "../core/vector";
+import { MetaWireBuilding } from "./buildings/wire";
 import { getBuildingDataFromCode } from "./building_codes";
-import { enumWireVariant } from "./components/wire";
 import { Entity } from "./entity";
 import { CHUNK_OVERLAY_RES } from "./map_chunk_view";
 import { MetaBuilding } from "./meta_building";
@@ -55,7 +55,7 @@ export class GameLogic {
      * @param {Vector=} offset Optional, move the entity by the given offset first
      * @returns {boolean} true if the entity could be placed there
      */
-    checkCanPlaceEntity(entity, offset = null) {
+    checkCanPlaceEntity(entity, offset = null, blueprint = false) {
         // Compute area of the building
         const rect = entity.components.StaticMapEntity.getTileSpaceBounds();
         if (offset) {
@@ -70,7 +70,9 @@ export class GameLogic {
                 const otherEntity = this.root.map.getLayerContentXY(x, y, entity.layer);
                 if (otherEntity) {
                     const metaClass = otherEntity.components.StaticMapEntity.getMetaBuilding();
-                    if (!metaClass.getIsReplaceable()) {
+                    const staticComp = otherEntity.components.StaticMapEntity;
+                    const data = getBuildingDataFromCode(staticComp.code);
+                    if (!metaClass.getIsReplaceable(data.variant)) {
                         // This one is a direct blocker
                         return false;
                     }
@@ -79,7 +81,7 @@ export class GameLogic {
         }
 
         // Perform additional placement checks
-        if (this.root.signals.prePlacementCheck.dispatch(entity, offset) === STOP_PROPAGATION) {
+        if (this.root.signals.prePlacementCheck.dispatch(entity, offset, blueprint) === STOP_PROPAGATION) {
             return false;
         }
 
@@ -128,8 +130,10 @@ export class GameLogic {
             for (let y = rect.y; y < rect.y + rect.h; ++y) {
                 const contents = this.root.map.getLayerContentXY(x, y, entity.layer);
                 if (contents) {
+                    const staticComp = contents.components.StaticMapEntity;
+                    const data = getBuildingDataFromCode(staticComp.code);
                     assertAlways(
-                        contents.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(),
+                        contents.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(data.variant),
                         "Tried to replace non-repleaceable entity"
                     );
                     if (!this.tryDeleteBuilding(contents)) {
@@ -167,7 +171,8 @@ export class GameLogic {
      */
     canDeleteBuilding(building) {
         const staticComp = building.components.StaticMapEntity;
-        return staticComp.getMetaBuilding().getIsRemovable();
+        const data = getBuildingDataFromCode(staticComp.code);
+        return staticComp.getMetaBuilding().getIsRemovable(data.variant);
     }
 
     /**
@@ -188,7 +193,7 @@ export class GameLogic {
      *
      * Computes the flag for a given tile
      * @param {object} param0
-     * @param {enumWireVariant} param0.wireVariant
+     * @param {MetaWireBuilding.wireVariants} param0.wireVariant
      * @param {Vector} param0.tile The tile to check at
      * @param {enumDirection} param0.edge The edge to check for
      */

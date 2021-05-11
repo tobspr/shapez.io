@@ -1,3 +1,6 @@
+/**
+ * @type {Array<{version: string, date: string, skin?: string, entries: Array<String>}>} changelog
+ */
 export const CHANGELOG = [
     {
         version: "1.3.1",

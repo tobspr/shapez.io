@@ -4,11 +4,23 @@ import { Signal } from "./signal";
 import BackgroundAnimationFrameEmitterWorker from "../webworkers/background_animation_frame_emittter.worker";
 
 import { createLogger } from "./logging";
+/**
+ * Logger for animation_frame
+ */
 const logger = createLogger("animation_frame");
 
+/**
+ * Maximum delta milliseconds
+ */
 const maxDtMs = 1000;
+/**
+ * Reset delta milliseconds
+ */
 const resetDtMs = 16;
 
+/**
+ * Controls the frames and emit signals to draw
+ */
 export class AnimationFrame {
     constructor() {
         this.frameEmitted = new Signal();
@@ -26,6 +38,9 @@ export class AnimationFrame {
         this.backgroundWorker.addEventListener("message", this.handleBackgroundTick.bind(this));
     }
 
+    /**
+     * Handels the background tick
+     */
     handleBackgroundTick() {
         const time = performance.now();
 
@@ -39,11 +54,17 @@ export class AnimationFrame {
         this.bgLastTime = time;
     }
 
+    /**
+     * Starts the frame loop
+     */
     start() {
         assertAlways(window.requestAnimationFrame, "requestAnimationFrame is not supported!");
         this.handleAnimationFrame();
     }
 
+    /**
+     * Handels the animation frame
+     */
     handleAnimationFrame(time) {
         let dt = time - this.lastTime;
 

@@ -13,7 +13,7 @@ export class HUDWireInfo extends BaseHUDPart {
 
     /**
      *
-     * @param {import("../../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../../core/draw_parameters").DrawParameters} parameters
      */
     drawOverlays(parameters) {
         if (this.root.currentLayer !== "wires") {
@@ -81,7 +81,7 @@ export class HUDWireInfo extends BaseHUDPart {
     /**
      *
      *
-     * @param {import("../../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../../core/draw_parameters").DrawParameters} parameters
      * @param {WireNetwork} network
      */
     drawHighlightedNetwork(parameters, network) {
@@ -91,7 +91,7 @@ export class HUDWireInfo extends BaseHUDPart {
             const wire = network.wires[i];
             const staticComp = wire.components.StaticMapEntity;
             const screenTile = this.root.camera.worldToScreen(staticComp.origin.toWorldSpace());
-            MapChunkView.drawSingleWiresOverviewTile({
+            MapChunkView.drawSingleOverviewTile({
                 context: parameters.context,
                 x: screenTile.x,
                 y: screenTile.y,
@@ -105,7 +105,7 @@ export class HUDWireInfo extends BaseHUDPart {
             const tunnel = network.tunnels[i];
             const staticComp = tunnel.components.StaticMapEntity;
             const screenTile = this.root.camera.worldToScreen(staticComp.origin.toWorldSpace());
-            MapChunkView.drawSingleWiresOverviewTile({
+            MapChunkView.drawSingleOverviewTile({
                 context: parameters.context,
                 x: screenTile.x,
                 y: screenTile.y,

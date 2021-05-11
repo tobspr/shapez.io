@@ -15,9 +15,9 @@ import {
 } from "../../core/vector";
 import { ACHIEVEMENTS } from "../../platform/achievement_provider";
 import { BaseItem } from "../base_item";
-import { arrayWireRotationVariantToType, MetaWireBuilding } from "../buildings/wire";
+import { MetaWireBuilding } from "../buildings/wire";
 import { getCodeFromBuildingData } from "../building_codes";
-import { enumWireType, enumWireVariant, WireComponent } from "../components/wire";
+import { enumWireType, WireComponent } from "../components/wire";
 import { enumPinSlotType, WiredPinsComponent } from "../components/wired_pins";
 import { WireTunnelComponent } from "../components/wire_tunnel";
 import { Entity } from "../entity";
@@ -95,11 +95,11 @@ export class WireSystem extends GameSystemWithFilter {
         super(root, [WireComponent]);
 
         /**
-         * @type {Object<enumWireVariant, Object<enumWireType, AtlasSprite>>}
+         * @type {Object<MetaWireBuilding.wireVariants, Object<enumWireType, AtlasSprite>>}
          */
         this.wireSprites = {};
 
-        const variants = ["conflict", ...Object.keys(enumWireVariant)];
+        const variants = ["conflict", ...Object.keys(MetaWireBuilding.wireVariants)];
         for (let i = 0; i < variants.length; ++i) {
             const wireVariant = variants[i];
             const sprites = {};
@@ -131,6 +131,10 @@ export class WireSystem extends GameSystemWithFilter {
          * @type {Array<WireNetwork>}
          */
         this.networks = [];
+    }
+
+    static getId() {
+        return "wire";
     }
 
     /**
@@ -224,7 +228,7 @@ export class WireSystem extends GameSystemWithFilter {
         /**
          * Once we occur a wire, we store its variant so we don't connect to
          * mismatching ones
-         * @type {enumWireVariant}
+         * @type {MetaWireBuilding.wireVariants}
          */
         let variantMask = null;
 
@@ -365,7 +369,7 @@ export class WireSystem extends GameSystemWithFilter {
      * @param {Vector} initialTile
      * @param {Array<enumDirection>} directions
      * @param {WireNetwork} network
-     * @param {enumWireVariant=} variantMask Only accept connections to this mask
+     * @param {MetaWireBuilding.wireVariants=} variantMask Only accept connections to this mask
      * @returns {Array<any>}
      */
     findSurroundingWireTargets(initialTile, directions, network, variantMask = null) {
@@ -464,9 +468,8 @@ export class WireSystem extends GameSystemWithFilter {
                     }
 
                     const staticComp = entity.components.StaticMapEntity;
-
                     // Compute where this tunnel connects to
-                    const forwardedTile = staticComp.origin.add(offset);
+                    const forwardedTile = WireSystem.getForwardedTile(tunnelComp, staticComp, offset);
                     VERBOSE_WIRES &&
                         logger.log(
                             "   Found tunnel",
@@ -569,12 +572,13 @@ export class WireSystem extends GameSystemWithFilter {
     /**
      * Returns the given tileset and opacity
      * @param {WireComponent} wireComp
-     * @returns {{ spriteSet: Object<enumWireType, import("../../core/draw_utils").AtlasSprite>, opacity: number}}
+     * @returns {{ spriteSet: Object<enumWireType, import("../../core/sprites").AtlasSprite>, opacity: number}}
      */
     getSpriteSetAndOpacityForWire(wireComp) {
         if (!wireComp.linkedNetwork) {
             // There is no network, it's empty
             return {
+                // @ts-ignore
                 spriteSet: this.wireSprites[wireComp.variant],
                 opacity: 0.5,
             };
@@ -590,6 +594,7 @@ export class WireSystem extends GameSystemWithFilter {
         }
 
         return {
+            // @ts-ignore
             spriteSet: this.wireSprites[wireComp.variant],
             opacity: isTruthyItem(network.currentValue) ? 1 : 0.5,
         };
@@ -597,10 +602,10 @@ export class WireSystem extends GameSystemWithFilter {
 
     /**
      * Draws a given chunk
-     * @param {import("../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../core/draw_parameters").DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_WiresForegroundLayer(parameters, chunk) {
         const contents = chunk.wireContents;
         for (let y = 0; y < globalConfig.mapChunkSize; ++y) {
             for (let x = 0; x < globalConfig.mapChunkSize; ++x) {
@@ -741,7 +746,7 @@ export class WireSystem extends GameSystemWithFilter {
                     });
 
                     // Compute delta to see if anything changed
-                    const newType = arrayWireRotationVariantToType[rotationVariant];
+                    const newType = MetaWireBuilding.rotationVariantToType[rotationVariant];
 
                     if (targetStaticComp.rotation !== rotation || newType !== targetWireComp.type) {
                         // Change stuff
@@ -759,3 +764,5 @@ export class WireSystem extends GameSystemWithFilter {
         }
     }
 }
+
+WireSystem.getForwardedTile = (tunnelComp, staticComp, offset) => staticComp.origin.add(offset);

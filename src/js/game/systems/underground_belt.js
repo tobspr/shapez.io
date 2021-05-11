@@ -46,6 +46,10 @@ export class UndergroundBeltSystem extends GameSystemWithFilter {
         );
     }
 
+    static getId() {
+        return "undergroundBelt";
+    }
+
     /**
      * Callback when an entity got placed, used to remove belts between underground belts
      * @param {Entity} entity

@@ -20,16 +20,20 @@ export class ItemProcessorOverlaysSystem extends GameSystem {
         this.root.signals.gameFrameStarted.add(this.clearDrawnUids, this);
     }
 
+    static getId() {
+        return "itemProcessorOverlays";
+    }
+
     clearDrawnUids() {
         this.drawnUids.clear();
     }
 
     /**
      *
-     * @param {import("../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../core/draw_parameters").DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundStaticLayer(parameters, chunk) {
         const contents = chunk.containedEntitiesByLayer.regular;
         for (let i = 0; i < contents.length; ++i) {
             const entity = contents[i];
@@ -48,12 +52,13 @@ export class ItemProcessorOverlaysSystem extends GameSystem {
                 }
                 this.drawnUids.add(entity.uid);
 
-                switch (requirement) {
-                    case enumItemProcessorRequirements.painterQuad: {
-                        this.drawConnectedSlotRequirement(parameters, entity, { drawIfFalse: true });
-                        break;
-                    }
-                }
+                if (ItemProcessorOverlaysSystem.processorOverlayStatic[requirement])
+                    ItemProcessorOverlaysSystem.processorOverlayStatic[requirement].bind(this)(
+                        parameters,
+                        chunk,
+                        entity,
+                        processorComp
+                    );
 
                 if (processorComp.type === enumItemProcessorTypes.reader) {
                     this.drawReaderOverlays(parameters, entity);
@@ -74,7 +79,7 @@ export class ItemProcessorOverlaysSystem extends GameSystem {
 
     /**
      *
-     * @param {import("../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../core/draw_parameters").DrawParameters} parameters
      * @param {Entity} entity
      */
     drawReaderOverlays(parameters, entity) {
@@ -102,7 +107,7 @@ export class ItemProcessorOverlaysSystem extends GameSystem {
 
     /**
      *
-     * @param {import("../../core/draw_utils").DrawParameters} parameters
+     * @param {import("../../core/draw_parameters").DrawParameters} parameters
      * @param {Entity} entity
      * @param {object} param0
      * @param {boolean=} param0.drawIfFalse
@@ -140,3 +145,9 @@ export class ItemProcessorOverlaysSystem extends GameSystem {
         parameters.context.globalAlpha = 1;
     }
 }
+
+ItemProcessorOverlaysSystem.processorOverlayStatic = {
+    [enumItemProcessorRequirements.painterQuad]: function (parameters, chunk, entity, processorComp) {
+        this.drawConnectedSlotRequirement(parameters, entity, { drawIfFalse: true });
+    },
+};

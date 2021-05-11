@@ -12,6 +12,10 @@ export class FilterSystem extends GameSystemWithFilter {
         super(root, [FilterComponent]);
     }
 
+    static getId() {
+        return "filter";
+    }
+
     update() {
         const progress =
             this.root.dynamicTickrate.deltaSeconds *
@@ -63,12 +67,7 @@ export class FilterSystem extends GameSystemWithFilter {
         assert(filterComp, "entity is no filter");
 
         // Figure out which list we have to check
-        let listToCheck;
-        if (value.equals(BOOL_TRUE_SINGLETON) || value.equals(item)) {
-            listToCheck = filterComp.pendingItemsToLeaveThrough;
-        } else {
-            listToCheck = filterComp.pendingItemsToReject;
-        }
+        let listToCheck = FilterSystem.listToCheck(entity, slot, item, filterComp, value);
 
         if (listToCheck.length >= MAX_ITEMS_IN_QUEUE) {
             // Busy
@@ -83,3 +82,8 @@ export class FilterSystem extends GameSystemWithFilter {
         return true;
     }
 }
+
+FilterSystem.listToCheck = (entity, slot, item, filterComp, networkValue) =>
+    networkValue.equals(BOOL_TRUE_SINGLETON) || networkValue.equals(item)
+        ? filterComp.pendingItemsToLeaveThrough
+        : filterComp.pendingItemsToReject;

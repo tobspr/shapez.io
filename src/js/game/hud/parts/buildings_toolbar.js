@@ -20,29 +20,36 @@ import { queryParamOptions } from "../../../core/query_parameters";
 export class HUDBuildingsToolbar extends HUDBaseToolbar {
     constructor(root) {
         super(root, {
-            primaryBuildings: [
-                MetaBeltBuilding,
-                MetaBalancerBuilding,
-                MetaUndergroundBeltBuilding,
-                MetaMinerBuilding,
-                MetaCutterBuilding,
-                MetaRotaterBuilding,
-                MetaStackerBuilding,
-                MetaMixerBuilding,
-                MetaPainterBuilding,
-                MetaTrashBuilding,
-                ...(queryParamOptions.sandboxMode || G_IS_DEV ? [MetaItemProducerBuilding] : []),
-            ],
-            secondaryBuildings: [
-                MetaStorageBuilding,
-                MetaReaderBuilding,
-                MetaLeverBuilding,
-                MetaFilterBuilding,
-                MetaDisplayBuilding,
-            ],
+            primaryBuildings: HUDBuildingsToolbar.bar.primaryBuildings,
+            secondaryBuildings: HUDBuildingsToolbar.bar.secondaryBuildings,
             visibilityCondition: () =>
-                !this.root.camera.getIsMapOverlayActive() && this.root.currentLayer === "regular",
-            htmlElementId: "ingame_HUD_BuildingsToolbar",
+                !root.camera.getIsMapOverlayActive() && root.currentLayer === "regular",
+            htmlElementId: HUDBuildingsToolbar.bar.htmlElementId,
         });
     }
 }
+
+HUDBuildingsToolbar.bar = {
+    primaryBuildings: [
+        MetaBeltBuilding,
+        MetaBalancerBuilding,
+        MetaUndergroundBeltBuilding,
+        MetaMinerBuilding,
+        MetaCutterBuilding,
+        MetaRotaterBuilding,
+        MetaStackerBuilding,
+        MetaMixerBuilding,
+        MetaPainterBuilding,
+        MetaTrashBuilding,
+        ...(queryParamOptions.sandboxMode || G_IS_DEV ? [MetaItemProducerBuilding] : []),
+    ],
+
+    secondaryBuildings: [
+        MetaStorageBuilding,
+        MetaReaderBuilding,
+        MetaLeverBuilding,
+        MetaFilterBuilding,
+        MetaDisplayBuilding,
+    ],
+    htmlElementId: "ingame_HUD_BuildingsToolbar",
+};

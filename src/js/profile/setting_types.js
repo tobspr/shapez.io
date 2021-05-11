@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* typehints:start */
 import { Application } from "../application";
 /* typehints:end */
@@ -23,8 +24,8 @@ export class BaseSetting {
      *
      * @param {string} id
      * @param {string} categoryId
-     * @param {function(Application, any):void} changeCb
-     * @param {function(Application) : boolean=} enabledCb
+     * @param {function(Application,any):void} changeCb
+     * @param {function(app:Application) : boolean=} enabledCb
      */
     constructor(id, categoryId, changeCb, enabledCb = null) {
         this.id = id;

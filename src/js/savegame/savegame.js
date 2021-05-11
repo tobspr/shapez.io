@@ -13,34 +13,27 @@ import { SavegameInterface_V1005 } from "./schemas/1005";
 import { SavegameInterface_V1006 } from "./schemas/1006";
 import { SavegameInterface_V1007 } from "./schemas/1007";
 import { SavegameInterface_V1008 } from "./schemas/1008";
+import { SavegameInterface_ML01 } from "./schemas/ML01";
+import { RegularGameMode } from "../game/modes/regular";
 
 const logger = createLogger("savegame");
-
-/**
- * @typedef {import("../application").Application} Application
- * @typedef {import("../game/root").GameRoot} GameRoot
- * @typedef {import("./savegame_typedefs").SavegameData} SavegameData
- * @typedef {import("./savegame_typedefs").SavegameMetadata} SavegameMetadata
- * @typedef {import("./savegame_typedefs").SavegameStats} SavegameStats
- * @typedef {import("./savegame_typedefs").SerializedGame} SerializedGame
- */
 
 export class Savegame extends ReadWriteProxy {
     /**
      *
-     * @param {Application} app
+     * @param {import("../application").Application} app
      * @param {object} param0
      * @param {string} param0.internalId
-     * @param {SavegameMetadata} param0.metaDataRef Handle to the meta data
+     * @param {import("./savegame_typedefs").SavegameMetadata} param0.metaDataRef Handle to the meta data
      */
-    constructor(app, { internalId, metaDataRef }) {
+    constructor(app, { internalId, metaDataRef }, gamemode = null) {
         super(app, "savegame-" + internalId + ".bin");
         this.internalId = internalId;
         this.metaDataRef = metaDataRef;
 
-        /** @type {SavegameData} */
+        /** @type {import("./savegame_typedefs").SavegameData} */
         this.currentData = this.getDefaultData();
-
+        if (gamemode) this.currentData.gamemode = gamemode;
         assert(
             savegameInterfaces[Savegame.getCurrentVersion()],
             "Savegame interface not defined: " + Savegame.getCurrentVersion()
@@ -50,10 +43,10 @@ export class Savegame extends ReadWriteProxy {
     //////// RW Proxy Impl //////////
 
     /**
-     * @returns {number}
+     * @returns {any}
      */
     static getCurrentVersion() {
-        return 1008;
+        return "ML01";
     }
 
     /**
@@ -72,7 +65,7 @@ export class Savegame extends ReadWriteProxy {
 
     /**
      * Returns the savegames default data
-     * @returns {SavegameData}
+     * @returns {import("./savegame_typedefs").SavegameData}
      */
     getDefaultData() {
         return {
@@ -84,12 +77,13 @@ export class Savegame extends ReadWriteProxy {
                 usedInverseRotater: false,
             },
             lastUpdate: Date.now(),
+            gamemode: RegularGameMode.getId(),
         };
     }
 
     /**
      * Migrates the savegames data
-     * @param {SavegameData} data
+     * @param {import("./savegame_typedefs").SavegameData} data
      */
     migrate(data) {
         if (data.version < 1000) {
@@ -136,12 +130,17 @@ export class Savegame extends ReadWriteProxy {
             data.version = 1008;
         }
 
+        if (data.version === 1008) {
+            SavegameInterface_ML01.migrate1008toML01(data);
+            data.version = "ML01";
+        }
+
         return ExplainedResult.good();
     }
 
     /**
      * Verifies the savegames data
-     * @param {SavegameData} data
+     * @param {import("./savegame_typedefs").SavegameData} data
      */
     verify(data) {
         if (!data.dump) {
@@ -166,7 +165,7 @@ export class Savegame extends ReadWriteProxy {
     }
     /**
      * Returns the statistics of the savegame
-     * @returns {SavegameStats}
+     * @returns {import("./savegame_typedefs").SavegameStats}
      */
     getStatistics() {
         return this.currentData.stats;
@@ -189,7 +188,7 @@ export class Savegame extends ReadWriteProxy {
 
     /**
      * Returns the current game dump
-     * @returns {SerializedGame}
+     * @returns {import("./savegame_typedefs").SerializedGame}
      */
     getCurrentDump() {
         return this.currentData.dump;
@@ -229,7 +228,7 @@ export class Savegame extends ReadWriteProxy {
 
     /**
      *
-     * @param {GameRoot} root
+     * @param {import("../game/root").GameRoot} root
      */
     updateData(root) {
         // Construct a new serializer
@@ -245,6 +244,8 @@ export class Savegame extends ReadWriteProxy {
         shadowData.dump = dump;
         shadowData.lastUpdate = new Date().getTime();
         shadowData.version = this.getCurrentVersion();
+        // @ts-ignore
+        shadowData.gamemode = root.gameMode.constructor.getId();
 
         const reader = this.getDumpReaderForExternalData(shadowData);
 

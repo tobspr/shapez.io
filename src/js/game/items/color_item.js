@@ -74,6 +74,13 @@ export class ColorItem extends BaseItem {
      */
     drawItemCenteredClipped(x, y, parameters, diameter = globalConfig.defaultItemDiameter) {
         const realDiameter = diameter * 0.6;
+        const func = ColorItem.drawingFunctionByColor[this.color];
+
+        if (func) {
+            func(x, y, parameters, realDiameter, this.color);
+            return;
+        }
+
         if (!this.cachedSprite) {
             this.cachedSprite = Loader.getSprite("sprites/colors/" + this.color + ".png");
         }
@@ -81,12 +88,18 @@ export class ColorItem extends BaseItem {
     }
 }
 
+ColorItem.drawingFunctionByColor = {};
+
+ColorItem.resolveSingleton = (root, itemData) => {
+    return ColorItem.ITEM_SINGLETONS[itemData];
+};
+
 /**
  * Singleton instances
  * @type {Object<enumColors, ColorItem>}
  */
-export const COLOR_ITEM_SINGLETONS = {};
+ColorItem.ITEM_SINGLETONS = {};
 
 for (const color in enumColors) {
-    COLOR_ITEM_SINGLETONS[color] = new ColorItem(color);
+    ColorItem.ITEM_SINGLETONS[color] = new ColorItem(color);
 }

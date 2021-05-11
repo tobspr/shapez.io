@@ -35,8 +35,21 @@ export class HUDWiresOverlay extends BaseHUDPart {
             ) {
                 this.root.currentLayer = "wires";
             }
-        } else {
+        } else if (
+            shapezAPI.ingame.layers.length > 0 &&
+            this.root.currentLayer === shapezAPI.ingame.layers[shapezAPI.ingame.layers.length - 1]
+        ) {
             this.root.currentLayer = "regular";
+        } else if (this.root.currentLayer === "wires") {
+            if (shapezAPI.ingame.layers.length > 0) {
+                this.root.currentLayer = shapezAPI.ingame.layers[0];
+            } else {
+                this.root.currentLayer = "regular";
+            }
+        } else if (!(shapezAPI.ingame.layers.indexOf(this.root.currentLayer) < 0)) {
+            const layer =
+                shapezAPI.ingame.layers[shapezAPI.ingame.layers.indexOf(this.root.currentLayer) + 1];
+            if (this.root.hubGoals.isRewardUnlocked("layers_" + layer)) this.root.currentLayer = layer;
         }
         this.root.signals.editModeChanged.dispatch(this.root.currentLayer);
     }

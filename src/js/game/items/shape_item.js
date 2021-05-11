@@ -72,7 +72,11 @@ export class ShapeItem extends BaseItem {
      * @param {DrawParameters} parameters
      * @param {number=} diameter
      */
-    drawItemCenteredImpl(x, y, parameters, diameter = globalConfig.defaultItemDiameter) {
-        this.definition.drawCentered(x, y, parameters, diameter);
+    drawItemCenteredImpl(x, y, parameters, diameter = globalConfig.defaultItemDiameter, background = true) {
+        this.definition.drawCentered(x, y, parameters, diameter, background);
     }
 }
+
+ShapeItem.resolveSingleton = (root, itemData) => {
+    return root.shapeDefinitionMgr.getShapeItemFromShortKey(itemData);
+};

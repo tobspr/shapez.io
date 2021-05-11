@@ -6,7 +6,7 @@ import { Vector } from "../core/vector";
 import { BaseItem } from "./base_item";
 import { enumColors } from "./colors";
 import { Entity } from "./entity";
-import { COLOR_ITEM_SINGLETONS } from "./items/color_item";
+import { ColorItem } from "./items/color_item";
 import { GameRoot } from "./root";
 import { enumSubShape } from "./shape_definition";
 import { Rectangle } from "../core/rectangle";
@@ -45,6 +45,12 @@ export class MapChunk {
          */
         this.wireContents = make2DUndefinedArray(globalConfig.mapChunkSize, globalConfig.mapChunkSize);
 
+        /**
+         * Stores the contents of the layers
+         *  @type {Map<string, Array<Array<?Entity>>>}
+         */
+        this.layersContents = new Map();
+
         /** @type {Array<Entity>} */
         this.containedEntities = [];
 
@@ -77,6 +83,15 @@ export class MapChunk {
             wires: [],
         };
 
+        for (let i = 0; i < shapezAPI.ingame.layers.length; i++) {
+            const layer = shapezAPI.ingame.layers[i];
+            this.containedEntitiesByLayer[layer] = [];
+            this.layersContents.set(
+                layer,
+                make2DUndefinedArray(globalConfig.mapChunkSize, globalConfig.mapChunkSize)
+            );
+        }
+
         /**
          * Store which patches we have so we can render them in the overview
          * @type {Array<{pos: Vector, item: BaseItem, size: number }>}
@@ -90,7 +105,7 @@ export class MapChunk {
      * Generates a patch filled with the given item
      * @param {RandomNumberGenerator} rng
      * @param {number} patchSize
-     * @param {BaseItem} item
+     * @param {any} item
      * @param {number=} overrideX Override the X position of the patch
      * @param {number=} overrideY Override the Y position of the patch
      */
@@ -158,110 +173,6 @@ export class MapChunk {
     }
 
     /**
-     * Generates a color patch
-     * @param {RandomNumberGenerator} rng
-     * @param {number} colorPatchSize
-     * @param {number} distanceToOriginInChunks
-     */
-    internalGenerateColorPatch(rng, colorPatchSize, distanceToOriginInChunks) {
-        // First, determine available colors
-        let availableColors = [enumColors.red, enumColors.green];
-        if (distanceToOriginInChunks > 2) {
-            availableColors.push(enumColors.blue);
-        }
-        this.internalGeneratePatch(rng, colorPatchSize, COLOR_ITEM_SINGLETONS[rng.choice(availableColors)]);
-    }
-
-    /**
-     * Generates a shape patch
-     * @param {RandomNumberGenerator} rng
-     * @param {number} shapePatchSize
-     * @param {number} distanceToOriginInChunks
-     */
-    internalGenerateShapePatch(rng, shapePatchSize, distanceToOriginInChunks) {
-        /** @type {[enumSubShape, enumSubShape, enumSubShape, enumSubShape]} */
-        let subShapes = null;
-
-        let weights = {};
-
-        // Later there is a mix of everything
-        weights = {
-            [enumSubShape.rect]: 100,
-            [enumSubShape.circle]: Math.round(50 + clamp(distanceToOriginInChunks * 2, 0, 50)),
-            [enumSubShape.star]: Math.round(20 + clamp(distanceToOriginInChunks, 0, 30)),
-            [enumSubShape.windmill]: Math.round(6 + clamp(distanceToOriginInChunks / 2, 0, 20)),
-        };
-
-        if (distanceToOriginInChunks < 7) {
-            // Initial chunks can not spawn the good stuff
-            weights[enumSubShape.star] = 0;
-            weights[enumSubShape.windmill] = 0;
-        }
-
-        if (distanceToOriginInChunks < 10) {
-            // Initial chunk patches always have the same shape
-            const subShape = this.internalGenerateRandomSubShape(rng, weights);
-            subShapes = [subShape, subShape, subShape, subShape];
-        } else if (distanceToOriginInChunks < 15) {
-            // Later patches can also have mixed ones
-            const subShapeA = this.internalGenerateRandomSubShape(rng, weights);
-            const subShapeB = this.internalGenerateRandomSubShape(rng, weights);
-            subShapes = [subShapeA, subShapeA, subShapeB, subShapeB];
-        } else {
-            // Finally there is a mix of everything
-            subShapes = [
-                this.internalGenerateRandomSubShape(rng, weights),
-                this.internalGenerateRandomSubShape(rng, weights),
-                this.internalGenerateRandomSubShape(rng, weights),
-                this.internalGenerateRandomSubShape(rng, weights),
-            ];
-        }
-
-        // Makes sure windmills never spawn as whole
-        let windmillCount = 0;
-        for (let i = 0; i < subShapes.length; ++i) {
-            if (subShapes[i] === enumSubShape.windmill) {
-                ++windmillCount;
-            }
-        }
-        if (windmillCount > 1) {
-            subShapes[0] = enumSubShape.rect;
-            subShapes[1] = enumSubShape.rect;
-        }
-
-        const definition = this.root.shapeDefinitionMgr.getDefinitionFromSimpleShapes(subShapes);
-        this.internalGeneratePatch(
-            rng,
-            shapePatchSize,
-            this.root.shapeDefinitionMgr.getShapeItemFromDefinition(definition)
-        );
-    }
-
-    /**
-     * Chooses a random shape with the given weights
-     * @param {RandomNumberGenerator} rng
-     * @param {Object.<enumSubShape, number>} weights
-     * @returns {enumSubShape}
-     */
-    internalGenerateRandomSubShape(rng, weights) {
-        // @ts-ignore
-        const sum = Object.values(weights).reduce((a, b) => a + b, 0);
-
-        const chosenNumber = rng.nextIntRange(0, sum - 1);
-        let accumulated = 0;
-        for (const key in weights) {
-            const weight = weights[key];
-            if (accumulated + weight > chosenNumber) {
-                return key;
-            }
-            accumulated += weight;
-        }
-
-        logger.error("Failed to find matching shape in chunk generation");
-        return enumSubShape.circle;
-    }
-
-    /**
      * Generates the lower layer "terrain"
      */
     generateLowerLayer() {
@@ -274,19 +185,8 @@ export class MapChunk {
         const chunkCenter = new Vector(this.x, this.y).addScalar(0.5);
         const distanceToOriginInChunks = Math.round(chunkCenter.length());
 
-        // Determine how likely it is that there is a color patch
-        const colorPatchChance = 0.9 - clamp(distanceToOriginInChunks / 25, 0, 1) * 0.5;
-
-        if (rng.next() < colorPatchChance / 4) {
-            const colorPatchSize = Math.max(2, Math.round(1 + clamp(distanceToOriginInChunks / 8, 0, 4)));
-            this.internalGenerateColorPatch(rng, colorPatchSize, distanceToOriginInChunks);
-        }
-
-        // Determine how likely it is that there is a shape patch
-        const shapePatchChance = 0.9 - clamp(distanceToOriginInChunks / 25, 0, 1) * 0.5;
-        if (rng.next() < shapePatchChance / 4) {
-            const shapePatchSize = Math.max(2, Math.round(1 + clamp(distanceToOriginInChunks / 8, 0, 4)));
-            this.internalGenerateShapePatch(rng, shapePatchSize, distanceToOriginInChunks);
+        for (let i = 0; i < MapChunk.lowerLayers.length; i++) {
+            MapChunk.lowerLayers[i](this, rng, distanceToOriginInChunks);
         }
     }
 
@@ -297,32 +197,11 @@ export class MapChunk {
      * @returns {boolean}
      */
     generatePredefined(rng) {
-        if (this.x === 0 && this.y === 0) {
-            this.internalGeneratePatch(rng, 2, COLOR_ITEM_SINGLETONS[enumColors.red], 7, 7);
-            return true;
+        for (let i = 0; i < MapChunk.predefined.length; i++) {
+            if (MapChunk.predefined[i](this, rng)) {
+                return true;
+            }
         }
-        if (this.x === -1 && this.y === 0) {
-            const item = this.root.shapeDefinitionMgr.getShapeItemFromShortKey("CuCuCuCu");
-            this.internalGeneratePatch(rng, 2, item, globalConfig.mapChunkSize - 9, 7);
-            return true;
-        }
-        if (this.x === 0 && this.y === -1) {
-            const item = this.root.shapeDefinitionMgr.getShapeItemFromShortKey("RuRuRuRu");
-            this.internalGeneratePatch(rng, 2, item, 5, globalConfig.mapChunkSize - 7);
-            return true;
-        }
-
-        if (this.x === -1 && this.y === -1) {
-            this.internalGeneratePatch(rng, 2, COLOR_ITEM_SINGLETONS[enumColors.green]);
-            return true;
-        }
-
-        if (this.x === 5 && this.y === -2) {
-            const item = this.root.shapeDefinitionMgr.getShapeItemFromShortKey("SuSuSuSu");
-            this.internalGeneratePatch(rng, 2, item, 5, globalConfig.mapChunkSize - 7);
-            return true;
-        }
-
         return false;
     }
 
@@ -374,10 +253,13 @@ export class MapChunk {
         assert(localY < globalConfig.mapChunkSize, "Local Y is >= chunk size");
         if (layer === "regular") {
             return this.contents[localX][localY] || null;
-        } else {
+        } else if (layer === "wires") {
             return this.wireContents[localX][localY] || null;
+        } else if (this.layersContents.has(layer)) {
+            return this.layersContents.get(layer)[localX][localY] || null;
         }
     }
+
     /**
      * Returns the contents of this chunk from the given world space coordinates
      * @param {number} worldX
@@ -402,6 +284,13 @@ export class MapChunk {
         if (wireContent) {
             result.push(wireContent);
         }
+
+        for (const [layer, array] of this.layersContents) {
+            if (array[localX][localY]) {
+                result.push(array[localX][localY]);
+            }
+        }
+
         return result;
     }
 
@@ -424,7 +313,7 @@ export class MapChunk {
      * Sets the chunks contents
      * @param {number} tileX
      * @param {number} tileY
-     * @param {Entity=} contents
+     * @param {Entity} contents
      * @param {Layer} layer
      */
     setLayerContentFromWorldCords(tileX, tileY, contents, layer) {
@@ -438,8 +327,10 @@ export class MapChunk {
         let oldContents;
         if (layer === "regular") {
             oldContents = this.contents[localX][localY];
-        } else {
+        } else if (layer === "wires") {
             oldContents = this.wireContents[localX][localY];
+        } else if (this.layersContents.has(layer)) {
+            oldContents = this.layersContents.get(layer)[localX][localY];
         }
 
         assert(contents === null || !oldContents, "Tile already used: " + tileX + " / " + tileY);
@@ -452,8 +343,10 @@ export class MapChunk {
 
         if (layer === "regular") {
             this.contents[localX][localY] = contents;
-        } else {
+        } else if (layer === "wires") {
             this.wireContents[localX][localY] = contents;
+        } else if (this.layersContents.has(layer)) {
+            this.layersContents.get(layer)[localX][localY] = contents;
         }
 
         if (contents) {
@@ -467,3 +360,161 @@ export class MapChunk {
         }
     }
 }
+MapChunk.predefined = [
+    (self, rng) => {
+        if (self.x === 0 && self.y === 0) {
+            self.internalGeneratePatch(rng, 2, ColorItem.ITEM_SINGLETONS[enumColors.red], 7, 7);
+            return true;
+        }
+    },
+    (self, rng) => {
+        if (self.x === 0 && self.y === 0) {
+            self.internalGeneratePatch(rng, 2, ColorItem.ITEM_SINGLETONS[enumColors.red], 7, 7);
+            return true;
+        }
+    },
+    (self, rng) => {
+        if (self.x === -1 && self.y === 0) {
+            const item = self.root.shapeDefinitionMgr.getShapeItemFromShortKey("CuCuCuCu");
+            self.internalGeneratePatch(rng, 2, item, globalConfig.mapChunkSize - 9, 7);
+            return true;
+        }
+    },
+    (self, rng) => {
+        if (self.x === 0 && self.y === -1) {
+            const item = self.root.shapeDefinitionMgr.getShapeItemFromShortKey("RuRuRuRu");
+            self.internalGeneratePatch(rng, 2, item, 5, globalConfig.mapChunkSize - 7);
+            return true;
+        }
+    },
+    (self, rng) => {
+        if (self.x === -1 && self.y === -1) {
+            self.internalGeneratePatch(rng, 2, ColorItem.ITEM_SINGLETONS[enumColors.green]);
+            return true;
+        }
+    },
+    (self, rng) => {
+        if (self.x === 5 && self.y === -2) {
+            const item = self.root.shapeDefinitionMgr.getShapeItemFromShortKey("SuSuSuSu");
+            self.internalGeneratePatch(rng, 2, item, 5, globalConfig.mapChunkSize - 7);
+            return true;
+        }
+    },
+];
+
+MapChunk.lowerLayers = [
+    (self, rng, distanceToOriginInChunks) => {
+        // Determine how likely it is that there is a color patch
+        const colorPatchChance = 0.9 - clamp(distanceToOriginInChunks / 25, 0, 1) * 0.5;
+
+        if (rng.next() < colorPatchChance / 4) {
+            const colorPatchSize = Math.max(2, Math.round(1 + clamp(distanceToOriginInChunks / 8, 0, 4)));
+            // First, determine available colors
+            let availableColors = [enumColors.red, enumColors.green];
+            if (distanceToOriginInChunks > 2) {
+                availableColors.push(enumColors.blue);
+            }
+            self.internalGeneratePatch(
+                rng,
+                colorPatchSize,
+                ColorItem.ITEM_SINGLETONS[rng.choice(availableColors)]
+            );
+        }
+    },
+    (self, rng, distanceToOriginInChunks) => {
+        /**
+         * Chooses a random shape with the given weights
+         * @param {RandomNumberGenerator} rng
+         * @param {Object.<enumSubShape, number>} weights
+         * @returns {enumSubShape}
+         */
+        var internalGenerateRandomSubShape = (rng, weights) => {
+            // @ts-ignore
+            const sum = Object.values(weights).reduce((a, b) => a + b, 0);
+
+            const chosenNumber = rng.nextIntRange(0, sum - 1);
+            let accumulated = 0;
+            for (const key in weights) {
+                const weight = weights[key];
+                if (accumulated + weight > chosenNumber) {
+                    return key;
+                }
+                accumulated += weight;
+            }
+
+            logger.error("Failed to find matching shape in chunk generation");
+            return enumSubShape.circle;
+        };
+        /**
+         * Generates a shape patch
+         * @param {RandomNumberGenerator} rng
+         * @param {number} shapePatchSize
+         * @param {number} distanceToOriginInChunks
+         */
+        var internalGenerateShapePatch = (rng, shapePatchSize, distanceToOriginInChunks) => {
+            /** @type {[enumSubShape, enumSubShape, enumSubShape, enumSubShape]} */
+            let subShapes = null;
+
+            let weights = {};
+
+            // Later there is a mix of everything
+            weights = {
+                [enumSubShape.rect]: 100,
+                [enumSubShape.circle]: Math.round(50 + clamp(distanceToOriginInChunks * 2, 0, 50)),
+                [enumSubShape.star]: Math.round(20 + clamp(distanceToOriginInChunks, 0, 30)),
+                [enumSubShape.windmill]: Math.round(6 + clamp(distanceToOriginInChunks / 2, 0, 20)),
+            };
+
+            if (distanceToOriginInChunks < 7) {
+                // Initial chunks can not spawn the good stuff
+                weights[enumSubShape.star] = 0;
+                weights[enumSubShape.windmill] = 0;
+            }
+
+            if (distanceToOriginInChunks < 10) {
+                // Initial chunk patches always have the same shape
+                const subShape = internalGenerateRandomSubShape(rng, weights);
+                subShapes = [subShape, subShape, subShape, subShape];
+            } else if (distanceToOriginInChunks < 15) {
+                // Later patches can also have mixed ones
+                const subShapeA = internalGenerateRandomSubShape(rng, weights);
+                const subShapeB = internalGenerateRandomSubShape(rng, weights);
+                subShapes = [subShapeA, subShapeA, subShapeB, subShapeB];
+            } else {
+                // Finally there is a mix of everything
+                subShapes = [
+                    internalGenerateRandomSubShape(rng, weights),
+                    internalGenerateRandomSubShape(rng, weights),
+                    internalGenerateRandomSubShape(rng, weights),
+                    internalGenerateRandomSubShape(rng, weights),
+                ];
+            }
+
+            // Makes sure windmills never spawn as whole
+            let windmillCount = 0;
+            for (let i = 0; i < subShapes.length; ++i) {
+                if (subShapes[i] === enumSubShape.windmill) {
+                    ++windmillCount;
+                }
+            }
+            if (windmillCount > 1) {
+                subShapes[0] = enumSubShape.rect;
+                subShapes[1] = enumSubShape.rect;
+            }
+
+            const definition = self.root.shapeDefinitionMgr.getDefinitionFromSimpleShapes(subShapes);
+            self.internalGeneratePatch(
+                rng,
+                shapePatchSize,
+                self.root.shapeDefinitionMgr.getShapeItemFromDefinition(definition)
+            );
+        };
+
+        // Determine how likely it is that there is a shape patch
+        const shapePatchChance = 0.9 - clamp(distanceToOriginInChunks / 25, 0, 1) * 0.5;
+        if (rng.next() < shapePatchChance / 4) {
+            const shapePatchSize = Math.max(2, Math.round(1 + clamp(distanceToOriginInChunks / 8, 0, 4)));
+            internalGenerateShapePatch(rng, shapePatchSize, distanceToOriginInChunks);
+        }
+    },
+];

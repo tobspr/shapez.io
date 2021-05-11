@@ -1,39 +1,6 @@
 import { enumDirection, Vector } from "../../core/vector";
-import { types } from "../../savegame/serialization";
 import { BeltPath } from "../belt_path";
 import { Component } from "../component";
-
-export const curvedBeltLength = /* Math.PI / 4 */ 0.78;
-
-/** @type {import("./item_acceptor").ItemAcceptorSlot} */
-export const FAKE_BELT_ACCEPTOR_SLOT = {
-    pos: new Vector(0, 0),
-    directions: [enumDirection.bottom],
-};
-
-/** @type {Object<enumDirection, import("./item_ejector").ItemEjectorSlot>} */
-export const FAKE_BELT_EJECTOR_SLOT_BY_DIRECTION = {
-    [enumDirection.top]: {
-        pos: new Vector(0, 0),
-        direction: enumDirection.top,
-        item: null,
-        progress: 0,
-    },
-
-    [enumDirection.right]: {
-        pos: new Vector(0, 0),
-        direction: enumDirection.right,
-        item: null,
-        progress: 0,
-    },
-
-    [enumDirection.left]: {
-        pos: new Vector(0, 0),
-        direction: enumDirection.left,
-        item: null,
-        progress: 0,
-    },
-};
 
 export class BeltComponent extends Component {
     static getId() {
@@ -62,7 +29,7 @@ export class BeltComponent extends Component {
      * @returns {number}
      */
     getEffectiveLengthTiles() {
-        return this.direction === enumDirection.top ? 1.0 : curvedBeltLength;
+        return this.direction === enumDirection.top ? 1.0 : BeltComponent.curvedBeltLength;
     }
 
     /**
@@ -70,7 +37,7 @@ export class BeltComponent extends Component {
      * @returns {import("./item_acceptor").ItemAcceptorSlot}
      */
     getFakeAcceptorSlot() {
-        return FAKE_BELT_ACCEPTOR_SLOT;
+        return BeltComponent.fake_belt_acceptor_slot;
     }
 
     /**
@@ -79,11 +46,11 @@ export class BeltComponent extends Component {
      */
     getFakeEjectorSlot() {
         assert(
-            FAKE_BELT_EJECTOR_SLOT_BY_DIRECTION[this.direction],
+            BeltComponent.fake_belt_ejector_slot_by_direction[this.direction],
             "Invalid belt direction: ",
             this.direction
         );
-        return FAKE_BELT_EJECTOR_SLOT_BY_DIRECTION[this.direction];
+        return BeltComponent.fake_belt_ejector_slot_by_direction[this.direction];
     }
 
     /**
@@ -100,13 +67,13 @@ export class BeltComponent extends Component {
                 return new Vector(0, 0.5 - progress);
 
             case enumDirection.right: {
-                assert(progress <= curvedBeltLength + 0.02, "Invalid progress 2: " + progress);
-                const arcProgress = (progress / curvedBeltLength) * 0.5 * Math.PI;
+                assert(progress <= BeltComponent.curvedBeltLength + 0.02, "Invalid progress 2: " + progress);
+                const arcProgress = (progress / BeltComponent.curvedBeltLength) * 0.5 * Math.PI;
                 return new Vector(0.5 - 0.5 * Math.cos(arcProgress), 0.5 - 0.5 * Math.sin(arcProgress));
             }
             case enumDirection.left: {
-                assert(progress <= curvedBeltLength + 0.02, "Invalid progress 3: " + progress);
-                const arcProgress = (progress / curvedBeltLength) * 0.5 * Math.PI;
+                assert(progress <= BeltComponent.curvedBeltLength + 0.02, "Invalid progress 3: " + progress);
+                const arcProgress = (progress / BeltComponent.curvedBeltLength) * 0.5 * Math.PI;
                 return new Vector(-0.5 + 0.5 * Math.cos(arcProgress), 0.5 - 0.5 * Math.sin(arcProgress));
             }
             default:
@@ -115,3 +82,35 @@ export class BeltComponent extends Component {
         }
     }
 }
+
+BeltComponent.curvedBeltLength = /* Math.PI / 4 */ 0.78;
+
+/** @type {import("./item_acceptor").ItemAcceptorSlot} */
+BeltComponent.fake_belt_acceptor_slot = {
+    pos: new Vector(0, 0),
+    directions: [enumDirection.bottom],
+};
+
+/** @type {Object<enumDirection, import("./item_ejector").ItemEjectorSlot>} */
+BeltComponent.fake_belt_ejector_slot_by_direction = {
+    [enumDirection.top]: {
+        pos: new Vector(0, 0),
+        direction: enumDirection.top,
+        item: null,
+        progress: 0,
+    },
+
+    [enumDirection.right]: {
+        pos: new Vector(0, 0),
+        direction: enumDirection.right,
+        item: null,
+        progress: 0,
+    },
+
+    [enumDirection.left]: {
+        pos: new Vector(0, 0),
+        direction: enumDirection.left,
+        item: null,
+        progress: 0,
+    },
+};

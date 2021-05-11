@@ -5,6 +5,7 @@ const webpack = require("webpack");
 const { getRevision, getVersion, getAllResourceImages } = require("./buildutils");
 const lzString = require("lz-string");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
+const StringReplacePlugin = require("string-replace-webpack-plugin");
 
 module.exports = ({ watch = false, standalone = false, chineseVersion = false }) => {
     return {
@@ -93,6 +94,31 @@ module.exports = ({ watch = false, standalone = false, chineseVersion = false })
                         },
                     ],
                 },
+                //TODO: fix es6 static on dev
+                // {
+                //     test: /\.js$/,
+                //     use: [
+                //         // "thread-loader",
+                //         {
+                //             loader: "babel-loader?cacheDirectory",
+                //             options: {
+                //                 configFile: require.resolve("./babel.config.js"),
+                //             },
+                //         },
+                //         "uglify-template-string-loader", // Finally found this plugin
+                //         StringReplacePlugin.replace({
+                //             replacements: [
+                //                 { pattern: /globalConfig\.tileSize/g, replacement: () => "32" },
+                //                 { pattern: /globalConfig\.halfTileSize/g, replacement: () => "16" },
+                //                 {
+                //                     pattern: /globalConfig\.beltSpeedItemsPerSecond/g,
+                //                     replacement: () => "2.0",
+                //                 },
+                //                 { pattern: /globalConfig\.debug/g, replacement: () => "''" },
+                //             ],
+                //         }),
+                //     ],
+                // },
                 {
                     test: /\.worker\.js$/,
                     use: {

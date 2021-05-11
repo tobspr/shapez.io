@@ -458,6 +458,10 @@ export class RegularGameMode extends GameMode {
         super(root);
     }
 
+    static getId() {
+        return "regular";
+    }
+
     getUpgrades() {
         return this.root.app.restrictionMgr.getHasExtendedUpgrades()
             ? fullVersionUpgrades

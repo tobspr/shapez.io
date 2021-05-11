@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cachebust } from "../core/cachebust";
 import { A_B_TESTING_LINK_TYPE, globalConfig, THIRDPARTY_URLS } from "../core/config";
 import { GameState } from "../core/game_state";
@@ -16,15 +17,14 @@ import {
     waitNextFrame,
 } from "../core/utils";
 import { HUDModalDialogs } from "../game/hud/parts/modal_dialogs";
+import { RegularGameMode } from "../game/modes/regular";
 import { getApplicationSettingById } from "../profile/application_settings";
 import { T } from "../translations";
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 const trim = require("trim");
-
-/**
- * @typedef {import("../savegame/savegame_typedefs").SavegameMetadata} SavegameMetadata
- * @typedef {import("../profile/setting_types").EnumSetting} EnumSetting
- */
 
 export class MainMenuState extends GameState {
     constructor() {
@@ -49,6 +49,7 @@ export class MainMenuState extends GameState {
                 }
 
                 <button class="settingsButton"></button>
+                ${this.getExtraTopButtons()}
             ${
                 G_IS_STANDALONE || G_IS_DEV
                     ? `
@@ -116,6 +117,15 @@ export class MainMenuState extends GameState {
                 )}</div>
             </div>
         `;
+    }
+
+    getExtraTopButtons() {
+        let html = "";
+        for (let i = 0; i < MainMenuState.extraTopButtons.length; i++) {
+            const extraButton = MainMenuState.extraTopButtons[i];
+            html += `<button class="${extraButton.htmlClass}" ${extraButton.htmlData}></button>`;
+        }
+        return html;
     }
 
     /**
@@ -221,6 +231,14 @@ export class MainMenuState extends GameState {
             }
         });
 
+        for (let i = 0; i < MainMenuState.extraTrackClicks.length; i++) {
+            const trackClick = MainMenuState.extraTrackClicks[i];
+            this.trackClicks(
+                this.htmlElement.querySelector(trackClick.htmlElement),
+                trackClick.action(this),
+                trackClick.options
+            );
+        }
         this.trackClicks(qs(".settingsButton"), this.onSettingsButtonClicked);
 
         if (!G_CHINA_VERSION) {
@@ -289,20 +307,32 @@ export class MainMenuState extends GameState {
                 T.mainMenu.continue
             );
             this.trackClicks(continueButton, this.onContinueButtonClicked);
+        } else {
+            // New game
+            const playBtn = makeButton(buttonContainer, ["playButton", "styledButton"], T.mainMenu.play);
+            this.trackClicks(playBtn, this.onPlayButtonClicked);
+        }
 
-            const outerDiv = makeDiv(buttonContainer, null, ["outer"], null);
-            outerDiv.appendChild(importButtonElement);
+        const outerDiv = makeDiv(buttonContainer, null, ["outer"], null);
+        outerDiv.appendChild(importButtonElement);
+
+        if (this.savedGames.length > 0) {
             const newGameButton = makeButton(
                 this.htmlElement.querySelector(".mainContainer .outer"),
                 ["newGameButton", "styledButton"],
                 T.mainMenu.newGame
             );
             this.trackClicks(newGameButton, this.onPlayButtonClicked);
-        } else {
-            // New game
-            const playBtn = makeButton(buttonContainer, ["playButton", "styledButton"], T.mainMenu.play);
-            this.trackClicks(playBtn, this.onPlayButtonClicked);
-            buttonContainer.appendChild(importButtonElement);
+        }
+
+        for (let i = 0; i < MainMenuState.extraSmallButtons.length; i++) {
+            const extraButton = MainMenuState.extraSmallButtons[i];
+            const button = makeButton(
+                this.htmlElement.querySelector(".mainContainer .outer"),
+                [extraButton.htmlClass, "styledButton"],
+                extraButton.text
+            );
+            this.trackClicks(button, extraButton.action(this));
         }
     }
 
@@ -389,13 +419,15 @@ export class MainMenuState extends GameState {
                     formatSecondsToTimeAgo((new Date().getTime() - games[i].lastUpdate) / 1000.0)
                 );
 
-                makeDiv(
+                const level = makeDiv(
                     elem,
                     null,
                     ["level"],
-                    games[i].level
-                        ? T.mainMenu.savegameLevel.replace("<x>", "" + games[i].level)
-                        : T.mainMenu.savegameLevelUnknown
+                    "<span>" +
+                        (games[i].level
+                            ? T.mainMenu.savegameLevel.replace("<x>", "" + games[i].level)
+                            : T.mainMenu.savegameLevelUnknown) +
+                        "</span>"
                 );
 
                 const name = makeDiv(
@@ -417,6 +449,10 @@ export class MainMenuState extends GameState {
                 renameButton.classList.add("styledButton", "renameGame");
                 name.appendChild(renameButton);
 
+                const gamemodeButton = document.createElement("button");
+                gamemodeButton.classList.add("styledButton", "gamemode");
+                level.appendChild(gamemodeButton);
+
                 const resumeButton = document.createElement("button");
                 resumeButton.classList.add("styledButton", "resumeGame");
                 elem.appendChild(resumeButton);
@@ -425,6 +461,7 @@ export class MainMenuState extends GameState {
                 this.trackClicks(downloadButton, () => this.downloadGame(games[i]));
                 this.trackClicks(resumeButton, () => this.resumeGame(games[i]));
                 this.trackClicks(renameButton, () => this.requestRenameSavegame(games[i]));
+                this.trackClicks(gamemodeButton, () => this.requestGameModeChange(games[i]));
             }
         }
     }
@@ -456,6 +493,34 @@ export class MainMenuState extends GameState {
             game.name = trim(nameInput.getValue());
             this.app.savegameMgr.writeAsync();
             this.renderSavegames();
+        });
+    }
+
+    /**
+     * @param {SavegameMetadata} game
+     */
+    requestGameModeChange(game) {
+        let savegame = this.app.savegameMgr.getSavegameById(game.internalId);
+        savegame.readAsync().then(() => {
+            const { optionSelected } = this.dialogs.showOptionChooser(T.settings.labels.gamemodes.title, {
+                active: savegame.currentData.gamemode,
+                options: Object.keys(shapezAPI.ingame.gamemodes).map(option => ({
+                    value: option,
+                    text: capitalizeFirstLetter(option.toLowerCase()),
+                })),
+            });
+
+            optionSelected.add(value => {
+                savegame.currentData.gamemode = value;
+                console.log(savegame.currentData);
+                savegame
+                    .writeSavegameAndMetadata()
+                    .then(() => this.app.savegameMgr.updateAfterSavegamesChanged())
+                    .then(() => this.renderSavegames())
+                    .then(() =>
+                        console.log(this.app.savegameMgr.getSavegameById(game.internalId).currentData)
+                    );
+            });
         });
     }
 
@@ -564,15 +629,39 @@ export class MainMenuState extends GameState {
             return;
         }
 
-        this.app.analytics.trackUiClick("startgame");
-        this.app.adProvider.showVideoAd().then(() => {
-            const savegame = this.app.savegameMgr.createNewSavegame();
-
-            this.moveToState("InGameState", {
-                savegame,
+        let gamemode = RegularGameMode.getId();
+        if (Object.keys(shapezAPI.ingame.gamemodes).length > 1) {
+            const { optionSelected } = this.dialogs.showOptionChooser(T.settings.labels.gamemodes.title, {
+                active: null,
+                options: Object.keys(shapezAPI.ingame.gamemodes).map(option => ({
+                    value: option,
+                    text: capitalizeFirstLetter(option.toLowerCase()),
+                })),
             });
-            this.app.analytics.trackUiClick("startgame_adcomplete");
-        });
+
+            optionSelected.add(value => {
+                gamemode = value;
+                this.app.analytics.trackUiClick("startgame");
+                this.app.adProvider.showVideoAd().then(() => {
+                    const savegame = this.app.savegameMgr.createNewSavegame(gamemode);
+
+                    this.moveToState("InGameState", {
+                        savegame,
+                    });
+                    this.app.analytics.trackUiClick("startgame_adcomplete");
+                });
+            }, this);
+        } else {
+            this.app.analytics.trackUiClick("startgame");
+            this.app.adProvider.showVideoAd().then(() => {
+                const savegame = this.app.savegameMgr.createNewSavegame(gamemode);
+
+                this.moveToState("InGameState", {
+                    savegame,
+                });
+                this.app.analytics.trackUiClick("startgame_adcomplete");
+            });
+        }
     }
 
     onContinueButtonClicked() {
@@ -597,3 +686,8 @@ export class MainMenuState extends GameState {
         this.dialogs.cleanup();
     }
 }
+
+MainMenuState.extraTopButtons = [];
+MainMenuState.extraSmallButtons = [];
+
+MainMenuState.extraTrackClicks = [];

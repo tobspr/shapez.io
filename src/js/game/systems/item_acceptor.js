@@ -13,6 +13,9 @@ export class ItemAcceptorSystem extends GameSystemWithFilter {
         // Well ... it's better to be verbose I guess?
         this.accumulatedTicksWhileInMapOverview = 0;
     }
+    static getId() {
+        return "itemAcceptor";
+    }
 
     update() {
         if (this.root.app.settings.getAllSettings().simplifiedBelts) {
@@ -60,7 +63,7 @@ export class ItemAcceptorSystem extends GameSystemWithFilter {
      * @param {DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundDynamicLayer(parameters, chunk) {
         if (this.root.app.settings.getAllSettings().simplifiedBelts) {
             // Disabled in potato mode
             return;

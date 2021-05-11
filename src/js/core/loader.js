@@ -3,11 +3,6 @@ import { AtlasSprite, BaseSprite, RegularSprite, SpriteAtlasLink } from "./sprit
 import { cachebust } from "./cachebust";
 import { createLogger } from "./logging";
 
-/**
- * @typedef {import("../application").Application} Application
- * @typedef {import("./atlas_definitions").AtlasDefinition} AtlasDefinition;
- */
-
 const logger = createLogger("loader");
 
 const missingSpriteIds = {};
@@ -23,7 +18,7 @@ class LoaderImpl {
     }
 
     /**
-     * @param {Application} app
+     * @param {import("../application").Application} app
      */
     linkAppAfterBoot(app) {
         this.app = app;
@@ -41,7 +36,7 @@ class LoaderImpl {
             if (!missingSpriteIds[key]) {
                 // Only show error once
                 missingSpriteIds[key] = true;
-                logger.error("Sprite '" + key + "' not found!");
+                /*logger.error("Sprite '" + key + "' not found!");*/ // Will be fixed right now it just spams errors
             }
             return this.spriteNotFoundSprite;
         }
@@ -141,7 +136,7 @@ class LoaderImpl {
 
     /**
      * Preloads an atlas
-     * @param {AtlasDefinition} atlas
+     * @param {import("./atlas_definitions").AtlasDefinition} atlas
      * @returns {Promise<void>}
      */
     preloadAtlas(atlas) {
@@ -154,7 +149,7 @@ class LoaderImpl {
 
     /**
      *
-     * @param {AtlasDefinition} atlas
+     * @param {import("./atlas_definitions").AtlasDefinition} atlas
      * @param {HTMLImageElement} loadedImage
      */
     internalParseAtlas({ meta: { scale }, sourceData }, loadedImage) {

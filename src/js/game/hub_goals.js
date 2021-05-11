@@ -497,50 +497,132 @@ export class HubGoals extends BasicSerializableObject {
      * @returns {number} items / sec
      */
     getProcessorBaseSpeed(processorType) {
-        switch (processorType) {
-            case enumItemProcessorTypes.trash:
-            case enumItemProcessorTypes.hub:
-                return 1e30;
-            case enumItemProcessorTypes.balancer:
-                return globalConfig.beltSpeedItemsPerSecond * this.upgradeImprovements.belt * 2;
-            case enumItemProcessorTypes.reader:
-                return globalConfig.beltSpeedItemsPerSecond * this.upgradeImprovements.belt;
-
-            case enumItemProcessorTypes.mixer:
-            case enumItemProcessorTypes.painter:
-            case enumItemProcessorTypes.painterDouble:
-            case enumItemProcessorTypes.painterQuad: {
-                assert(
-                    globalConfig.buildingSpeeds[processorType],
-                    "Processor type has no speed set in globalConfig.buildingSpeeds: " + processorType
-                );
-                return (
-                    globalConfig.beltSpeedItemsPerSecond *
-                    this.upgradeImprovements.painting *
-                    globalConfig.buildingSpeeds[processorType]
-                );
-            }
-
-            case enumItemProcessorTypes.cutter:
-            case enumItemProcessorTypes.cutterQuad:
-            case enumItemProcessorTypes.rotater:
-            case enumItemProcessorTypes.rotaterCCW:
-            case enumItemProcessorTypes.rotater180:
-            case enumItemProcessorTypes.stacker: {
-                assert(
-                    globalConfig.buildingSpeeds[processorType],
-                    "Processor type has no speed set in globalConfig.buildingSpeeds: " + processorType
-                );
-                return (
-                    globalConfig.beltSpeedItemsPerSecond *
-                    this.upgradeImprovements.processors *
-                    globalConfig.buildingSpeeds[processorType]
-                );
-            }
-            default:
-                assertAlways(false, "invalid processor type: " + processorType);
-        }
+        if (HubGoals.getProcessorBaseSpeed[processorType])
+            return HubGoals.getProcessorBaseSpeed[processorType].bind(this)(processorType);
+        else assertAlways(false, "invalid processor type: " + processorType);
 
         return 1 / globalConfig.beltSpeedItemsPerSecond;
     }
 }
+
+HubGoals.getProcessorBaseSpeed = {
+    trash: processorType => 1e30,
+    hub: processorType => 1e30,
+    balancer: function (processorType) {
+        return globalConfig.beltSpeedItemsPerSecond * this.upgradeImprovements.belt * 2;
+    },
+    reader: function (processorType) {
+        return globalConfig.beltSpeedItemsPerSecond * this.upgradeImprovements.belt;
+    },
+    mixer: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.painting *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    painter: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.painting *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    painterDouble: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.painting *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    painterQuad: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.painting *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+
+    cutter: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    cutterQuad: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    rotater: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    rotaterCCW: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    rotater180: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+    stacker: function (processorType) {
+        assert(
+            globalConfig.buildingSpeeds[processorType],
+            "Processor type has no speed set in globalConfig.buildingSpeeds:()=> " + processorType
+        );
+        return (
+            globalConfig.beltSpeedItemsPerSecond *
+            this.upgradeImprovements.processors *
+            globalConfig.buildingSpeeds[processorType]
+        );
+    },
+};

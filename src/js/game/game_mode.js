@@ -33,6 +33,11 @@ export class GameMode {
         this.root = root;
     }
 
+    static getId() {
+        abstract;
+        return "unknow-gamemode";
+    }
+
     /**
      * Should return all available upgrades
      * @returns {Object<string, UpgradeTiers>}

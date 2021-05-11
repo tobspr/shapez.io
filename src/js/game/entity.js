@@ -82,6 +82,10 @@ export class Entity extends BasicSerializableObject {
         };
     }
 
+    getId() {
+        return getBuildingDataFromCode(this.components.StaticMapEntity.code).metaInstance.getId();
+    }
+
     /**
      * Returns a clone of this entity
      */
@@ -99,7 +103,8 @@ export class Entity extends BasicSerializableObject {
         });
 
         for (const key in this.components) {
-            /** @type {Component} */ (this.components[key]).copyAdditionalStateTo(clone.components[key]);
+            /** @type {Component} */
+            (this.components[key]).copyAdditionalStateTo(clone.components[key]);
         }
 
         return clone;

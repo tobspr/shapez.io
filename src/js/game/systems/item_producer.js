@@ -6,6 +6,10 @@ export class ItemProducerSystem extends GameSystemWithFilter {
         super(root, [ItemProducerComponent]);
     }
 
+    static getId() {
+        return "itemProducer";
+    }
+
     update() {
         for (let i = 0; i < this.allEntities.length; ++i) {
             const entity = this.allEntities[i];

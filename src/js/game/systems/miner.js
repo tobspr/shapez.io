@@ -18,6 +18,10 @@ export class MinerSystem extends GameSystemWithFilter {
         this.root.signals.entityDestroyed.add(this.onEntityChanged, this);
     }
 
+    static getId() {
+        return "miner";
+    }
+
     /**
      * Called whenever an entity got changed
      * @param {Entity} entity
@@ -52,7 +56,7 @@ export class MinerSystem extends GameSystemWithFilter {
                     staticComp.origin.x,
                     staticComp.origin.y
                 );
-                if (!tileBelow) {
+                if (!tileBelow || typeof tileBelow != "object") {
                     continue;
                 }
                 minerComp.cachedMinedItem = tileBelow;
@@ -162,7 +166,7 @@ export class MinerSystem extends GameSystemWithFilter {
      * @param {DrawParameters} parameters
      * @param {MapChunkView} chunk
      */
-    drawChunk(parameters, chunk) {
+    drawChunk_ForegroundDynamicLayer(parameters, chunk) {
         const contents = chunk.containedEntitiesByLayer.regular;
 
         for (let i = 0; i < contents.length; ++i) {
@@ -173,7 +177,7 @@ export class MinerSystem extends GameSystemWithFilter {
             }
 
             const staticComp = entity.components.StaticMapEntity;
-            if (!minerComp.cachedMinedItem) {
+            if (!minerComp.cachedMinedItem || typeof minerComp.cachedMinedItem != "object") {
                 continue;
             }
 

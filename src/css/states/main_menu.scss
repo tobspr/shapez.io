@@ -318,6 +318,12 @@
                     grid-row: 2 / 3;
                     @include SuperSmallText;
                     opacity: 0.5;
+                    > span {
+                        display: inline-flex;
+                        @include S(max-width, 140px);
+                        overflow: hidden;
+                        vertical-align: middle;
+                    }
                 }
 
                 .name {
@@ -337,7 +343,8 @@
                 button.resumeGame,
                 button.downloadGame,
                 button.deleteGame,
-                button.renameGame {
+                button.renameGame,
+                button.gamemode {
                     padding: 0;
                     align-self: center;
                     justify-self: center;
@@ -409,6 +416,32 @@
                     }
                     @include S(width, 10px);
                     @include S(height, 10px);
+                    align-self: center;
+                    justify-self: center;
+
+                    background-size: 90%;
+                    opacity: 0.4;
+                    @include S(margin-left, 4px);
+
+                    &:hover {
+                        opacity: 0.5;
+                    }
+
+                    @include DarkThemeInvert;
+                }
+
+                button.gamemode {
+                    display: inline-flex;
+                    vertical-align: middle;
+                    background-color: transparent;
+                    @include IncreasedClickArea(2px);
+
+                    & {
+                        /* @load-async */
+                        background-image: uiResource("icons/edit_key.png");
+                    }
+                    @include S(width, 8px);
+                    @include S(height, 8px);
                     align-self: center;
                     justify-self: center;
 

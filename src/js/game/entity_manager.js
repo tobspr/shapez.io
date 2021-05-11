@@ -61,7 +61,7 @@ export class EntityManager extends BasicSerializableObject {
      * @param {Entity} entity
      * @param {number=} uid Optional predefined uid
      */
-    registerEntity(entity, uid = null) {
+    registerEntity(entity, uid = null, blueprint = false) {
         if (G_IS_DEV && !globalConfig.debug.disableSlowAsserts) {
             assert(this.entities.indexOf(entity) < 0, `RegisterEntity() called twice for entity ${entity}`);
         }
@@ -89,7 +89,7 @@ export class EntityManager extends BasicSerializableObject {
         entity.uid = uid ? uid : this.generateUid();
         entity.registered = true;
 
-        this.root.signals.entityAdded.dispatch(entity);
+        this.root.signals.entityAdded.dispatch(entity, blueprint);
     }
 
     /**
