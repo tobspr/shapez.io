@@ -210,6 +210,7 @@ export class InputDistributor {
             this.forwardToReceiver("keydown", {
                 keyCode: keyCode,
                 shift: event.shiftKey,
+                ctrl: event.ctrlKey,
                 alt: event.altKey,
                 initial: isInitial,
                 event,

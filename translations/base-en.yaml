@@ -275,6 +275,8 @@ ingame:
         copySelection: Copy
         clearSelection: Clear selection
         pipette: Pipette
+        undo: Undo
+        redo: Redo
         switchLayers: Switch layers
 
     # Names of the colors, used for the color blind mode
@@ -1131,6 +1133,8 @@ keybindings:
         # ---
 
         pipette: Pipette
+        undo: Undo
+        redo: Redo
         rotateWhilePlacing: Rotate
         rotateInverseModifier: >-
             Modifier: Rotate CCW instead

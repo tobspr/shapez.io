@@ -94,34 +94,8 @@ export class HUDMassSelector extends BaseHUDPart {
 
     doDelete() {
         const entityUids = Array.from(this.selectedUids);
-
-        // Build mapping from uid to entity
-        /**
-         * @type {Map<number, Entity>}
-         */
-        const mapUidToEntity = this.root.entityMgr.getFrozenUidSearchMap();
-
-        let count = 0;
-        this.root.logic.performBulkOperation(() => {
-            for (let i = 0; i < entityUids.length; ++i) {
-                const uid = entityUids[i];
-                const entity = mapUidToEntity.get(uid);
-                if (!entity) {
-                    logger.error("Entity not found by uid:", uid);
-                    continue;
-                }
-
-                if (!this.root.logic.tryDeleteBuilding(entity)) {
-                    logger.error("Error in mass delete, could not remove building");
-                } else {
-                    count++;
-                }
-            }
-
-            this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.destroy1000, count);
-        });
-
-        // Clear uids later
+        const count = this.root.logic.tryBulkDelete(entityUids);
+        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.destroy1000, count);
         this.selectedUids = new Set();
     }
 
@@ -174,14 +148,8 @@ export class HUDMassSelector extends BaseHUDPart {
                 // copy code relies on entities still existing, so must copy before deleting.
                 this.root.hud.signals.buildingsSelectedForCopy.dispatch(entityUids);
 
-                for (let i = 0; i < entityUids.length; ++i) {
-                    const uid = entityUids[i];
-                    const entity = this.root.entityMgr.findByUid(uid);
-                    if (!this.root.logic.tryDeleteBuilding(entity)) {
-                        logger.error("Error in mass cut, could not remove building");
-                        this.selectedUids.delete(uid);
-                    }
-                }
+                this.root.logic.tryBulkDelete(entityUids);
+                this.selectedUids = new Set();
             };
 
             const blueprint = Blueprint.fromUids(this.root, entityUids);
@@ -195,7 +163,6 @@ export class HUDMassSelector extends BaseHUDPart {
                 );
                 ok.add(cutAction);
             }
-
             this.root.soundProxy.playUiClick();
         } else {
             this.root.soundProxy.playUiError();

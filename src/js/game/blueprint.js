@@ -5,6 +5,7 @@ import { Vector } from "../core/vector";
 import { Entity } from "./entity";
 import { ACHIEVEMENTS } from "../platform/achievement_provider";
 import { GameRoot } from "./root";
+import { ActionBuilder } from "./history_manager";
 
 export class Blueprint {
     /**
@@ -149,6 +150,7 @@ export class Blueprint {
      */
     tryPlace(root, tile) {
         return root.logic.performBulkOperation(() => {
+            const actionBuilder = new ActionBuilder(root);
             let count = 0;
             for (let i = 0; i < this.entities.length; ++i) {
                 const entity = this.entities[i];
@@ -158,11 +160,13 @@ export class Blueprint {
 
                 const clone = entity.clone();
                 clone.components.StaticMapEntity.origin.addInplace(tile);
-                root.logic.freeEntityAreaBeforeBuild(clone);
+                const removed = root.logic.freeEntityAreaBeforeBuild(clone);
                 root.map.placeStaticEntity(clone);
                 root.entityMgr.registerEntity(clone);
+                actionBuilder.placeBuilding(clone, removed);
                 count++;
             }
+            root.historyMgr.addAction(actionBuilder.build());
 
             root.signals.bulkAchievementCheck.dispatch(
                 ACHIEVEMENTS.placeBlueprint,

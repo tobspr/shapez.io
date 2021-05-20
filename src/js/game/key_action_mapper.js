@@ -7,6 +7,7 @@ import { Application } from "../application";
 import { Signal, STOP_PROPAGATION } from "../core/signal";
 import { IS_MOBILE } from "../core/config";
 import { T } from "../translations";
+
 function key(str) {
     return str.toUpperCase().charCodeAt(0);
 }
@@ -65,7 +66,7 @@ export const KEYMAPPINGS = {
         item_producer: { keyCode: key("L") },
 
         // Secondary toolbar
-        storage: { keyCode: key("Y") },
+        storage: { keyCode: key("Y"), ctrl: false },
         reader: { keyCode: key("U") },
         lever: { keyCode: key("I") },
         filter: { keyCode: key("O") },
@@ -95,6 +96,9 @@ export const KEYMAPPINGS = {
         switchDirectionLockSide: { keyCode: key("R") },
 
         copyWireValue: { keyCode: key("Z") },
+
+        undo: { keyCode: key("Z"), ctrl: true, shift: false },
+        redo: { keyCode: key("Y"), ctrl: true, shift: false },
     },
 
     massSelect: {
@@ -284,14 +288,18 @@ export class Keybinding {
      * @param {Application} app
      * @param {object} param0
      * @param {number} param0.keyCode
+     * @param {boolean | undefined} param0.ctrl
+     * @param {boolean | undefined} param0.shift
      * @param {boolean=} param0.builtin
      * @param {boolean=} param0.repeated
      */
-    constructor(keyMapper, app, { keyCode, builtin = false, repeated = false }) {
+    constructor(keyMapper, app, { keyCode, ctrl, shift, builtin = false, repeated = false }) {
         assert(keyCode && Number.isInteger(keyCode), "Invalid key code: " + keyCode);
         this.keyMapper = keyMapper;
         this.app = app;
         this.keyCode = keyCode;
+        this.ctrl = ctrl;
+        this.shift = shift;
         this.builtin = builtin;
         this.repeated = repeated;
 
@@ -440,17 +448,22 @@ export class KeyActionMapper {
      * @param {number} param0.keyCode
      * @param {boolean} param0.shift
      * @param {boolean} param0.alt
+     * @param {boolean} param0.ctrl
      * @param {boolean=} param0.initial
      */
-    handleKeydown({ keyCode, shift, alt, initial }) {
+    handleKeydown({ keyCode, shift, alt, ctrl, initial }) {
         let stop = false;
 
         // Find mapping
         for (const key in this.keybindings) {
             /** @type {Keybinding} */
             const binding = this.keybindings[key];
-            if (binding.keyCode === keyCode && (initial || binding.repeated)) {
-                /** @type {Signal} */
+            let isPressed =
+                binding.keyCode === keyCode &&
+                (initial || binding.repeated) &&
+                (binding.ctrl === undefined || binding.ctrl === ctrl) &&
+                (binding.shift === undefined || binding.shift === shift);
+            if (isPressed) {
                 const signal = this.keybindings[key].signal;
                 if (signal.dispatch() === STOP_PROPAGATION) {
                     return;

@@ -10,6 +10,7 @@ import { CHUNK_OVERLAY_RES } from "./map_chunk_view";
 import { MetaBuilding } from "./meta_building";
 import { GameRoot } from "./root";
 import { WireNetwork } from "./systems/wire";
+import { ActionBuilder } from "./history_manager";
 
 const logger = createLogger("ingame/logic");
 
@@ -107,9 +108,11 @@ export class GameLogic {
             variant,
         });
         if (this.checkCanPlaceEntity(entity)) {
-            this.freeEntityAreaBeforeBuild(entity);
+            const removed = this.freeEntityAreaBeforeBuild(entity);
             this.root.map.placeStaticEntity(entity);
             this.root.entityMgr.registerEntity(entity);
+            const action = new ActionBuilder(this.root).placeBuilding(entity, removed).build();
+            this.root.historyMgr.addAction(action);
             return entity;
         }
         return null;
@@ -119,10 +122,12 @@ export class GameLogic {
      * Removes all entities with a RemovableMapEntityComponent which need to get
      * removed before placing this entity
      * @param {Entity} entity
+     * @return {Entity[]} removedEntities
      */
     freeEntityAreaBeforeBuild(entity) {
         const staticComp = entity.components.StaticMapEntity;
         const rect = staticComp.getTileSpaceBounds();
+        const toRemove = [];
         // Remove any removeable colliding entities on the same layer
         for (let x = rect.x; x < rect.x + rect.w; ++x) {
             for (let y = rect.y; y < rect.y + rect.h; ++y) {
@@ -132,15 +137,19 @@ export class GameLogic {
                         contents.components.StaticMapEntity.getMetaBuilding().getIsReplaceable(),
                         "Tried to replace non-repleaceable entity"
                     );
-                    if (!this.tryDeleteBuilding(contents)) {
+                    if (!this.canDeleteBuilding(contents)) {
                         assertAlways(false, "Tried to replace non-repleaceable entity #2");
                     }
+                    toRemove.push(contents);
                 }
             }
         }
 
+        toRemove.forEach(e => this.unsafeDeleteBuilding(e));
+
         // Perform other callbacks
         this.root.signals.freeEntityAreaBeforeBuild.dispatch(entity);
+        return toRemove;
     }
 
     /**
@@ -178,10 +187,38 @@ export class GameLogic {
         if (!this.canDeleteBuilding(building)) {
             return false;
         }
+        const action = new ActionBuilder(this.root).removeBuilding(building.clone()).build();
+        this.root.historyMgr.addAction(action);
+        this.unsafeDeleteBuilding(building);
+        return true;
+    }
+
+    unsafeDeleteBuilding(building) {
         this.root.map.removeStaticEntity(building);
         this.root.entityMgr.destroyEntity(building);
         this.root.entityMgr.processDestroyList();
-        return true;
+    }
+
+    /**
+     * @param {number[]} entityUids
+     * @return {number} number of removed entities
+     */
+    tryBulkDelete(entityUids) {
+        return this.performBulkOperation(() => {
+            const mapUidToEntity = this.root.entityMgr.getFrozenUidSearchMap();
+            const entitiesToDelete = entityUids
+                .map(uid => mapUidToEntity.get(uid))
+                .filter(entity => !!entity)
+                .filter(entity => this.canDeleteBuilding(entity));
+            const action = new ActionBuilder(this.root).bulkRemoveBuildings(entitiesToDelete).build();
+            this.root.historyMgr.addAction(action);
+            entitiesToDelete.forEach(entity => {
+                this.root.map.removeStaticEntity(entity);
+                this.root.entityMgr.destroyEntity(entity);
+            });
+            this.root.entityMgr.processDestroyList();
+            return entitiesToDelete.length;
+        });
     }
 
     /**

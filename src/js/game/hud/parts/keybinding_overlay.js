@@ -120,6 +120,14 @@ export class HUDKeybindingOverlay extends BaseHUDPart {
         return this.root.camera.getIsMapOverlayActive();
     }
 
+    get undoActive() {
+        return !this.mapOverviewActive && !this.blueprintPlacementActive && this.root.historyMgr.canUndo;
+    }
+
+    get redoActive() {
+        return !this.mapOverviewActive && !this.blueprintPlacementActive && this.root.historyMgr.canRedo;
+    }
+
     /**
      * Initializes the element
      * @param {HTMLElement} parent
@@ -183,6 +191,20 @@ export class HUDKeybindingOverlay extends BaseHUDPart {
                 label: T.ingame.keybindingsOverlay.pipette,
                 keys: [k.placement.pipette],
                 condition: () => !this.mapOverviewActive && !this.blueprintPlacementActive,
+            },
+
+            {
+                // Undo
+                label: T.ingame.keybindingsOverlay.undo,
+                keys: [k.placement.undo],
+                condition: () => this.undoActive,
+            },
+
+            {
+                // Redo
+                label: T.ingame.keybindingsOverlay.redo,
+                keys: [k.placement.redo],
+                condition: () => this.redoActive,
             },
 
             {
@@ -297,10 +319,18 @@ export class HUDKeybindingOverlay extends BaseHUDPart {
                     case ADDER_TOKEN:
                         html += `+`;
                         break;
-                    default:
-                        html += `<code class="keybinding">${getStringForKeyCode(
-                            mapper.getBinding(/** @type {KeyCode} */ (key)).keyCode
-                        )}</code>`;
+                    default: {
+                        const binding = mapper.getBinding(/** @type {KeyCode} */ (key));
+                        if (binding.shift) {
+                            html += `<code class="keybinding">${getStringForKeyCode(16)}</code>`;
+                            html += `+`;
+                        }
+                        if (binding.ctrl) {
+                            html += `<code class="keybinding">${getStringForKeyCode(17)}</code>`;
+                            html += `+`;
+                        }
+                        html += `<code class="keybinding">${getStringForKeyCode(binding.keyCode)}</code>`;
+                    }
                 }
             }
             html += `<label>${handle.label}</label>`;
