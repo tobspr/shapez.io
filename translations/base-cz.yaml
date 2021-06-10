@@ -1165,56 +1165,56 @@ tips:
     - Stisknutím F4 dvakrát zobrazíte souřadnici myši a kamery.
     - Můžete kliknout na připínáček vlevo vedle připnutého tvaru k jeho odepnutí.
 puzzleMenu:
-    play: Play
-    edit: Edit
-    title: Puzzle Mode
-    createPuzzle: Create Puzzle
-    loadPuzzle: Load
-    reviewPuzzle: Review & Publish
-    validatingPuzzle: Validating Puzzle
-    submittingPuzzle: Submitting Puzzle
-    noPuzzles: There are currently no puzzles in this section.
+    play: Hrát
+    edit: Upravit
+    title: Logický režim
+    createPuzzle: Vytvoři pucle
+    loadPuzzle: Nahrát
+    reviewPuzzle: Zkontrolovat & Publikovat
+    validatingPuzzle: Ověření logické hry
+    submittingPuzzle: Odesílání hádanky
+    noPuzzles: V této sekci nejsou momentálně žádné hádanky.
     categories:
-        levels: Levels
-        new: New
-        top-rated: Top Rated
-        mine: My Puzzles
-        short: Short
-        easy: Easy
-        hard: Hard
-        completed: Completed
+        levels: Levly
+        new: Nový
+        top-rated: Nejoblibenější
+        mine: Moje pucle
+        short: Krátký
+        easy: Lehký
+        hard: Těžký
+        completed: Dokončeno
     validation:
-        title: Invalid Puzzle
-        noProducers: Please place a Constant Producer!
-        noGoalAcceptors: Please place a Goal Acceptor!
-        goalAcceptorNoItem: One or more Goal Acceptors have not yet assigned an item.
-            Deliver a shape to them to set a goal.
-        goalAcceptorRateNotMet: One or more Goal Acceptors are not getting enough items.
-            Make sure that the indicators are green for all acceptors.
-        buildingOutOfBounds: One or more buildings are outside of the buildable area.
-            Either increase the area or remove them.
-        autoComplete: Your puzzle autocompletes itself! Please make sure your constant
-            producers are not directly delivering to your goal acceptors.
+        title: Neplatné pucle
+        noProducers: Umístěte stálého producenta!
+        noGoalAcceptors: Umístěte prosím přijímače cílů!
+        goalAcceptorNoItem: Jeden nebo více příjemců cílů ještě nepřiřadilo položku.
+            Dej jim tvar, aby si stanovili cíl.
+        goalAcceptorRateNotMet: Jeden nebo více přijímačů cílů nedostává dostatek položek.
+            Ujistěte se, že indikátory jsou zelené pro všechny akceptory.
+        buildingOutOfBounds: Jedna nebo více budov je mimo zastavitelnou oblast.
+            Buď zvětšete plochu, nebo je odstraňte.
+        autoComplete: Vaše skládačka se automaticky doplňuje! Ujistěte se, že vaše konstanta
+            producenti nedodávají přímo vašim příjemcům cílů.
 backendErrors:
-    ratelimit: You are performing your actions too frequent. Please wait a bit.
-    invalid-api-key: Failed to communicate with the backend, please try to
-        update/restart the game (Invalid Api Key).
-    unauthorized: Failed to communicate with the backend, please try to
-        update/restart the game (Unauthorized).
-    bad-token: Failed to communicate with the backend, please try to update/restart
-        the game (Bad Token).
-    bad-id: Invalid puzzle identifier.
-    not-found: The given puzzle could not be found.
-    bad-category: The given category could not be found.
-    bad-short-key: The given short key is invalid.
-    profane-title: Your puzzle title contains profane words.
-    bad-title-too-many-spaces: Your puzzle title is too short.
-    bad-shape-key-in-emitter: A constant producer has an invalid item.
-    bad-shape-key-in-goal: A goal acceptor has an invalid item.
-    no-emitters: Your puzzle does not contain any constant producers.
-    no-goals: Your puzzle does not contain any goal acceptors.
-    short-key-already-taken: This short key is already taken, please use another one.
-    can-not-report-your-own-puzzle: You can not report your own puzzle.
-    bad-payload: The request contains invalid data.
-    bad-building-placement: Your puzzle contains invalid placed buildings.
-    timeout: The request timed out.
+    ratelimit: Provádíte své akce příliš často. Počkejte prosím.
+    invalid-api-key: Komunikace s back-endem se nezdařila, zkuste to
+        aktualizovat/restartovat hru (neplatný klíč Api).
+    unauthorized: Komunikace s back-endem se nezdařila, zkuste to
+        aktualizovat/restartovat hru (neoprávněné).
+    bad-token: Komunikace s back-endem se nezdařila, zkuste to prosím aktualizovat/restartovat
+        hru (Bad Token).
+    bad-id: Neplatný identifikátor hádanky.
+    not-found: Dané puzzle se nepodařilo najít.
+    bad-category: Danou kategorii nelze najít.
+    bad-short-key: Daný krátký klíč je neplatný.
+    profane-title: Název puzzle obsahuje neslušná slova.
+    bad-title-too-many-spaces: Název vaší hádanky je příliš krátký.
+    bad-shape-key-in-emitter: Konstantní producent má neplatnou položku.
+    bad-shape-key-in-goal: Akceptor cílů má neplatnou položku.
+    no-emitters: Vaše hádanka neobsahuje žádné stálé producenty.
+    no-goals: Vaše hádanka neobsahuje žádné akceptory cílů.
+    short-key-already-taken: Tento krátký klíč je již použit, použijte prosím jiný.
+    can-not-report-your-own-puzzle: Nemůžete nahlásit vlastní hádanku.
+    bad-payload: Žádost obsahuje neplatná data.
+    bad-building-placement: Vaše hádanka obsahuje neplatně umístěné budovy.
+    timeout: Požadavek vypršel.
