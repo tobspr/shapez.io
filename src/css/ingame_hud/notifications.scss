@@ -1,7 +1,58 @@
 #ingame_HUD_Notifications {
     position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
     @include S(bottom, 60px);
     @include S(right, 10px);
+    @include S(width, 196px);
+    @include S(max-height, 200px);
+    @include S(padding, 3px);
+    @include S(border-radius, $globalBorderRadius);
+    transition: 0.3s;
+
+    &:hover {
+        pointer-events: all;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background-color: rgba(#333438, 0.5);
+        &::-webkit-scrollbar {
+            width: 3px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(#333438, 0.8);
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .notification {
+            opacity: 1;
+        }
+
+        #notificationHover {
+            min-height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        #notificationPadding {
+            padding-top: 1px;
+        }
+    }
+
+    #notificationHover {
+        display: block;
+        position: relative;
+        opacity: 0;
+        background: transparent;
+        @include S(margin, 3px, 0px, 0px, 0px);
+        @include S(padding, 7px, 10px);
+        @include S(width, 175px);
+        @include S(min-height, 13px);
+        transform-origin: 100% 50%;
+        box-sizing: content-box;
+        pointer-events: all;
+        transition: 0.3s;
+    }
 
     .notification {
         background: rgba(#333438, 0.8);
@@ -26,6 +77,8 @@
 
         transform-origin: 100% 50%;
         opacity: 0;
+        transition: 0.3s;
+        animation-iteration-count: 1;
         @include InlineAnimation(3s ease-in-out) {
             0% {
                 opacity: 1;
