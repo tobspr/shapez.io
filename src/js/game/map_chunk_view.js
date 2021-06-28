@@ -33,6 +33,7 @@ export class MapChunkView extends MapChunk {
     markDirty() {
         ++this.renderIteration;
         this.renderKey = this.x + "/" + this.y + "@" + this.renderIteration;
+        this.root.map.getAggregateForChunk(this.x, this.y, true).markDirty(this.x, this.y);
     }
 
     /**
@@ -82,73 +83,41 @@ export class MapChunkView extends MapChunk {
     }
 
     /**
-     * Overlay
      * @param {DrawParameters} parameters
+     * @param {number} xoffs
+     * @param {number} yoffs
+     * @param {number} diameter
      */
-    drawOverlay(parameters) {
-        const overlaySize = globalConfig.mapChunkSize * CHUNK_OVERLAY_RES;
-        const sprite = this.root.buffers.getForKey({
-            key: "chunk@" + this.root.currentLayer,
-            subKey: this.renderKey,
-            w: overlaySize,
-            h: overlaySize,
-            dpi: 1,
-            redrawMethod: this.generateOverlayBuffer.bind(this),
-        });
-
-        const dims = globalConfig.mapChunkWorldSize;
-        const extrude = 0.05;
-
-        // Draw chunk "pixel" art
-        parameters.context.imageSmoothingEnabled = false;
-        drawSpriteClipped({
-            parameters,
-            sprite,
-            x: this.x * dims - extrude,
-            y: this.y * dims - extrude,
-            w: dims + 2 * extrude,
-            h: dims + 2 * extrude,
-            originalW: overlaySize,
-            originalH: overlaySize,
-        });
-
-        parameters.context.imageSmoothingEnabled = true;
-        const resourcesScale = this.root.app.settings.getAllSettings().mapResourcesScale;
-
-        // Draw patch items
-        if (this.root.currentLayer === "regular" && resourcesScale > 0.05) {
-            const diameter = (70 / Math.pow(parameters.zoomLevel, 0.35)) * (0.2 + 2 * resourcesScale);
-
-            for (let i = 0; i < this.patches.length; ++i) {
-                const patch = this.patches[i];
-                if (patch.item.getItemType() === "shape") {
-                    const destX = this.x * dims + patch.pos.x * globalConfig.tileSize;
-                    const destY = this.y * dims + patch.pos.y * globalConfig.tileSize;
-                    patch.item.drawItemCenteredClipped(destX, destY, parameters, diameter);
-                }
+    drawOverlayPatches(parameters, xoffs, yoffs, diameter) {
+        for (let i = 0; i < this.patches.length; ++i) {
+            const patch = this.patches[i];
+            if (patch.item.getItemType() === "shape") {
+                const destX = xoffs + patch.pos.x * globalConfig.tileSize;
+                const destY = yoffs + patch.pos.y * globalConfig.tileSize;
+                patch.item.drawItemCenteredClipped(destX, destY, parameters, diameter);
             }
         }
     }
 
     /**
      *
-     * @param {HTMLCanvasElement} canvas
      * @param {CanvasRenderingContext2D} context
      * @param {number} w
      * @param {number} h
-     * @param {number} dpi
+     * @param {number=} xoffs
+     * @param {number=} yoffs
      */
-    generateOverlayBuffer(canvas, context, w, h, dpi) {
+    generateOverlayBuffer(context, w, h, xoffs, yoffs) {
         context.fillStyle =
             this.containedEntities.length > 0
                 ? THEME.map.chunkOverview.filled
                 : THEME.map.chunkOverview.empty;
-        context.fillRect(0, 0, w, h);
+        context.fillRect(xoffs, yoffs, w, h);
 
         if (this.root.app.settings.getAllSettings().displayChunkBorders) {
             context.fillStyle = THEME.map.chunkBorders;
-            context.fillRect(0, 0, w, 1);
-            context.fillRect(0, 1, 1, h);
+            context.fillRect(xoffs, yoffs, w, 1);
+            context.fillRect(xoffs, yoffs + 1, 1, h);
         }
 
         for (let x = 0; x < globalConfig.mapChunkSize; ++x) {
@@ -174,8 +143,8 @@ export class MapChunkView extends MapChunk {
                         if (lowerContent) {
                             context.fillStyle = lowerContent.getBackgroundColorAsResource();
                             context.fillRect(
-                                x * CHUNK_OVERLAY_RES,
-                                y * CHUNK_OVERLAY_RES,
+                                xoffs + x * CHUNK_OVERLAY_RES,
+                                yoffs + y * CHUNK_OVERLAY_RES,
                                 CHUNK_OVERLAY_RES,
                                 CHUNK_OVERLAY_RES
                             );
@@ -190,8 +159,8 @@ export class MapChunkView extends MapChunk {
                                 const isFilled = overlayMatrix[dx + dy * 3];
                                 if (isFilled) {
                                     context.fillRect(
-                                        x * CHUNK_OVERLAY_RES + dx,
-                                        y * CHUNK_OVERLAY_RES + dy,
+                                        xoffs + x * CHUNK_OVERLAY_RES + dx,
+                                        yoffs + y * CHUNK_OVERLAY_RES + dy,
                                         1,
                                         1
                                     );
@@ -206,8 +175,8 @@ export class MapChunkView extends MapChunk {
                             data.rotationVariant
                         );
                         context.fillRect(
-                            x * CHUNK_OVERLAY_RES,
-                            y * CHUNK_OVERLAY_RES,
+                            xoffs + x * CHUNK_OVERLAY_RES,
+                            yoffs + y * CHUNK_OVERLAY_RES,
                             CHUNK_OVERLAY_RES,
                             CHUNK_OVERLAY_RES
                         );
@@ -220,8 +189,8 @@ export class MapChunkView extends MapChunk {
                 if (lowerContent) {
                     context.fillStyle = lowerContent.getBackgroundColorAsResource();
                     context.fillRect(
-                        x * CHUNK_OVERLAY_RES,
-                        y * CHUNK_OVERLAY_RES,
+                        xoffs + x * CHUNK_OVERLAY_RES,
+                        yoffs + y * CHUNK_OVERLAY_RES,
                         CHUNK_OVERLAY_RES,
                         CHUNK_OVERLAY_RES
                     );
@@ -233,7 +202,7 @@ export class MapChunkView extends MapChunk {
             // Draw wires overlay
 
             context.fillStyle = THEME.map.wires.overlayColor;
-            context.fillRect(0, 0, w, h);
+            context.fillRect(xoffs, yoffs, w, h);
 
             for (let x = 0; x < globalConfig.mapChunkSize; ++x) {
                 const wiresArray = this.wireContents[x];
@@ -244,8 +213,8 @@ export class MapChunkView extends MapChunk {
                     }
                     MapChunkView.drawSingleWiresOverviewTile({
                         context,
-                        x: x * CHUNK_OVERLAY_RES,
-                        y: y * CHUNK_OVERLAY_RES,
+                        x: xoffs + x * CHUNK_OVERLAY_RES,
+                        y: yoffs + y * CHUNK_OVERLAY_RES,
                         entity: content,
                         tileSizePixels: CHUNK_OVERLAY_RES,
                     });

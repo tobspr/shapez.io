@@ -55,6 +55,7 @@ export const globalConfig = {
 
     // Map
     mapChunkSize: 16,
+    chunkAggregateSize: 4,
     mapChunkOverviewMinZoom: 0.9,
     mapChunkWorldSize: null, // COMPUTED
 

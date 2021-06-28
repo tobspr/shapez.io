@@ -3,6 +3,7 @@ import { Vector } from "../core/vector";
 import { BasicSerializableObject, types } from "../savegame/serialization";
 import { BaseItem } from "./base_item";
 import { Entity } from "./entity";
+import { MapChunkAggregate } from "./map_chunk_aggregate";
 import { MapChunkView } from "./map_chunk_view";
 import { GameRoot } from "./root";
 
@@ -31,6 +32,11 @@ export class BaseMap extends BasicSerializableObject {
          * Mapping of 'X|Y' to chunk
          * @type {Map<string, MapChunkView>} */
         this.chunksById = new Map();
+
+        /**
+         * Mapping of 'X|Y' to chunk aggregate
+         * @type {Map<string, MapChunkAggregate>} */
+        this.aggregatesById = new Map();
     }
 
     /**
@@ -49,6 +55,39 @@ export class BaseMap extends BasicSerializableObject {
         if (createIfNotExistent) {
             const instance = new MapChunkView(this.root, chunkX, chunkY);
             this.chunksById.set(chunkIdentifier, instance);
+            return instance;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the chunk aggregate containing a given chunk
+     * @param {number} chunkX
+     * @param {number} chunkY
+     */
+    getAggregateForChunk(chunkX, chunkY, createIfNotExistent = false) {
+        const aggX = Math.floor(chunkX / globalConfig.chunkAggregateSize);
+        const aggY = Math.floor(chunkY / globalConfig.chunkAggregateSize);
+        return this.getAggregate(aggX, aggY, createIfNotExistent);
+    }
+
+    /**
+     * Returns the given chunk aggregate by index
+     * @param {number} aggX
+     * @param {number} aggY
+     */
+    getAggregate(aggX, aggY, createIfNotExistent = false) {
+        const aggIdentifier = aggX + "|" + aggY;
+        let storedAggregate;
+
+        if ((storedAggregate = this.aggregatesById.get(aggIdentifier))) {
+            return storedAggregate;
+        }
+
+        if (createIfNotExistent) {
+            const instance = new MapChunkAggregate(this.root, aggX, aggY);
+            this.aggregatesById.set(aggIdentifier, instance);
             return instance;
         }
 

@@ -167,4 +167,25 @@ export class BufferMaintainer {
         });
         return canvas;
     }
+
+    /**
+     * @param {object} param0
+     * @param {string} param0.key
+     * @param {string} param0.subKey
+     * @returns {HTMLCanvasElement?}
+     *
+     */
+    getForKeyOrNullNoUpdate({ key, subKey }) {
+        let parent = this.cache.get(key);
+        if (!parent) {
+            return null;
+        }
+
+        // Now search for sub key
+        const cacheHit = parent.get(subKey);
+        if (cacheHit) {
+            return cacheHit.canvas;
+        }
+        return null;
+    }
 }
