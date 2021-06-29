@@ -24,7 +24,7 @@ const tutorialsByLevel = [
         // 1.2. connect to hub
         {
             id: "1_2_conveyor",
-            condition: /** @param {GameRoot} root */ root => root.hubGoals.getCurrentGoalDelivered() === 0,
+            condition: /** @param {GameRoot} root */ root => root.hubGoals.getCurrentGoalDelivered()[0] === 0,
         },
         // 1.3 wait for completion
         {
@@ -70,7 +70,7 @@ const tutorialsByLevel = [
             id: "3_1_rectangles",
             condition: /** @param {GameRoot} root */ root =>
                 // 4 miners placed above rectangles and 10 delivered
-                root.hubGoals.getCurrentGoalDelivered() < 10 ||
+                root.hubGoals.getCurrentGoalDelivered()[0] < 10 ||
                 root.entityMgr.getAllWithComponent(MinerComponent).filter(entity => {
                     const tile = entity.components.StaticMapEntity.origin;
                     const below = root.map.getLowerLayerContentXY(tile.x, tile.y);

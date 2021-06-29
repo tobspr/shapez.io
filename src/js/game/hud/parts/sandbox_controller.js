@@ -48,6 +48,7 @@ export class HUDSandboxController extends BaseHUDPart {
                 <div class="additionalOptions">
                     <button class="styledButton giveBlueprints">Fill blueprint shapes</button>
                     <button class="styledButton maxOutAll">Max out all</button>
+                    <button class="styledButton clearAll">Clear all</button>
                 </div>
             </div>
         `
@@ -57,6 +58,7 @@ export class HUDSandboxController extends BaseHUDPart {
 
         bind(".giveBlueprints", this.giveBlueprints);
         bind(".maxOutAll", this.maxOutAll);
+        bind(".clearAll", this.clearAll);
         bind(".levelToggle .minus", () => this.modifyLevel(-1));
         bind(".levelToggle .plus", () => this.modifyLevel(1));
 
@@ -79,6 +81,13 @@ export class HUDSandboxController extends BaseHUDPart {
             this.root.hubGoals.storedShapes[shape] = 0;
         }
         this.root.hubGoals.storedShapes[shape] += 1e9;
+    }
+
+    clearAll() {
+        this.modifyUpgrade("belt", -1000);
+        this.modifyUpgrade("miner", -1000);
+        this.modifyUpgrade("processors", -1000);
+        this.modifyUpgrade("painting", -1000);
     }
 
     maxOutAll() {
@@ -116,7 +125,9 @@ export class HUDSandboxController extends BaseHUDPart {
         hubGoals.computeNextGoal();
 
         // Clear all shapes of this level
-        hubGoals.storedShapes[hubGoals.currentGoal.definition.getHash()] = 0;
+        for (let i = 0; i < hubGoals.currentGoal.definitions.length; i++) {
+            hubGoals.storedShapes[hubGoals.currentGoal.definitions[i].shape.getHash()] = 0;
+        }
 
         if (this.root.hud.parts.pinnedShapes) {
             this.root.hud.parts.pinnedShapes.rerenderFull();

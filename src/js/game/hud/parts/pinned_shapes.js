@@ -103,8 +103,11 @@ export class HUDPinnedShapes extends BaseHUDPart {
      * @param {string} key
      */
     findGoalValueForShape(key) {
-        if (key === this.root.hubGoals.currentGoal.definition.getHash()) {
-            return this.root.hubGoals.currentGoal.required;
+        const goalIndex = this.root.hubGoals.currentGoal.definitions.findIndex(
+            goal => goal.shape.getHash() === key
+        );
+        if (goalIndex > -1) {
+            return this.root.hubGoals.currentGoal.definitions[goalIndex].amount;
         }
         if (key === this.root.gameMode.getBlueprintShapeKey()) {
             return null;
@@ -138,10 +141,10 @@ export class HUDPinnedShapes extends BaseHUDPart {
      * @param {string} key
      */
     isShapePinned(key) {
-        if (
-            key === this.root.hubGoals.currentGoal.definition.getHash() ||
-            key === this.root.gameMode.getBlueprintShapeKey()
-        ) {
+        const goalIndex = this.root.hubGoals.currentGoal.definitions.findIndex(
+            goal => goal.shape.getHash() === key
+        );
+        if (goalIndex > -1 || key === this.root.gameMode.getBlueprintShapeKey()) {
             // This is a "special" shape which is always pinned
             return true;
         }
@@ -154,7 +157,6 @@ export class HUDPinnedShapes extends BaseHUDPart {
      */
     rerenderFull() {
         const currentGoal = this.root.hubGoals.currentGoal;
-        const currentKey = currentGoal.definition.getHash();
 
         // First, remove all old shapes
         for (let i = 0; i < this.handles.length; ++i) {
@@ -171,12 +173,14 @@ export class HUDPinnedShapes extends BaseHUDPart {
         this.handles = [];
 
         // Pin story goal
-        this.internalPinShape({
-            key: currentKey,
-            canUnpin: false,
-            className: "goal",
-            throughputOnly: currentGoal.throughputOnly,
-        });
+        for (let i = 0; i < currentGoal.definitions.length; i++) {
+            this.internalPinShape({
+                key: currentGoal.definitions[i].shape.getHash(),
+                canUnpin: false,
+                className: "goal",
+                throughputOnly: currentGoal.definitions[i].throughputOnly,
+            });
+        }
 
         // Pin blueprint shape as well
         if (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_blueprints)) {
@@ -190,7 +194,8 @@ export class HUDPinnedShapes extends BaseHUDPart {
         // Pin manually pinned shapes
         for (let i = 0; i < this.pinnedShapes.length; ++i) {
             const key = this.pinnedShapes[i];
-            if (key !== currentKey) {
+            const goalIndex = currentGoal.definitions.findIndex(goal => goal.shape.getHash() === key);
+            if (goalIndex < 0) {
                 this.internalPinShape({ key });
             }
         }
@@ -308,7 +313,10 @@ export class HUDPinnedShapes extends BaseHUDPart {
      */
     pinNewShape(definition) {
         const key = definition.getHash();
-        if (key === this.root.hubGoals.currentGoal.definition.getHash()) {
+        const goalIndex = this.root.hubGoals.currentGoal.definitions.findIndex(
+            goal => goal.shape.getHash() === key
+        );
+        if (goalIndex > -1) {
             // Can not pin current goal
             return;
         }

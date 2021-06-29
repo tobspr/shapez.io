@@ -105,6 +105,21 @@ export class HubGoals extends BasicSerializableObject {
             this.upgradeImprovements[key] = 1;
         }
 
+        /**
+         * @type {{
+         *  definitions:  Array<{
+         *      shape: ShapeDefinition,
+         *      amount: Number,
+         *      throughputOnly?: Boolean,
+         *  }>,
+         *  reward: enumHubGoalRewards,
+         *  inOrder?: Boolean,
+         * }}
+         */
+        this.currentGoal = null;
+
+        this.deliverOrder = [];
+
         this.computeNextGoal();
 
         // Allow quickly switching goals in dev mode
@@ -167,16 +182,34 @@ export class HubGoals extends BasicSerializableObject {
      * Returns how much of the current goal was already delivered
      */
     getCurrentGoalDelivered() {
-        if (this.currentGoal.throughputOnly) {
-            return (
-                this.root.productionAnalytics.getCurrentShapeRateRaw(
-                    enumAnalyticsDataSource.delivered,
-                    this.currentGoal.definition
-                ) / globalConfig.analyticsSliceDurationSeconds
-            );
+        const currentGoalDeliverd = [];
+
+        for (let i = 0; i < this.currentGoal.definitions.length; i++) {
+            if (this.currentGoal.definitions[i].throughputOnly) {
+                currentGoalDeliverd.push(
+                    this.root.productionAnalytics.getCurrentShapeRateRaw(
+                        enumAnalyticsDataSource.delivered,
+                        this.currentGoal.definitions[i].shape
+                    ) / globalConfig.analyticsSliceDurationSeconds
+                );
+            } else {
+                currentGoalDeliverd.push(this.getShapesStored(this.currentGoal.definitions[i].shape));
+            }
+        }
+        return currentGoalDeliverd;
+    }
+
+    /**
+     * Returns if the current goal is completed
+     */
+    isGoalCompleted() {
+        const delivered = this.getCurrentGoalDelivered();
+
+        for (let i = 0; i < delivered.length; i++) {
+            if (delivered[i] < this.currentGoal.definitions[i].amount) return false;
         }
 
-        return this.getShapesStored(this.currentGoal.definition);
+        return true;
     }
 
     /**
@@ -209,15 +242,55 @@ export class HubGoals extends BasicSerializableObject {
      */
     handleDefinitionDelivered(definition) {
         const hash = definition.getHash();
-        this.storedShapes[hash] = (this.storedShapes[hash] || 0) + 1;
 
-        this.root.signals.shapeDelivered.dispatch(definition);
+        const definitions = this.currentGoal.definitions;
+        // In order and shape is goal shape
+        if (this.currentGoal.inOrder && definitions.some(goal => goal.shape.getHash() === hash)) {
+            // Add to delivered order
+            this.deliverOrder.push(hash);
+
+            if (this.deliverOrder.length === definitions.length) {
+                // Check if order is correct
+                const startIndex = this.deliverOrder.findIndex(
+                    hash => hash === definitions[0].shape.getHash()
+                );
+
+                if (startIndex > -1) {
+                    for (let i = 0; i < definitions.length; i++) {
+                        // Offset order to first shape
+                        let currentOrder = startIndex + i;
+                        if (currentOrder >= this.deliverOrder.length)
+                            currentOrder = currentOrder - this.deliverOrder.length;
+
+                        // Wrong order clear order
+                        if (this.deliverOrder[currentOrder] !== definitions[i].shape.getHash()) {
+                            this.deliverOrder = [];
+                            break;
+                        }
+                    }
+                } else {
+                    this.deliverOrder = [];
+                }
+
+                // Add to stored shapes
+                for (let i = 0; i < this.deliverOrder.length; i++) {
+                    this.storedShapes[this.deliverOrder[i]] =
+                        (this.storedShapes[this.deliverOrder[i]] || 0) + 1;
+                    this.root.signals.shapeDelivered.dispatch(
+                        ShapeDefinition.fromShortKey(this.deliverOrder[i])
+                    );
+                }
+
+                this.deliverOrder = [];
+            }
+        } else {
+            this.storedShapes[hash] = (this.storedShapes[hash] || 0) + 1;
+
+            this.root.signals.shapeDelivered.dispatch(definition);
+        }
 
         // Check if we have enough for the next level
-        if (
-            this.getCurrentGoalDelivered() >= this.currentGoal.required ||
-            (G_IS_DEV && globalConfig.debug.rewardsInstant)
-        ) {
+        if (this.isGoalCompleted() || (G_IS_DEV && globalConfig.debug.rewardsInstant)) {
             if (!this.isEndOfDemoReached()) {
                 this.onGoalCompleted();
             }
@@ -231,24 +304,30 @@ export class HubGoals extends BasicSerializableObject {
         const storyIndex = this.level - 1;
         const levels = this.root.gameMode.getLevelDefinitions();
         if (storyIndex < levels.length) {
-            const { shape, required, reward, throughputOnly } = levels[storyIndex];
-            this.currentGoal = {
-                /** @type {ShapeDefinition} */
-                definition: this.root.shapeDefinitionMgr.getShapeFromShortKey(shape),
-                required,
-                reward,
-                throughputOnly,
-            };
-            return;
+            const { shapes, reward, inOrder } = levels[storyIndex];
+            if (shapes) {
+                this.currentGoal = {
+                    definitions: shapes.map(shape => {
+                        return {
+                            ...shape,
+                            shape: this.root.shapeDefinitionMgr.getShapeFromShortKey(shape.key),
+                            key: null,
+                        };
+                    }),
+                    reward,
+                    inOrder,
+                };
+                return;
+            }
         }
 
         //Floor Required amount to remove confusion
         const required = Math.min(200, Math.floor(4 + (this.level - 27) * 0.25));
         this.currentGoal = {
-            definition: this.computeFreeplayShape(this.level),
-            required,
+            definitions: [
+                { shape: this.computeFreeplayShape(this.level), throughputOnly: true, amount: required },
+            ],
             reward: enumHubGoalRewards.no_reward_freeplay,
-            throughputOnly: true,
         };
     }
 

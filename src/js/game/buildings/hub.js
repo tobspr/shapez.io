@@ -57,6 +57,21 @@ export class MetaHubBuilding extends MetaBuilding {
                         type: enumPinSlotType.logicalEjector,
                         direction: enumDirection.left,
                     },
+                    {
+                        pos: new Vector(3, 2),
+                        type: enumPinSlotType.logicalEjector,
+                        direction: enumDirection.right,
+                    },
+                    {
+                        pos: new Vector(0, 3),
+                        type: enumPinSlotType.logicalEjector,
+                        direction: enumDirection.left,
+                    },
+                    {
+                        pos: new Vector(3, 3),
+                        type: enumPinSlotType.logicalEjector,
+                        direction: enumDirection.right,
+                    },
                 ],
             })
         );

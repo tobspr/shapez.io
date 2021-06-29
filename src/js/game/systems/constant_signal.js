@@ -75,11 +75,13 @@ export class ConstantSignalSystem extends GameSystemWithFilter {
         }
 
         if (this.root.gameMode.hasHub()) {
-            items.push(
-                this.root.shapeDefinitionMgr.getShapeItemFromDefinition(
-                    this.root.hubGoals.currentGoal.definition
-                )
-            );
+            for (let i = 0; i < this.root.hubGoals.currentGoal.definitions.length; i++) {
+                items.push(
+                    this.root.shapeDefinitionMgr.getShapeItemFromDefinition(
+                        this.root.hubGoals.currentGoal.definitions[i].shape
+                    )
+                );
+            }
         }
 
         if (this.root.hud.parts.pinnedShapes) {
