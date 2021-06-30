@@ -25,8 +25,8 @@ steamPage:
 global:
     loading: Cargando
     error: Error
-    thousandsDivider: ","
-    decimalSeparator: .
+    thousandsDivider: "."
+    decimalSeparator: ","
     suffix:
         thousands: k
         millions: M
@@ -78,7 +78,7 @@ mainMenu:
     puzzleDlcText: ¿Disfrutas compactando y optimizando fábricas? ¡Consigue ahora el
         DLC de Puzles en Steam para aún más diversión!
     puzzleDlcWishlist: ¡Añádelo ahora a tu lista de deseos!
-    puzzleDlcViewNow: View Dlc
+    puzzleDlcViewNow: Ver Dlc
 dialogs:
     buttons:
         ok: OK
@@ -198,7 +198,7 @@ dialogs:
         desc: Hay un video tutorial disponible para este nivel, pero solo está
             disponible en inglés ¿Te gustaría verlo?
     editConstantProducer:
-        title: Set Item
+        title: Elegir item
     puzzleLoadFailed:
         title: Fallo al cargar los Puzles
         desc: Desafortunadamente, no se pudieron cargar los puzles.
@@ -248,12 +248,12 @@ dialogs:
     puzzleReport:
         title: Reportar Puzle
         options:
-            profane: Lenguaje soez
+            profane: Profanidades
             unsolvable: Imposible de resolver
             trolling: Troll
     puzzleReportComplete:
         title: ¡Gracias por tu aporte!
-        desc: El puzle ha sido marcado como abuso.
+        desc: El puzle ha sido reportado exitosamente.
     puzzleReportError:
         title: No se pudo reportar
         desc: "No pudimos procesar tu informe:"
@@ -261,8 +261,8 @@ dialogs:
         title: Introducir clave
         desc: Introduce la clave del puzle para cargarlo.
     puzzleDelete:
-        title: Delete Puzzle?
-        desc: Are you sure you want to delete '<title>'? This can not be undone!
+        title: ¿Eliminar Puzle?
+        desc: ¿Estas seguro de querer eliminar '<title>'? ¡Esto no se puede deshacer!
 ingame:
     keybindingsOverlay:
         moveMap: Mover
@@ -284,7 +284,7 @@ ingame:
         clearSelection: Limpiar selección
         pipette: Cuentagotas
         switchLayers: Cambiar capas
-        clearBelts: Clear belts
+        clearBelts: Borrar cintas
     colors:
         red: Rojo
         green: Verde
@@ -621,29 +621,29 @@ buildings:
         default:
             name: Puerta AND
             description: Emite el valor booleano "1" si ambas entradas son verdaderas.
-                (Verdadeas significa una forma, color o valor booleano "1")
+                (Verdaderas significa una forma, color o valor booleano "1")
         not:
             name: Puerta NOT
             description: Emite el valor booleano "1" si ambas entradas no son verdaderas.
-                (Verdadeas significa una forma, color o valor booleano "1")
+                (Verdaderas significa una forma, color o valor booleano "1")
         xor:
             name: Puerta XOR
             description: Emite el valor booleano "1" si una de las entradas es verdadera,
-                pero no si ambas lo son. (Verdadeas significa una forma, color o
+                pero no si ambas lo son. (Verdaderas significa una forma, color o
                 valor booleano "1")
         or:
             name: Puerta OR
             description: Emite el valor booleano "1" Si una de las entradas es verdadera.
-                (Verdadeas significa una forma, color o valor booleano "1")
+                (Verdaderas significa una forma, color o valor booleano "1")
     transistor:
         default:
             name: Transistor
             description: Envia la señal de abajo si la señal del costado es verdadera
-                (Verdadeas significa una forma, color o valor booleano "1").
+                (Verdaderas significa una forma, color o valor booleano "1").
         mirrored:
             name: Transistor
             description: Envia la señal de abajo si la señal del costado es verdadera
-                (Verdadeas significa una forma, color o valor booleano "1").
+                (Verdaderas significa una forma, color o valor booleano "1").
     filter:
         default:
             name: Filtro
@@ -664,7 +664,7 @@ buildings:
     analyzer:
         default:
             name: Analizador de formas
-            description: analiza el cuadrante de arriba a la derecha de la capa más baja de
+            description: Analiza el cuadrante de arriba a la derecha de la capa más baja de
                 la forma y devuelve su figura y color.
     comparator:
         default:
@@ -1244,22 +1244,22 @@ puzzleMenu:
         levels: Niveles
         new: Nuevos
         top-rated: Los mejor valorados
-        mine: Mis Puzles
+        mine: Mios
         easy: Fáciles
         hard: Difíciles
         completed: Completados
-        medium: Medium
-        official: Official
-        trending: Trending today
-        trending-weekly: Trending weekly
-        categories: Categories
-        difficulties: By Difficulty
-        account: My Puzzles
-        search: Search
+        medium: Medios
+        official: Oficiales
+        trending: Tendencias de hoy
+        trending-weekly: Tendencias de la semana
+        categories: Categorías
+        difficulties: Por dificultad
+        account: Mis puzles
+        search: Buscar
     validation:
         title: Puzle no válido
-        noProducers: Por favor, ¡pon un Productor de una sola pieza!
-        noGoalAcceptors: Por favor , ¡pon un Aceptador de objetivos!
+        noProducers: Por favor, ¡Pon un Productor de una sola pieza!
+        noGoalAcceptors: Por favor, ¡Pon un Aceptador de objetivos!
         goalAcceptorNoItem: Uno o más aceptadores de objetivos no tienen asignado un
             elemento. Transporta una forma hacia ellos para poner un objetivo.
         goalAcceptorRateNotMet: Uno o más aceptadores de objetivos no están recibiendo
@@ -1271,11 +1271,11 @@ puzzleMenu:
             solo elemento no están conectados directamente a tus aceptadores de
             objetivos.
     difficulties:
-        easy: Easy
-        medium: Medium
-        hard: Hard
-    dlcHint: Purchased the DLC already? Make sure it is activated by right clicking
-        shapez.io in your library, selecting Properties > DLCs.
+        easy: Fácil
+        medium: Medio
+        hard: Dificil
+    dlcHint: ¿Ya compraste el DLC? Asegurate de tenerlo activado haciendo click derecho a
+        shapez.io en tu biblioteca, selecionando propiedades > DLCs.
 backendErrors:
     ratelimit: Estás haciendo tus acciones con demasiada frecuencia. Por favor,
         espera un poco.
@@ -1289,7 +1289,7 @@ backendErrors:
     not-found: No pudimos encontrar ese puzle.
     bad-category: No pudimos encontar esa categoría.
     bad-short-key: La clave que nos diste no es válida.
-    profane-title: El título de tu puzle contiene lenguaje soez.
+    profane-title: El título de tu puzle contiene lenguaje profano.
     bad-title-too-many-spaces: El título de tu puzle es demasiado breve.
     bad-shape-key-in-emitter: Un productor de un solo elemento tiene un elemento no válido.
     bad-shape-key-in-goal: Un aceptador de objetivos tiene un elemento no válido.
@@ -1300,6 +1300,6 @@ backendErrors:
     bad-payload: La petición contiene datos no válidos.
     bad-building-placement: Tu puzle contiene edificios en posiciones no válidas.
     timeout: El tiempo para la solicitud ha expirado.
-    too-many-likes-already: The puzzle alreay got too many likes. If you still want
-        to remove it, please contact support@shapez.io!
-    no-permission: You do not have the permission to perform this action.
+    too-many-likes-already: El puzle ha recibido demasiados me gusta ¡Si todavía quieres
+        eliminarlo, por favor contacta a support@shapez.io! (Solo inglés)
+    no-permission: No tienes los permisos necesarios para llevar a cabo esta acción.

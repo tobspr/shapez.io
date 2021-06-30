@@ -342,63 +342,63 @@ export function generateLevelDefinitions(limitedVersion = false) {
             reward: enumHubGoalRewards.reward_rotater_ccw,
         },
 
-        // 8
-        {
-            shape: "RbRb----", // painter t2
-            required: 480,
-            reward: enumHubGoalRewards.reward_mixer,
-        },
-
-        // 9
-        // Mixing (purple)
-        {
-            shape: "CpCpCpCp", // belts t3
-            required: 600,
-            reward: enumHubGoalRewards.reward_merger,
-        },
-
-        // 10
-        // STACKER: Star shape + cyan
-        {
-            shape: "ScScScSc", // miners t3
-            required: 800,
-            reward: enumHubGoalRewards.reward_stacker,
-        },
-
-        // 11
-        // Chainable miner
-        {
-            shape: "CgScScCg", // processors t3
-            required: 1000,
-            reward: enumHubGoalRewards.reward_miner_chainable,
-        },
-
-        // 12
-        // Blueprints
-        {
-            shape: "CbCbCbRb:CwCwCwCw",
-            required: 1000,
-            reward: enumHubGoalRewards.reward_blueprints,
-        },
-
-        // 13
-        // Tunnel Tier 2
-        {
-            shape: chinaShapes ? "CuCuCuCu:CwCwCwCw:Sb--Sr--" : "RpRpRpRp:CwCwCwCw", // painting t3
-            required: 3800,
-            reward: enumHubGoalRewards.reward_underground_belt_tier_2,
-        },
-
         // DEMO STOPS HERE
         ...(limitedVersion
             ? [
                   {
-                      shape: chinaShapes ? "CuCuCuCu:CwCwCwCw:Sb--Sr--" : "RpRpRpRp:CwCwCwCw",
+                      shape: "CrCrCrCr",
                       required: 0,
                       reward: enumHubGoalRewards.reward_demo_end,
                   },
               ]
             : [
+                  // 8
+                  {
+                      shape: "RbRb----", // painter t2
+                      required: 480,
+                      reward: enumHubGoalRewards.reward_mixer,
+                  },
+
+                  // 9
+                  // Mixing (purple)
+                  {
+                      shape: "CpCpCpCp", // belts t3
+                      required: 600,
+                      reward: enumHubGoalRewards.reward_merger,
+                  },
+
+                  // 10
+                  // STACKER: Star shape + cyan
+                  {
+                      shape: "ScScScSc", // miners t3
+                      required: 800,
+                      reward: enumHubGoalRewards.reward_stacker,
+                  },
+
+                  // 11
+                  // Chainable miner
+                  {
+                      shape: "CgScScCg", // processors t3
+                      required: 1000,
+                      reward: enumHubGoalRewards.reward_miner_chainable,
+                  },
+
+                  // 12
+                  // Blueprints
+                  {
+                      shape: "CbCbCbRb:CwCwCwCw",
+                      required: 1000,
+                      reward: enumHubGoalRewards.reward_blueprints,
+                  },
+
+                  // 13
+                  // Tunnel Tier 2
+                  {
+                      shape: chinaShapes ? "CuCuCuCu:CwCwCwCw:Sb--Sr--" : "RpRpRpRp:CwCwCwCw", // painting t3
+                      required: 3800,
+                      reward: enumHubGoalRewards.reward_underground_belt_tier_2,
+                  },
+
                   // 14
                   // Belt reader
                   {
