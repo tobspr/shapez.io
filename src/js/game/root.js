@@ -187,7 +187,7 @@ export class GameRoot {
             freeEntityAreaBeforeBuild: /** @type {TypedSignal<[Entity]>} */ (new Signal()),
 
             // Called with an achievement key and necessary args to validate it can be unlocked.
-            achievementCheck: /** @type {TypedSignal<[string, any]>} */ (new Signal()),
+            achievementCheck: /** @type {TypedSignal<[string, ...(any)[]]>} */ (new Signal()),
             bulkAchievementCheck: /** @type {TypedSignal<(string|any)[]>} */ (new Signal()),
 
             // Puzzle mode

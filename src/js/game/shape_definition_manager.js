@@ -97,7 +97,7 @@ export class ShapeDefinitionManager extends BasicSerializableObject {
         const rightSide = definition.cloneFilteredByQuadrants([2, 3]);
         const leftSide = definition.cloneFilteredByQuadrants([0, 1]);
 
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.cutShape, null);
+        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.cutShape);
 
         return /** @type {[ShapeDefinition, ShapeDefinition]} */ (this.operationCache[key] = [
             this.registerOrReturnHandle(rightSide),
@@ -140,7 +140,7 @@ export class ShapeDefinitionManager extends BasicSerializableObject {
 
         const rotated = definition.cloneRotateCW();
 
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.rotateShape, null);
+        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.rotateShape);
 
         return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
             rotated
@@ -195,7 +195,7 @@ export class ShapeDefinitionManager extends BasicSerializableObject {
             return /** @type {ShapeDefinition} */ (this.operationCache[key]);
         }
 
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.stackShape, null);
+        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.stackShape);
 
         const stacked = lowerDefinition.cloneAndStackWith(upperDefinition);
         return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
@@ -215,7 +215,7 @@ export class ShapeDefinitionManager extends BasicSerializableObject {
             return /** @type {ShapeDefinition} */ (this.operationCache[key]);
         }
 
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.paintShape, null);
+        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.paintShape);
 
         const colorized = definition.cloneAndPaintWith(color);
         return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(

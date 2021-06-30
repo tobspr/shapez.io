@@ -324,7 +324,7 @@ export class AchievementCollection {
      * @param {string} key - Maps to an Achievement
      * @param {any} data - Data received from signal dispatches for validation
      */
-    unlock(key, data) {
+    unlock(key, data = null) {
         if (!this.map.has(key)) {
             return;
         }
@@ -593,7 +593,7 @@ export class AchievementCollection {
 
     /** @param {Achievement} achievement */
     initStore100Unique({ key }) {
-        this.unlock(key, null);
+        this.unlock(key);
     }
 
     /** @returns {boolean} */
@@ -603,7 +603,7 @@ export class AchievementCollection {
 
     /** @param {Achievement} achievement */
     initStoreShape({ key }) {
-        this.unlock(key, null);
+        this.unlock(key);
     }
 
     /** @returns {boolean} */
