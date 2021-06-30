@@ -1363,6 +1363,8 @@ keybindings:
         placeMultiple: Stay in placement mode
         placeInverse: Invert automatic belt orientation
 
+        showShapeTooltip: Show shape output tooltip
+
 about:
     title: About this Game
     body: >-

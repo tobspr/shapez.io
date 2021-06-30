@@ -189,6 +189,7 @@ export class GameHUD {
             "colorBlindHelper",
             "changesDebugger",
             "minerHighlight",
+            "shapeTooltip",
         ];
 
         for (let i = 0; i < partsOrder.length; ++i) {
