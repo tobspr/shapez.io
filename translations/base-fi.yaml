@@ -1,20 +1,20 @@
 steamPage:
-    shortText: shapez.io on peli tehtaiden rakentamisesta, joiden avulla
+    shortText: shapez.io on peli, jossa rakennetaan muotoja valmistavia tehtaita, joiden avulla
         automatisoidaan yhä monimutkaisempien muotojen luonti ja yhdisteleminen
-        loputtomassa maailmassa.
-    discordLinkShort: Virallinen Discord
+        äärettömässä pelikentässä.
+    discordLinkShort: Virallinen Discord-palvelin
     intro: >-
-        Shapez.io on rento peli, jossa sinun täytyy rakentaa tehtaita
+        Shapez.io on rento peli, jossa rakennat tehtaita
         geometristen muotojen automatisoituun tuotantoon.
 
-        Kun taso nousee, muodot tulevat entistä vaikeammiksi ja sinun täytyy laajentua loputtomassa kartassa.
+        Kun pelin taso nousee, muodot muuttuvat entistä vaikeammiksi ja sinun täytyy laajentaa tehtaitasi loputtomassa kartassa.
 
-        Ja jos tämä ei ollut tarpeeksi, niin sinun täytyy tuottaa eksponentiaalisesti enemmän täyttääksesi tarpeet - ainut asia mikä auttaa on skaalautuminen!
+        Eikä tässä vielä kaikki! Ajan myötä sinun täytyy tuottaa eksponentiaalisesti enemmän täyttääksesi kasvavat tarpeet - missä auttaa vain tehtaiden skaalaaminen!
 
-        Vaikka alussa vain prosessoit muotoja, myöhemmin niitä pitää myös maalata - tätä varten sinun täytyy kerätä ja sekoittaa värejä
+        Vaikka alussa prosessoitkin vain yksinkertaisia muotoja, myöhemmin niitä on myös maalattava! Tätä varten sinun täytyy myös kerätä värejä ja sekoittaa niitä keskenään.
 
-        Pelin ostaminen Steamista antaa sinulle pääsyn pelin täysversioon, mutta voit myös pelata kokeiluversiota ensin sivuillamme shapez.io ja päättää myöhemmin!
-    what_others_say: Muiden mielipiteitä shapez.io:sta
+        Pelin ostaminen Steamista antaa sinulle pääsyn pelin täysversioon, mutta voit myös ilmaiseksi pelata kokeiluversiota sivuillamme shapez.io ja päättää myöhemmin!
+    what_others_say: Muiden mielipiteitä shapez.iosta
     nothernlion_comment: This game is great - I'm having a wonderful time playing,
         and time has flown by.
     notch_comment: Oh crap. I really should sleep, but I think I just figured out
@@ -28,10 +28,10 @@ global:
     thousandsDivider: " "
     decimalSeparator: ","
     suffix:
-        thousands: k
-        millions: M
-        billions: G
-        trillions: T
+        thousands: t.
+        millions: milj.
+        billions: mrd.
+        trillions: trlj.
     infinite: ∞
     time:
         oneSecondAgo: yksi sekunti sitten
@@ -53,19 +53,19 @@ global:
         escape: ESC
         shift: SHIFT
         space: VÄLILYÖNTI
-    loggingIn: Logging in
+    loggingIn: Kirjaudutaan sisään
 demoBanners:
     title: Demoversio
     intro: Hanki pelin täysversio avataksesi kaikki ominaisuudet!
 mainMenu:
     play: Pelaa
     continue: Jatka
-    newGame: Uusi Peli
+    newGame: Uusi peli
     changelog: Muutosloki
     subreddit: Reddit
     importSavegame: Tuo peli
     openSourceHint: Tämä on avoimen lähdekoodin peli!
-    discordLink: Virallinen Discord -palvelin
+    discordLink: Virallinen Discord-palvelin
     helpTranslate: Auta kääntämään!
     madeBy: Pelin on tehnyt <author-link>
     browserWarning: Anteeksi, mutta pelin tiedetään toimivan huonosti selaimellasi!
@@ -73,12 +73,12 @@ mainMenu:
     savegameLevel: Taso <x>
     savegameLevelUnknown: Tuntematon taso
     savegameUnnamed: Nimetön
-    puzzleMode: Puzzle Mode
-    back: Back
-    puzzleDlcText: Do you enjoy compacting and optimizing factories? Get the Puzzle
-        DLC now on Steam for even more fun!
-    puzzleDlcWishlist: Wishlist now!
-    puzzleDlcViewNow: View Dlc
+    puzzleMode: Pulmamoodi
+    back: Takaisin
+    puzzleDlcText: Pidätkö tehtaiden tiivistämisestä ja optimisoinnista? Hanki Puzzle
+        DLC Steamista entistä hauskempaan pelikokemukseen!
+    puzzleDlcWishlist: Lisää nyt toivelistalle!
+    puzzleDlcViewNow: Katso DLC
 dialogs:
     buttons:
         ok: OK
@@ -92,17 +92,17 @@ dialogs:
         viewUpdate: Näytä päivitys
         showUpgrades: Näytä päivitykset
         showKeybindings: Näytä pikanäppäimet
-        retry: Retry
-        continue: Continue
-        playOffline: Play Offline
+        retry: Yritä uudelleen
+        continue: Jatka
+        playOffline: Pelaa offline-tilassa
     importSavegameError:
         title: Tuontivirhe
         text: "Tallennuksen tuonti epäonnistui:"
     importSavegameSuccess:
-        title: Tallennus tuotiin
+        title: Tallennus tuotu
         text: Tallennuksesi tuotiin onnistuneesti.
     gameLoadFailure:
-        title: Peli on rikki
+        title: Ongelma tallennuksen tuonnissa
         text: "Tallennuksen lataus epäonnistui:"
     confirmSavegameDelete:
         title: Varmista poisto
@@ -116,14 +116,14 @@ dialogs:
         text: Käynnistä peli uudelleen ottaaksesi asetukset käyttöön.
     editKeybinding:
         title: Vaihda pikanäppäin
-        desc: Paina näppäintä tai hiiren nappia, jonka haluat asettaa tai paina escape
+        desc: Paina sitä näppäintä tai hiiren nappia, jonka haluat asettaa pikanäppäimeksi tai paina Escape
             peruuttaaksesi.
     resetKeybindingsConfirmation:
         title: Nollaa pikanäppäimet
-        desc: Tämä nollaa kaikki pikanäppäimet oletusarvoihin. Vahvista.
+        desc: Tämä toiminto nollaa kaikki pikanäppäimet oletuksiin. Vahvista.
     keybindingsResetOk:
-        title: Pikanäppäimet nollattiin
-        desc: Pikanäppäimet nollattiin oletusarvoihin!
+        title: Pikanäppäimet nollattu
+        desc: Pikanäppäimet nollattu oletusarvoihin!
     featureRestriction:
         title: Demoversio
         desc: Yritit käyttää ominaisuutta (<feature>), joka ei ole saatavilla
@@ -142,11 +142,11 @@ dialogs:
             päivitysikkunan näytön oikeasta yläkulmasta.
     massDeleteConfirm:
         title: Vahvista poisto
-        desc: Olet poistamassa paljon rakennuksia (<count> tarkalleen)! Oletko varma,
+        desc: Olet poistamassa paljon rakennuksia kerralla (<count> tarkalleen)! Oletko varma,
             että haluat jatkaa?
     massCutConfirm:
         title: Vahvista leikkaus
-        desc: Olet leikkaamassa paljon rakennuksia (<count> tarkalleen)! Oletko varma,
+        desc: Olet leikkaamassa paljon rakennuksia kerralla (<count> tarkalleen)! Oletko varma,
             että haluat jatkaa?
     blueprintsNotUnlocked:
         title: Ei vielä avattu
@@ -154,24 +154,23 @@ dialogs:
     keybindingsIntroduction:
         title: Hyödyllisiä pikanäppäimiä
         desc: "Tässä pelissä on paljon pikanäppäimiä, jotka tekevät isojen tehtaiden
-            rakentamisesta helpompaa. Tässä on muutama, mutta <strong>katso
+            rakentamisesta helpompaa. Tässä on muutama, mutta <strong>käy erikseen katsomassa
             kaikki pikanäppäimet</strong>!<br><br> <code
             class='keybinding'>CTRL</code> + Raahaus: Valitse alue.<br> <code
             class='keybinding'>SHIFT</code>: Pidä pohjassa sijoittaaksesi useita
             samoja rakennuksia.<br> <code class='keybinding'>ALT</code>: Käännä
-            sijoitettavien kuljettimien suunta.<br>"
+            sijoitettavien hihnojen suunta.<br>"
     createMarker:
-        title: Uusi merkki
-        desc: Anna merkille kuvaava nimi. Voit myös liittää <strong>lyhyen
-            koodin</strong> muodosta. (Jonka voit luoda <link>täällä</link>.)
-        titleEdit: Muokkaa merkkiä
+        title: Uusi karttamerkki
+        desc: Anna karttamerkille sitä kuvaava nimi. Voit myös liittää tekstikenttään <strong>muodon koodilyhenteen</strong>. (Jonka voit luoda <link>täällä</link>.)
+        titleEdit: Muokkaa karttamerkkiä
     markerDemoLimit:
-        desc: Voit tehdä vain kaksi mukautettua merkkiä demoversiossa. Hanki täysversio
-            saadaksesi loputtoman määrän merkkejä!
+        desc: Voit luoda vain kaksi mukautettua karttamerkkiä demoversiossa. Hanki täysversio
+            saadaksesi loputtoman määrän karttamerkkejä!
     exportScreenshotWarning:
         title: Vie kuvakaappaus
-        desc: Pyysit tukikohtasi viemistä kuvakaappauksena. Huomaa, että tämä voi olla
-            melko hidasta isolla tukikohdalla ja voi jopa kaataa pelisi!
+        desc: Haluat viedä tukikohtasi kuvakaappauksena. Huomaa, että tämä voi olla
+            melko hidasta isolla tukikohdalla ja jopa kaataa pelisi!
     massCutInsufficientConfirm:
         title: Vahvista leikkaus
         desc: Sinulla ei ole varaa leikata tätä aluetta! Oletko varma että haluat
@@ -186,96 +185,89 @@ dialogs:
         desc: Voit nimetä tallennuksesi uudelleen täällä.
     tutorialVideoAvailable:
         title: Ohjevideo saatavilla
-        desc: Tästä tasosta on saatavilla ohjevideo! Haluaisitko katsoa sen?
+        desc: Tästä tasosta on saatavilla ohjevideo! Haluatko katsoa sen?
     tutorialVideoAvailableForeignLanguage:
         title: Ohjevideo saatavilla
-        desc: Tästä tasosta on saatavilla ohjevideo! Haluaisitko katsoa sen?
+        desc: Tästä tasosta on saatavilla ohjevideo! Haluatko katsoa sen?
     editConstantProducer:
-        title: Set Item
+        title: Aseta esine
     puzzleLoadFailed:
-        title: Puzzles failed to load
-        desc: "Unfortunately the puzzles could not be loaded:"
+        title: Pulmien lataaminen epäonnistui
+        desc: "Valitettavasti pulmia ei pystytty lataamaan."
     submitPuzzle:
-        title: Submit Puzzle
-        descName: "Give your puzzle a name:"
-        descIcon: "Please enter a unique short key, which will be shown as the icon of
-            your puzzle (You can generate them <link>here</link>, or choose one
-            of the randomly suggested shapes below):"
-        placeholderName: Puzzle Title
+        title: Lähetä pulma
+        descName: "Keksi pulmallesi koodi."
+        descIcon: "Anna pulmallesi ainutlaatuinen lyhyt koodi, joka näytetään pulmasi kuvakkeena (Voit luoda sen <link>täältä</link>, tai valita yhden satunnaisesti ehdotetuista muodoista alta):"
+        placeholderName: Pulman otsikko
     puzzleResizeBadBuildings:
-        title: Resize not possible
-        desc: You can't make the zone any smaller, because then some buildings would be
-            outside the zone.
+        title: Koon muuttaminen ei mahdollista
+        desc: Et voi tehdä alueestasi pienempää, sillä muuten jotkut rakennukset jäisivät alueen ulkopuolelle.
     puzzleLoadError:
-        title: Bad Puzzle
-        desc: "The puzzle failed to load:"
+        title: Epäkelpo pulma
+        desc: "Pulman lataaminen ei onnistunut."
     offlineMode:
-        title: Offline Mode
-        desc: We couldn't reach the servers, so the game has to run in offline mode.
-            Please make sure you have an active internet connection.
+        title: Offline-muoto
+        desc: Emme pystyneet saavuttamaan palvelimia, joten peli kulkee offline-muodossa.
+            Varmista, että sinulla on toimiva internet-yhteys.
     puzzleDownloadError:
-        title: Download Error
+        title: Ongelma lataamisessa
         desc: "Failed to download the puzzle:"
     puzzleSubmitError:
-        title: Submission Error
+        title: Ongelma lähettämisessä
         desc: "Failed to submit your puzzle:"
     puzzleSubmitOk:
-        title: Puzzle Published
-        desc: Congratulations! Your puzzle has been published and can now be played by
-            others. You can now find it in the "My puzzles" section.
+        title: Pulma julkaistu
+        desc: Onneksi olkoon! Pulmasi on julkaistu ja on nyt muiden pelattavissa. Voit löytää sen "Minun pulmani" -osiosta.
     puzzleCreateOffline:
-        title: Offline Mode
-        desc: Since you are offline, you will not be able to save and/or publish your
-            puzzle. Would you still like to continue?
+        title: Olet offline-muodossa
+        desc: Koska et ole yhteydessä verkkoon, et pysty tallentamaan tai julkaisemaan pulmaasi. Haluatko silti jatkaa?
     puzzlePlayRegularRecommendation:
-        title: Recommendation
-        desc: I <strong>strongly</strong> recommend playing the normal game to level 12
-            before attempting the puzzle DLC, otherwise you may encounter
-            mechanics not yet introduced. Do you still want to continue?
+        title: Suositus
+        desc: Suosittelisin <strong>vahvasti</strong> tavallisen pelin pelaamista tasolle 12
+            asti ennen Puzzle DLC:n kokeilemista. Saatat muuten kohdata itsellesi tuntemattomia mekaniikkoja. Haluatko silti jatkaa?
     puzzleShare:
-        title: Short Key Copied
-        desc: The short key of the puzzle (<key>) has been copied to your clipboard! It
-            can be entered in the puzzle menu to access the puzzle.
+        title: Pulman koodi kopioitu
+        desc: Pulman koodi (<key>) on kopioitu leikepöydällesi! Voit liittää sen pulmavalikossa päästäksesi pulmaasi.
     puzzleReport:
-        title: Report Puzzle
+        title: Ilmoita pulma
         options:
-            profane: Profane
-            unsolvable: Not solvable
-            trolling: Trolling
+            profane: Tämä pulma on rienaava
+            unsolvable: Tätä pulmaa ei voi ratkaista
+            trolling: Tämä pulma on trolli
     puzzleReportComplete:
-        title: Thank you for your feedback!
-        desc: The puzzle has been flagged.
+        title: Kiitos palautteestasi!
+        desc: Pulmasta on tehty ilmoitus kehittäjälle.
     puzzleReportError:
-        title: Failed to report
-        desc: "Your report could not get processed:"
+        title: Ilmoittaminen epäonnistui
+        desc: "Ilmoitustasi ei pystytty prosessoimaan"
     puzzleLoadShortKey:
-        title: Enter short key
-        desc: Enter the short key of the puzzle to load it.
+        title: Anna pulmakoodi
+        desc: Kirjoita pulman koodi ladataksesi pulman.
     puzzleDelete:
-        title: Delete Puzzle?
-        desc: Are you sure you want to delete '<title>'? This can not be undone!
+        title: Poista pulma?
+        desc: Oletko varma että haluan poistaa pulman '<title>'? Tätä toimintoa ei voi peruuttaa!
 ingame:
     keybindingsOverlay:
         moveMap: Liiku
         selectBuildings: Valitse alue
         stopPlacement: Lopeta sijoittaminen
-        rotateBuilding: Käännä laitetta
+        rotateBuilding: Käännä rakennusta
         placeMultiple: Sijoita useita
         reverseOrientation: Käänteinen suunta
         disableAutoOrientation: Poista automaattinen suunta käytöstä
         toggleHud: Vaihda valikon näkyvyys
-        placeBuilding: Sijoita laite
-        createMarker: Luo merkki
+        placeBuilding: Sijoita rakennus
+        createMarker: Luo karttamerkki
         delete: Poista
         pasteLastBlueprint: Liitä viimeisin piirustus
-        lockBeltDirection: Ota kuljettimen suunnittelija käyttöön
+        lockBeltDirection: Ota hihnasuunnittelija käyttöön
         plannerSwitchSide: Vaihda suunnittelijan puolta
         cutSelection: Leikkaa
         copySelection: Kopioi
         clearSelection: Tyhjennä valinta
         pipette: Pipetti
-        switchLayers: Vaihda tasoa
-        clearBelts: Clear belts
+        switchLayers: Vaihda kerrosta
+        clearBelts: Tyhjennä liukuhihnat
     colors:
         red: Punainen
         green: Vihreä
@@ -291,48 +283,48 @@ ingame:
         hotkeyLabel: "Pikanäppäin: <key>"
         infoTexts:
             speed: Nopeus
-            range: Matka
+            range: Kantama
             storage: Varasto
-            oneItemPerSecond: 1 kappale / sekunti
-            itemsPerSecond: <x> kappaleita / s
+            oneItemPerSecond: 1 kappale per sekunti
+            itemsPerSecond: <x> kappaletta per sekunti
             itemsPerSecondDouble: (x2)
-            tiles: <x> laattaa
+            tiles: <x> ruutua
     levelCompleteNotification:
         levelTitle: Taso <level>
         completed: Suoritettu
-        unlockText: Avattu <reward>!
+        unlockText: <reward> avattu!
         buttonNextLevel: Seuraava taso
     notifications:
         newUpgrade: Uusi päivitys on saatavilla!
         gameSaved: Peli on tallennettu.
-        freeplayLevelComplete: Taso <level> on saavutettu!
+        freeplayLevelComplete: Taso <level> saavutettu!
     shop:
         title: Päivitykset
         buttonUnlock: Päivitä
         tier: Taso <x>
-        maximumLevel: SUURIN TASO (Nopeus x<currentMult>)
+        maximumLevel: KORKEIN TASO (Nopeus x<currentMult>)
     statistics:
         title: Tilastot
         dataSources:
             stored:
-                title: Varastoitu
-                description: Näyttää keskusrakennuksessa varastoitujen muotojen määrän.
+                title: Varastoidut muodot
+                description: Näyttää keskusrakennukseen varastoitujen muotojen määrän.
             produced:
-                title: Tuotettu
-                description: Näyttää kaikki tehtaidesi tuottamat muodot ja lisäksi myös
-                    välituotteet.
+                title: Tuotetut muodot
+                description: Näyttää kaikkien tehtaidesi tuottamien muotojen ja  myös
+                    välituotteiden määrän.
             delivered:
-                title: Toimitettu
-                description: Näyttää muodot, jotka on toimitettu keskusrakennukseen.
+                title: Toimitetut muodot
+                description: Näyttää muodot, jotka ovat toimitettu keskusrakennukseen.
         noShapesProduced: Muotoja ei ole vielä tuotettu.
         shapesDisplayUnits:
-            second: <shapes> / s
-            minute: <shapes> / m
-            hour: <shapes> / h
+            second: <shapes> per sekunti
+            minute: <shapes> per minuutti
+            hour: <shapes> per tunti
     settingsMenu:
         playtime: Peliaika
-        buildingsPlaced: Rakennukset
-        beltsPlaced: Kuljettimet
+        buildingsPlaced: Asetetut rakennukset
+        beltsPlaced: Asetetut liukuhihnan osat
     tutorialHints:
         title: Tarvitsetko apua?
         showHint: Näytä vihje
@@ -340,13 +332,13 @@ ingame:
     blueprintPlacer:
         cost: Hinta
     waypoints:
-        waypoints: Merkit
+        waypoints: Karttamerkit
         hub: Keskusrakennus
-        description: Paina merkkiä hiiren vasemmalla mennäksesi siihen, paina oikeaa
-            nappia poistaaksesi sen.<br><br>Paina <keybinding> luodaksesi merkin
-            nykyisestä näkymästä tai <strong>vasenta nappia</strong> luodaksesi
-            merkin valittuun paikkaan.
-        creationSuccessNotification: Merkki luotiin onnistuneesti.
+        description: Paina karttamerkkiä hiiren vasemmalla näppäimellä siirtyäksesi sen luo, tai paina hiiren oikeaa
+            näppäintä poistaaksesi sen.<br><br>Paina <keybinding> luodaksesi karttamerkin
+            nykyisestä näkymästä tai <strong>hiiren vasenta näppäintä</strong> luodaksesi
+            karttamerkin valittuun paikkaan.
+        creationSuccessNotification: Karttamerkki luotu onnistuneesti.
     shapeViewer:
         title: Tasot
         empty: Tyhjä
