@@ -15,7 +15,6 @@ export class HUDShapeTooltip extends BaseHUDPart {
         this.currentEntity = null;
 
         this.isPlacingBuilding = false;
-        this.active = false;
 
         this.root.signals.entityQueuedForDestroy.add(() => {
             this.currentEntity = null;
@@ -26,36 +25,17 @@ export class HUDShapeTooltip extends BaseHUDPart {
         }, this);
     }
 
-    update() {
-        // don't show the tooltip when any other placer is active
+    isActive() {
         const hudParts = this.root.hud.parts;
 
-        this.active =
+        // return false if any other placer is active
+        return (
             this.root.keyMapper.getBinding(KEYMAPPINGS.ingame.showShapeTooltip).pressed &&
             !this.isPlacingBuilding &&
             !hudParts.massSelector.currentSelectionStartWorld &&
             hudParts.massSelector.selectedUids.size < 1 &&
-            !hudParts.blueprintPlacer.currentBlueprint.get();
-
-        const mousePos = this.root.app.mousePosition;
-
-        if (!mousePos) {
-            // Not on screen
-            return;
-        }
-
-        const tile = this.root.camera.screenToWorld(mousePos.copy()).toTileSpace();
-        if (!tile.equals(this.currentTile)) {
-            this.currentTile = tile;
-
-            const entity = this.root.map.getLayerContentXY(tile.x, tile.y, this.root.currentLayer);
-
-            if (entity && entity.components.ItemProcessor && entity.components.ItemEjector) {
-                this.currentEntity = entity;
-            } else {
-                this.currentEntity = null;
-            }
-        }
+            !hudParts.blueprintPlacer.currentBlueprint.get()
+        );
     }
 
     /**
@@ -63,7 +43,28 @@ export class HUDShapeTooltip extends BaseHUDPart {
      * @param {DrawParameters} parameters
      */
     draw(parameters) {
-        if (this.active && this.currentEntity) {
+        if (this.isActive()) {
+            const mousePos = this.root.app.mousePosition;
+
+            if (mousePos) {
+                const tile = this.root.camera.screenToWorld(mousePos.copy()).toTileSpace();
+                if (!tile.equals(this.currentTile)) {
+                    this.currentTile = tile;
+
+                    const entity = this.root.map.getLayerContentXY(tile.x, tile.y, this.root.currentLayer);
+
+                    if (entity && entity.components.ItemProcessor && entity.components.ItemEjector) {
+                        this.currentEntity = entity;
+                    } else {
+                        this.currentEntity = null;
+                    }
+                }
+            }
+
+            if (!this.currentEntity) {
+                return;
+            }
+
             const ejectorComp = this.currentEntity.components.ItemEjector;
             const staticComp = this.currentEntity.components.StaticMapEntity;
 
