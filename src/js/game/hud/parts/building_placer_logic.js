@@ -128,7 +128,6 @@ export class HUDBuildingPlacerLogic extends BaseHUDPart {
         this.root.hud.signals.buildingsSelectedForCopy.add(this.abortPlacement, this);
         this.root.hud.signals.pasteBlueprintRequested.add(this.abortPlacement, this);
         this.root.signals.storyGoalCompleted.add(() => this.signals.variantChanged.dispatch());
-        this.root.signals.storyGoalCompleted.add(() => this.currentMetaBuilding.set(null));
         this.root.signals.upgradePurchased.add(() => this.signals.variantChanged.dispatch());
         this.root.signals.editModeChanged.add(this.onEditModeChanged, this);
 
