@@ -164,7 +164,7 @@
             .keybinding {
                 position: relative;
                 background: #eee;
-                @include PlainText;
+                @include SuperSmallText;
                 height: unset;
                 margin: 1px 0;
             }
@@ -211,6 +211,69 @@
 
                     &:hover {
                         opacity: 0.9;
+                    }
+                }
+            }
+
+            .checkBoxFormElem,
+            .enumFormElem {
+                display: flex;
+                align-items: center;
+                @include S(margin, 10px, 0);
+
+                > label {
+                    @include S(margin-right, 10px);
+                }
+            }
+
+            .checkBoxGridFormElem {
+                display: inline-grid;
+                grid-template-columns: 1fr;
+                @include S(margin, 10px, 0);
+                @include S(grid-row-gap, 10px);
+
+                > .checkBoxFormElem {
+                    margin: 0;
+                    justify-content: space-between;
+                }
+            }
+
+            .enum {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                @include S(grid-gap, 4px);
+                @include S(min-width, 160px);
+
+                > div {
+                    background: $mainBgColor;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    pointer-events: all;
+                    cursor: pointer;
+                    @include S(border-radius, $globalBorderRadius);
+                    @include S(padding, 4px);
+
+                    transition: background-color 0.12s ease-in-out;
+                    &:hover {
+                        background-color: darken($mainBgColor, 5);
+                    }
+
+                    @include DarkThemeOverride {
+                        background-color: $darkModeControlsBackground;
+                        color: #ddd;
+                        &:hover {
+                            background-color: darken($darkModeControlsBackground, 2);
+                        }
+                    }
+
+                    &.toggle {
+                        @include S(width, 16px);
+                    }
+
+                    &.value {
+                        transform: none !important;
                     }
                 }
             }
