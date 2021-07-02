@@ -512,12 +512,15 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
                 let isBlocked = false;
                 let isConnected = false;
 
-                // Find all entities which are on that tile
-                const sourceEntities = this.root.map.getLayersContentsMultipleXY(sourceTile.x, sourceTile.y);
+                // Find entity which is on that tile
+                const sourceEntity = this.root.map.getLayerContentXY(
+                    sourceTile.x,
+                    sourceTile.y,
+                    this.fakeEntity.layer
+                );
 
-                // Check for every entity:
-                for (let i = 0; i < sourceEntities.length; ++i) {
-                    const sourceEntity = sourceEntities[i];
+                // Check for the entity:
+                if (sourceEntity) {
                     const sourceEjector = sourceEntity.components.ItemEjector;
                     const sourceBeltComp = sourceEntity.components.Belt;
                     const sourceStaticComp = sourceEntity.components.StaticMapEntity;
@@ -571,15 +574,15 @@ export class HUDBuildingPlacer extends HUDBuildingPlacerLogic {
             let isBlocked = false;
             let isConnected = false;
 
-            // Find all entities which are on that tile
-            const destEntities = this.root.map.getLayersContentsMultipleXY(
+            // Find entity which is on that tile
+            const destEntity = this.root.map.getLayerContentXY(
                 ejectorSlotWsTile.x,
-                ejectorSlotWsTile.y
+                ejectorSlotWsTile.y,
+                this.fakeEntity.layer
             );
 
-            // Check for every entity:
-            for (let i = 0; i < destEntities.length; ++i) {
-                const destEntity = destEntities[i];
+            // Check for the entity:
+            if (destEntity) {
                 const destAcceptor = destEntity.components.ItemAcceptor;
                 const destStaticComp = destEntity.components.StaticMapEntity;
                 const destMiner = destEntity.components.Miner;
