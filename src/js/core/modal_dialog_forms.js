@@ -124,6 +124,7 @@ export class FormElementInput extends FormElement {
 
     focus() {
         this.element.focus();
+        this.element.select();
     }
 }
 

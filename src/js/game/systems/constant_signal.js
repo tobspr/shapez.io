@@ -49,11 +49,12 @@ export class ConstantSignalSystem extends GameSystemWithFilter {
         // Ok, query, but also save the uid because it could get stale
         const uid = entity.uid;
 
+        const signal = entity.components.ConstantSignal.signal;
         const signalValueInput = new FormElementInput({
             id: "signalValue",
             label: fillInLinkIntoTranslation(T.dialogs.editSignal.descShortKey, THIRDPARTY_URLS.shapeViewer),
             placeholder: "",
-            defaultValue: "",
+            defaultValue: signal ? signal.getAsCopyableKey() : "",
             validator: val => this.parseSignalCode(entity, val),
         });
 
