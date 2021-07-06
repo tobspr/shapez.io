@@ -296,7 +296,7 @@ export class HUDBaseToolbar extends BaseHUDPart {
             const metaBuilding = this.requiredBuildings[i];
             const handle = this.buildingHandles[metaBuilding.getId()];
             handle.puzzleLocked = testMode;
-            handle.element.classList.toggle("unlocked", !testMode);
+            handle.element.classList.toggle("hidden", testMode);
         }
     }
 
