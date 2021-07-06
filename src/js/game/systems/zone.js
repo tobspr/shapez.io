@@ -61,7 +61,7 @@ export class ZoneSystem extends GameSystem {
      */
     drawChunk(parameters, chunk) {
         if (this.drawn) {
-            // oof
+            // double oof
             return;
         }
         this.drawn = true;
@@ -101,5 +101,31 @@ export class ZoneSystem extends GameSystem {
         );
 
         context.globalAlpha = 1;
+
+        // render zone indicators with letters and numbers
+
+        context.font = "10px GameFont";
+        context.fillStyle = "#626262";
+        context.textAlign = "center";
+
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        const halfTile = globalConfig.halfTileSize;
+        const pixelGap = 9;
+        const topLeft = zone.topLeft().add(new Vector(-pixelGap, -pixelGap));
+
+        for (let i = 0; i < zones[0].h; ++i) {
+            const letter = alphabet[i];
+
+            const pxOffset = halfTile + i * globalConfig.tileSize + pixelGap;
+
+            context.fillText(letter, topLeft.x, topLeft.y + pxOffset + 5);
+        }
+
+        for (let i = 0; i < zones[0].w; ++i) {
+            const pxOffset = halfTile + i * globalConfig.tileSize + pixelGap;
+
+            context.fillText((i + 1).toString(), topLeft.x + pxOffset, topLeft.y + 3);
+        }
     }
 }
