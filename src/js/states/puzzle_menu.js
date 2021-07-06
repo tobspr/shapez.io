@@ -1,8 +1,9 @@
 import { createLogger } from "../core/logging";
 import { DialogWithForm } from "../core/modal_dialog_elements";
 import { FormElementInput } from "../core/modal_dialog_forms";
+import { ReadWriteProxy } from "../core/read_write_proxy";
 import { TextualGameState } from "../core/textual_game_state";
-import { formatBigNumberFull } from "../core/utils";
+import { formatBigNumberFull, startFileChoose, waitNextFrame } from "../core/utils";
 import { enumGameModeIds } from "../game/game_mode";
 import { ShapeDefinition } from "../game/shape_definition";
 import { MUSIC } from "../platform/sound";
@@ -42,6 +43,7 @@ export class PuzzleMenuState extends TextualGameState {
                 <h1><button class="backButton"></button> ${this.getStateHeaderTitle()}</h1>
 
                 <div class="actions">
+                    <button class="styledButton importPuzzle">Import</button>
                     <button class="styledButton loadPuzzle">${T.puzzleMenu.loadPuzzle}</button>
                     <button class="styledButton createPuzzle">+ ${T.puzzleMenu.createPuzzle}</button>
                 </div>
@@ -388,6 +390,7 @@ export class PuzzleMenuState extends TextualGameState {
 
         this.trackClicks(this.htmlElement.querySelector("button.createPuzzle"), () => this.createNewPuzzle());
         this.trackClicks(this.htmlElement.querySelector("button.loadPuzzle"), () => this.loadPuzzle());
+        this.trackClicks(this.htmlElement.querySelector("button.importPuzzle"), () => this.importPuzzle());
     }
 
     createEmptySavegame() {
@@ -454,7 +457,44 @@ export class PuzzleMenuState extends TextualGameState {
         const savegame = this.createEmptySavegame();
         this.moveToState("InGameState", {
             gameModeId: enumGameModeIds.puzzleEdit,
+            gameModeParameters: {},
             savegame,
+        });
+    }
+
+    importPuzzle() {
+        startFileChoose(".bin").then(file => {
+            if (file) {
+                const closeLoader = this.dialogs.showLoadingDialog("Importing Puzzle");
+                waitNextFrame().then(() => {
+                    const reader = new FileReader();
+                    reader.addEventListener("load", event => {
+                        const fileContents = event.target.result.toString();
+
+                        /** @type {import("../savegame/savegame_typedefs").PuzzleGameData} */
+                        let gameData;
+
+                        try {
+                            gameData = ReadWriteProxy.deserializeObject(fileContents);
+                        } catch (err) {
+                            closeLoader();
+                            this.dialogs.showWarning(T.global.error, String(err));
+                            return;
+                        }
+
+                        const savegame = this.createEmptySavegame();
+                        this.moveToState("InGameState", {
+                            gameModeId: enumGameModeIds.puzzleEdit,
+                            gameModeParameters: {
+                                gameData,
+                                startInTestMode: true,
+                            },
+                            savegame,
+                        });
+                    });
+                    reader.readAsText(file);
+                });
+            }
         });
     }
 }

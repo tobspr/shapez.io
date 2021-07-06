@@ -116,29 +116,31 @@
                 }
 
                 .puzzle-lock {
-                    & {
-                        /* @load-async */
-                        background: uiResource("locked_building.png") center center / 90% no-repeat;
-                    }
+                    &.active {
+                        & {
+                            /* @load-async */
+                            background: uiResource("locked_building.png") center center / 90% no-repeat;
+                        }
 
-                    display: grid;
-                    grid-auto-flow: column;
+                        display: grid;
+                        grid-auto-flow: column;
 
-                    position: absolute;
-                    @include S(top, -15px);
-                    left: 50%;
-                    transform: translateX(-50%) !important;
-                    transition: all 0.12s ease-in-out;
-                    transition-property: opacity, transform;
+                        position: absolute;
+                        @include S(top, -15px);
+                        left: 50%;
+                        transform: translateX(-50%) !important;
+                        transition: all 0.12s ease-in-out;
+                        transition-property: opacity, transform;
 
-                    cursor: pointer;
-                    pointer-events: all;
+                        cursor: pointer;
+                        pointer-events: all;
 
-                    @include S(width, 12px);
-                    @include S(height, 12px);
+                        @include S(width, 12px);
+                        @include S(height, 12px);
 
-                    &:hover {
-                        opacity: 0.5;
+                        &:hover {
+                            opacity: 0.5;
+                        }
                     }
                 }
             }

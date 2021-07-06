@@ -3,6 +3,7 @@ import { DrawParameters } from "../../core/draw_parameters";
 import { clamp, lerp } from "../../core/utils";
 import { Vector } from "../../core/vector";
 import { GoalAcceptorComponent } from "../components/goal_acceptor";
+import { enumGameModeIds } from "../game_mode";
 import { GameSystemWithFilter } from "../game_system_with_filter";
 import { MapChunk } from "../map_chunk";
 import { GameRoot } from "../root";
@@ -42,7 +43,7 @@ export class GoalAcceptorSystem extends GameSystemWithFilter {
             !this.puzzleCompleted &&
             this.root.gameInitialized &&
             allAccepted &&
-            !this.root.gameMode.getIsEditor()
+            !(this.root.gameMode.getId() == enumGameModeIds.puzzleEdit)
         ) {
             this.root.signals.puzzleComplete.dispatch();
             this.puzzleCompleted = true;

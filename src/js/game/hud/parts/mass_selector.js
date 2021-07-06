@@ -45,6 +45,7 @@ export class HUDMassSelector extends BaseHUDPart {
 
         this.root.hud.signals.selectedPlacementBuildingChanged.add(this.clearSelection, this);
         this.root.signals.editModeChanged.add(this.clearSelection, this);
+        this.root.signals.testModeChanged.add(this.clearSelection, this);
     }
 
     /**

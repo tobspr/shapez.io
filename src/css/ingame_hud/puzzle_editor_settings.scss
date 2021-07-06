@@ -2,7 +2,7 @@
     position: absolute;
     background: $ingameHudBg;
     @include S(padding, 10px);
-    @include S(bottom, 60px);
+    @include S(bottom, 70px);
     @include S(left, 10px);
 
     @include SuperSmallText;
@@ -44,7 +44,13 @@
             }
         }
 
-        > .buttons {
+        > .mainButtons {
+            &.disabled {
+                button {
+                    pointer-events: none;
+                }
+            }
+
             > .buttonBar {
                 display: flex;
                 align-items: center;
@@ -57,14 +63,17 @@
                     }
                 }
             }
+        }
 
-            > .buildingsButton {
-                display: grid;
-                align-items: center;
-                @include S(margin-top, 4px);
-                > button {
-                    @include SuperSmallText;
+        > .testToggle {
+            display: grid;
+            align-items: center;
+            @include S(margin-top, 4px);
+            > button {
+                &.disabled {
+                    pointer-events: none;
                 }
+                @include SuperSmallText;
             }
         }
     }

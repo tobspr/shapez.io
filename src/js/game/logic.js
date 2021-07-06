@@ -107,6 +107,15 @@ export class GameLogic {
             rotationVariant,
             variant,
         });
+        return this.tryPlaceEntity(entity);
+    }
+
+    /**
+     * Attempts to place the given entity
+     * @param {Entity} entity
+     * @returns {Entity}
+     */
+    tryPlaceEntity(entity) {
         if (this.checkCanPlaceEntity(entity)) {
             this.freeEntityAreaBeforeBuild(entity);
             this.root.map.placeStaticEntity(entity);

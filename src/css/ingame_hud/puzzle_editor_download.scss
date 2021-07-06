@@ -1,0 +1,39 @@
+#ingame_HUD_PuzzleEditorDownload {
+    position: absolute;
+    @include S(top, 35px);
+    left: 50%;
+
+    transform: translateX(-50%);
+    backdrop-filter: blur(D(1px));
+    padding: D(3px);
+
+    > .button {
+        @include PlainText;
+        pointer-events: all;
+        cursor: pointer;
+        position: relative;
+        color: #333438;
+        transition: all 0.12s ease-in-out;
+        transition-property: opacity, transform;
+        text-transform: uppercase;
+        @include PlainText;
+        @include S(width, 30px);
+        @include S(height, 30px);
+
+        @include DarkThemeInvert;
+
+        opacity: 1;
+        &:hover {
+            opacity: 0.9 !important;
+        }
+
+        &.pressed {
+            transform: scale(0.95) !important;
+        }
+
+        & {
+            /* @load-async */
+            background: uiResource("icons/download.png") center center / D(15px) no-repeat;
+        }
+    }
+}
