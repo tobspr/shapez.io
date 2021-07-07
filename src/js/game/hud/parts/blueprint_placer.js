@@ -1,4 +1,5 @@
 import { DrawParameters } from "../../../core/draw_parameters";
+import { createLogger } from "../../../core/logging";
 import { STOP_PROPAGATION } from "../../../core/signal";
 import { TrackedState } from "../../../core/tracked_state";
 import { makeDiv } from "../../../core/utils";
@@ -10,6 +11,13 @@ import { enumMouseButton } from "../../camera";
 import { KEYMAPPINGS } from "../../key_action_mapper";
 import { BaseHUDPart } from "../base_hud_part";
 import { DynamicDomAttach } from "../dynamic_dom_attach";
+import { globalConfig } from "../../../core/config";
+import { paste } from "../../../core/clipboard_paste";
+import { compressX64, decompressX64 } from "../../../core/lzstring";
+
+const copy = require("clipboard-copy");
+
+const logger = createLogger("blueprint_placer");
 
 export class HUDBlueprintPlacer extends BaseHUDPart {
     createElements(parent) {
@@ -104,7 +112,7 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
     }
 
     /**
-     * mouse down pre handler
+     * Mouse down pre handler
      * @param {Vector} pos
      * @param {enumMouseButton} button
      */
@@ -157,6 +165,9 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
             return;
         }
         this.currentBlueprint.set(Blueprint.fromUids(this.root, uids));
+        if (G_IS_DEV && globalConfig.debug.useClipboard) {
+            this.copyToClipboard();
+        }
     }
 
     /**
@@ -175,23 +186,26 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
     /**
      * Attempts to paste the last blueprint
      */
-    pasteBlueprint() {
-        if (this.lastBlueprintUsed !== null) {
-            if (this.lastBlueprintUsed.layer !== this.root.currentLayer) {
+    async pasteBlueprint() {
+        let blueprint = null;
+        if (G_IS_DEV && globalConfig.debug.useClipboard) {
+            blueprint = await this.pasteFromClipboard();
+        }
+        blueprint = blueprint || this.lastBlueprintUsed;
+        if (blueprint !== null) {
+            if (blueprint.layer !== this.root.currentLayer) {
                 // Not compatible
                 this.root.soundProxy.playUiError();
                 return;
             }
-
             this.root.hud.signals.pasteBlueprintRequested.dispatch();
-            this.currentBlueprint.set(this.lastBlueprintUsed);
+            this.currentBlueprint.set(blueprint);
         } else {
             this.root.soundProxy.playUiError();
         }
     }
 
     /**
-     *
      * @param {DrawParameters} parameters
      */
     draw(parameters) {
@@ -208,5 +222,36 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
         const worldPos = this.root.camera.screenToWorld(mousePosition);
         const tile = worldPos.toTileSpace();
         blueprint.draw(parameters, tile);
+    }
+
+    /**
+     * Copy blueprint to clipboard
+     */
+    async copyToClipboard() {
+        const serializedBP = this.currentBlueprint.get().serialize();
+        try {
+            const json = JSON.stringify(serializedBP);
+            await copy(compressX64(json));
+            this.root.soundProxy.playUi(SOUNDS.copy);
+            logger.debug("Copied blueprint to clipboard");
+        } catch (e) {
+            logger.error("Copy to clipboard failed:", e.message);
+        }
+    }
+
+    /**
+     * Attempt to get Blueprint from clipboard
+     * @returns {Promise<Blueprint|void>}
+     */
+    async pasteFromClipboard() {
+        let json;
+        try {
+            let data = await paste();
+            json = JSON.parse(decompressX64(data.trim()));
+            logger.debug("Received data from clipboard");
+        } catch (e) {
+            logger.error("Paste from clipboard failed:", e.message);
+        }
+        return Blueprint.deserialize(this.root, json);
     }
 }

@@ -5,6 +5,10 @@ import { Vector } from "../core/vector";
 import { Entity } from "./entity";
 import { ACHIEVEMENTS } from "../platform/achievement_provider";
 import { GameRoot } from "./root";
+import { SerializerInternal } from "../savegame/serializer_internal";
+import { createLogger } from "../core/logging";
+
+const logger = createLogger("blueprint");
 
 export class Blueprint {
     /**
@@ -23,6 +27,60 @@ export class Blueprint {
             return "regular";
         }
         return this.entities[0].layer;
+    }
+
+    /**
+     * Serialize
+     */
+    serialize() {
+        let data = new SerializerInternal().serializeEntityArray(this.entities);
+        // Remove unneeded fields
+        for (let i = 0; i < data.length; ++i) {
+            const entry = data[i];
+            delete entry.uid;
+            delete entry.components.WiredPins;
+        }
+        return data;
+    }
+
+    /**
+     * Deserialize
+     * @param {GameRoot} root
+     * @param {Object} json
+     * @retruns {Blueprint|void}
+     */
+    static deserialize(root, json) {
+        try {
+            if (typeof json != "object") {
+                return;
+            }
+            if (!Array.isArray(json)) {
+                return;
+            }
+
+            const serializer = new SerializerInternal();
+            /** @type {Array<Entity>} */
+            const entityArray = [];
+            for (let i = 0; i < json.length; ++i) {
+                /** @type {Entity?} */
+                const value = json[i];
+                if (value.components == undefined || value.components.StaticMapEntity == undefined) {
+                    return;
+                }
+                const staticData = value.components.StaticMapEntity;
+                if (staticData.code == undefined || staticData.origin == undefined) {
+                    return;
+                }
+                const result = serializer.deserializeEntity(root, value);
+                if (typeof result === "string") {
+                    throw new Error(result);
+                }
+                entityArray.push(result);
+            }
+            return new Blueprint(entityArray);
+        } catch (e) {
+            logger.error("Invalid blueprint data:", e.message);
+        }
     }
 
     /**

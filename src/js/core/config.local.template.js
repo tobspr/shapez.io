@@ -116,5 +116,8 @@ export default {
     // Disables slow asserts, useful for debugging performance
     // disableSlowAsserts: true,
     // -----------------------------------------------------------------------------------
+    // Enable copy and paste using system clipboard
+    // useClipboard: true,
+    // -----------------------------------------------------------------------------------
     /* dev:end */
 };
