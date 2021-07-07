@@ -5,6 +5,7 @@ import { freeCanvas, makeOffscreenBuffer } from "../core/buffer_utils";
 import { Entity } from "./entity";
 import { THEME } from "./theme";
 import { MapChunkView } from "./map_chunk_view";
+import { MapChunkAggregate } from "./map_chunk_aggregate";
 
 /**
  * This is the view of the map, it extends the map which is the raw model and allows
@@ -165,6 +166,40 @@ export class MapView extends BaseMap {
     }
 
     /**
+     * Calls a given method on all given chunks
+     * @param {DrawParameters} parameters
+     * @param {function} method
+     */
+    drawVisibleAggregates(parameters, method) {
+        const cullRange = parameters.visibleRect.allScaled(1 / globalConfig.tileSize);
+        const top = cullRange.top();
+        const right = cullRange.right();
+        const bottom = cullRange.bottom();
+        const left = cullRange.left();
+
+        const border = 0;
+        const minY = top - border;
+        const maxY = bottom + border;
+        const minX = left - border;
+        const maxX = right + border;
+
+        const aggregateTiles = globalConfig.chunkAggregateSize * globalConfig.mapChunkSize;
+        const aggStartX = Math.floor(minX / aggregateTiles);
+        const aggStartY = Math.floor(minY / aggregateTiles);
+
+        const aggEndX = Math.floor(maxX / aggregateTiles);
+        const aggEndY = Math.floor(maxY / aggregateTiles);
+
+        // Render y from top down for proper blending
+        for (let aggX = aggStartX; aggX <= aggEndX; ++aggX) {
+            for (let aggY = aggStartY; aggY <= aggEndY; ++aggY) {
+                const aggregate = this.root.map.getAggregate(aggX, aggY, true);
+                method.call(aggregate, parameters);
+            }
+        }
+    }
+
+    /**
      * Draws the wires foreground
      * @param {DrawParameters} parameters
      */
@@ -177,7 +212,7 @@ export class MapView extends BaseMap {
      * @param {DrawParameters} parameters
      */
     drawOverlay(parameters) {
-        this.drawVisibleChunks(parameters, MapChunkView.prototype.drawOverlay);
+        this.drawVisibleAggregates(parameters, MapChunkAggregate.prototype.drawOverlay);
     }
 
     /**
