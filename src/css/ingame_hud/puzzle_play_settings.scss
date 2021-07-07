@@ -13,7 +13,7 @@
 
     > .section {
         display: grid;
-        @include S(grid-gap, 5px);
+        @include S(grid-gap, 7px);
         grid-auto-flow: row;
 
         > button {
