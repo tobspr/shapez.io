@@ -10,7 +10,8 @@
         "no-console": false,
         "forin": false,
         "no-empty": false,
-        "space-before-function-paren": ["always"]
+        "space-before-function-paren": ["always"],
+        "no-unused-declaration": true
     },
     "rulesDirectory": []
 }

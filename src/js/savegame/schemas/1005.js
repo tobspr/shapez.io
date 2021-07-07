@@ -26,7 +26,7 @@ export class SavegameInterface_V1005 extends SavegameInterface_V1004 {
         // just reset belt paths for now
         dump.beltPaths = [];
 
-        const entities = dump.entities;
+        const entities = Array.isArray(dump.entities) ? dump.entities : [...dump.entities.values()];
 
         // clear ejector slots
         for (let i = 0; i < entities.length; ++i) {

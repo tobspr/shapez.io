@@ -56,3 +56,5 @@ config.local.js
 # Editor artifacts
 *.*.swp
 *.*.swo
+
+.history/

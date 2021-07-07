@@ -630,9 +630,10 @@ export class BeltPath extends BasicSerializableObject {
         beltComp.assignedPath = null;
 
         const entityLength = beltComp.getEffectiveLengthTiles();
-        assert(this.entityPath.indexOf(entity) >= 0, "Entity not contained for split");
-        assert(this.entityPath.indexOf(entity) !== 0, "Entity is first");
-        assert(this.entityPath.indexOf(entity) !== this.entityPath.length - 1, "Entity is last");
+        const index = this.entityPath.indexOf(entity);
+        assert(index >= 0, "Entity not contained for split");
+        assert(index !== 0, "Entity is first");
+        assert(index !== this.entityPath.length - 1, "Entity is last");
 
         let firstPathEntityCount = 0;
         let firstPathLength = 0;

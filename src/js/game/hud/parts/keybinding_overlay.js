@@ -101,7 +101,7 @@ export class HUDKeybindingOverlay extends BaseHUDPart {
      */
     get anythingSelectedOnMap() {
         const selector = this.root.hud.parts.massSelector;
-        return selector && selector.selectedUids.size > 0;
+        return selector && selector.selectedEntities.size > 0;
     }
 
     /**

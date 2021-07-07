@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ReadWriteProxy } from "../core/read_write_proxy";
 import { ExplainedResult } from "../core/explained_result";
 import { SavegameSerializer } from "./savegame_serializer";
@@ -190,7 +191,12 @@ export class Savegame extends ReadWriteProxy {
      * Returns if this game has a serialized game dump
      */
     hasGameDump() {
-        return !!this.currentData.dump && this.currentData.dump.entities.length > 0;
+        if (!this.currentData.dump) return false;
+        if (Array.isArray(this.currentData.dump.entities)) {
+            return this.currentData.dump.entities.length;
+        } else {
+            return this.currentData.dump.entities.size;
+        }
     }
 
     /**

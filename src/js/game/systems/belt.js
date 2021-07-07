@@ -425,8 +425,8 @@ export class BeltSystem extends GameSystemWithFilter {
 
         const result = [];
 
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const entity = this.allEntities[i];
+        for (let i = this.allEntitiesArray.length - 1; i >= 0; --i) {
+            const entity = this.allEntitiesArray[i];
             if (visitedUids.has(entity.uid)) {
                 continue;
             }

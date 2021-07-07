@@ -59,6 +59,37 @@ export class Blueprint {
     }
 
     /**
+     * Creates a new blueprint from the given entity uids
+     * @param {Array<Entity>} entities
+     */
+    static fromEntities(entities) {
+        const newEntities = [];
+
+        let averagePosition = new Vector();
+
+        // First, create a copy
+        for (let i = entities.length - 1; i >= 0; --i) {
+            const entity = entities[i];
+
+            const clone = entity.clone();
+            newEntities.push(clone);
+
+            const pos = entity.components.StaticMapEntity.getTileSpaceBounds().getCenter();
+            averagePosition.addInplace(pos);
+        }
+
+        averagePosition.divideScalarInplace(entities.length);
+        const blueprintOrigin = averagePosition.subScalars(0.5, 0.5).floor();
+
+        for (let i = newEntities.length - 1; i >= 0; --i) {
+            newEntities[i].components.StaticMapEntity.origin.subInplace(blueprintOrigin);
+        }
+
+        // Now, make sure the origin is 0,0
+        return new Blueprint(newEntities);
+    }
+
+    /**
      * Returns the cost of this blueprint in shapes
      */
     getCost() {

@@ -227,8 +227,8 @@ export class UndergroundBeltSystem extends GameSystemWithFilter {
         const sender = enumUndergroundBeltMode.sender;
         const now = this.root.time.now();
 
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const entity = this.allEntities[i];
+        for (let i = this.allEntitiesArray.length - 1; i >= 0; --i) {
+            const entity = this.allEntitiesArray[i];
             const undergroundComp = entity.components.UndergroundBelt;
             if (undergroundComp.mode === sender) {
                 this.handleSender(entity);

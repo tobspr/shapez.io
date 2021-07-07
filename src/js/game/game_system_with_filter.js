@@ -5,8 +5,6 @@ import { Entity } from "./entity";
 
 import { GameRoot } from "./root";
 import { GameSystem } from "./game_system";
-import { arrayDelete, arrayDeleteValue } from "../core/utils";
-import { globalConfig } from "../core/config";
 
 export class GameSystemWithFilter extends GameSystem {
     /**
@@ -22,9 +20,12 @@ export class GameSystemWithFilter extends GameSystem {
 
         /**
          * All entities which match the current components
-         * @type {Array<Entity>}
+         * @type {Set<Entity>}
          */
-        this.allEntities = [];
+        this.allEntitiesSet = new Set();
+        this.allEntitiesArray = [];
+        this.allEntitiesArrayIsOutdated = true;
+        this.entitiesQueuedToDelete = [];
 
         this.root.signals.entityAdded.add(this.internalPushEntityIfMatching, this);
         this.root.signals.entityGotNewComponent.add(this.internalReconsiderEntityToAdd, this);
@@ -33,6 +34,13 @@ export class GameSystemWithFilter extends GameSystem {
 
         this.root.signals.postLoadHook.add(this.internalPostLoadHook, this);
         this.root.signals.bulkOperationFinished.add(this.refreshCaches, this);
+    }
+
+    tryUpdateEntitiesArray() {
+        if (this.allEntitiesArrayIsOutdated) {
+            this.allEntitiesArray = [...this.allEntitiesSet.values()];
+            this.allEntitiesArrayIsOutdated = false;
+        }
     }
 
     /**
@@ -45,11 +53,7 @@ export class GameSystemWithFilter extends GameSystem {
             }
         }
 
-        // This is slow!
-        if (G_IS_DEV && !globalConfig.debug.disableSlowAsserts) {
-            assert(this.allEntities.indexOf(entity) < 0, "entity already in list: " + entity);
-        }
-
+        assert(!this.allEntitiesSet.has(entity), "entity already in list: " + entity);
         this.internalRegisterEntity(entity);
     }
 
@@ -58,7 +62,7 @@ export class GameSystemWithFilter extends GameSystem {
      * @param {Entity} entity
      */
     internalCheckEntityAfterComponentRemoval(entity) {
-        if (this.allEntities.indexOf(entity) < 0) {
+        if (!this.allEntitiesSet.has(entity)) {
             // Entity wasn't interesting anyways
             return;
         }
@@ -66,7 +70,7 @@ export class GameSystemWithFilter extends GameSystem {
         for (let i = 0; i < this.requiredComponentIds.length; ++i) {
             if (!entity.components[this.requiredComponentIds[i]]) {
                 // Entity is not interesting anymore
-                arrayDeleteValue(this.allEntities, entity);
+                this.allEntitiesArrayIsOutdated = this.allEntitiesSet.delete(entity);
             }
         }
     }
@@ -81,7 +85,7 @@ export class GameSystemWithFilter extends GameSystem {
                 return;
             }
         }
-        if (this.allEntities.indexOf(entity) >= 0) {
+        if (this.allEntitiesSet.has(entity)) {
             return;
         }
         this.internalRegisterEntity(entity);
@@ -89,15 +93,15 @@ export class GameSystemWithFilter extends GameSystem {
 
     refreshCaches() {
         // Remove all entities which are queued for destroy
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const entity = this.allEntities[i];
-            if (entity.queuedForDestroy || entity.destroyed) {
-                this.allEntities.splice(i, 1);
-                i -= 1;
+        if (this.entitiesQueuedToDelete.length > 0) {
+            for (let i = this.entitiesQueuedToDelete.length - 1; i >= 0; --i) {
+                this.allEntitiesSet.delete(this.entitiesQueuedToDelete[i]);
             }
+            this.entitiesQueuedToDelete = [];
         }
 
-        this.allEntities.sort((a, b) => a.uid - b.uid);
+        // called here in case a delete executed mid frame
+        this.tryUpdateEntitiesArray();
     }
 
     /**
@@ -112,12 +116,8 @@ export class GameSystemWithFilter extends GameSystem {
      * @param {Entity} entity
      */
     internalRegisterEntity(entity) {
-        this.allEntities.push(entity);
-
-        if (this.root.gameInitialized && !this.root.bulkOperationRunning) {
-            // Sort entities by uid so behaviour is predictable
-            this.allEntities.sort((a, b) => a.uid - b.uid);
-        }
+        this.allEntitiesSet.add(entity);
+        this.allEntitiesArray.push(entity);
     }
 
     /**
@@ -126,12 +126,9 @@ export class GameSystemWithFilter extends GameSystem {
      */
     internalPopEntityIfMatching(entity) {
         if (this.root.bulkOperationRunning) {
-            // We do this in refreshCaches afterwards
+            this.entitiesQueuedToDelete.push(entity);
             return;
         }
-        const index = this.allEntities.indexOf(entity);
-        if (index >= 0) {
-            arrayDelete(this.allEntities, index);
-        }
+        this.allEntitiesArrayIsOutdated = this.allEntitiesSet.delete(entity);
     }
 }

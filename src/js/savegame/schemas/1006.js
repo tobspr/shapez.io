@@ -173,7 +173,8 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
         dump.hubGoals.level = levelMapping[level] || level;
 
         // Update entities
-        const entities = dump.entities;
+        const entities = Array.isArray(dump.entities) ? dump.entities : [...dump.entities.values()];
+
         for (let i = 0; i < entities.length; ++i) {
             const entity = entities[i];
             const components = entity.components;
@@ -269,8 +270,17 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
         newStaticComp.originalRotation = staticComp.originalRotation;
         newStaticComp.rotation = staticComp.rotation;
 
+        /**
+         * in one of our files:
+         * we dont seem to actually have a blueprintspritekey
+         *  but we do have this attribute called code
+         */
+
         // @ts-ignore
-        newStaticComp.code = spriteMapping[staticComp.blueprintSpriteKey];
+        if (staticComp.blueprintSpriteKey) {
+            // @ts-ignore
+            newStaticComp.code = spriteMapping[staticComp.blueprintSpriteKey];
+        } else newStaticComp.code = staticComp.code;
 
         // Hub special case
         if (entity.components.Hub) {
@@ -293,9 +303,11 @@ export class SavegameInterface_V1006 extends SavegameInterface_V1005 {
         }
 
         if (!newStaticComp.code) {
+            console.dir(entity);
+            console.dir(staticComp);
             throw new Error(
                 // @ts-ignore
-                "1006 Migration: Could not reconstruct code for " + staticComp.blueprintSpriteKey
+                "1006 Migration: Could not reconstruct code for " + code
             );
         }
 

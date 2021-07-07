@@ -8,6 +8,7 @@ import { KEYMAPPINGS } from "../../key_action_mapper";
 import { enumHubGoalRewards } from "../../tutorial_goals";
 import { BaseHUDPart } from "../base_hud_part";
 
+// @ts-ignore
 const copy = require("clipboard-copy");
 const wiresBackgroundDpi = 4;
 
@@ -64,7 +65,7 @@ export class HUDWiresOverlay extends BaseHUDPart {
         const desiredAlpha = this.root.currentLayer === "wires" ? 1.0 : 0.0;
 
         // On low performance, skip the fade
-        if (this.root.entityMgr.entities.length > 5000 || this.root.dynamicTickrate.averageFps < 50) {
+        if (this.root.entityMgr.entities.size > 5000 || this.root.dynamicTickrate.averageFps < 50) {
             this.currentAlpha = desiredAlpha;
         } else {
             this.currentAlpha = lerp(this.currentAlpha, desiredAlpha, 0.12);

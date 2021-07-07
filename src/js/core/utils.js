@@ -682,6 +682,44 @@ export function smoothPulse(time) {
     return Math.sin(time * 4) * 0.5 + 0.5;
 }
 
+let logIntervals = {};
+const intervalStyle = "color: grey; font-style: inherit";
+const keyStyle = "color: purple; font-style: italic";
+const revertStyle = "color: inherit; font-style: inherit";
+
+export function logInterval(key, frames, message, ...args) {
+    let interval = logIntervals[key] || 0;
+    if (++interval > frames) {
+        console.log(
+            `%clogInterval [%c${key}%c]: \t%c` + message,
+            intervalStyle,
+            keyStyle,
+            intervalStyle,
+            revertStyle,
+            ...args
+        );
+        interval = 0;
+    }
+    logIntervals[key] = interval;
+}
+
+export function dirInterval(key, frames, object, premessage, ...args) {
+    let interval = logIntervals[key] || 0;
+    if (++interval > frames) {
+        console.log(
+            `%cdirInterval [%c${key}%c]: \t%c` + (premessage || ""),
+            intervalStyle,
+            keyStyle,
+            intervalStyle,
+            revertStyle,
+            ...args
+        );
+        console.dir(object);
+        interval = 0;
+    }
+    logIntervals[key] = interval;
+}
+
 /**
  * Fills in a <link> tag
  * @param {string} translation

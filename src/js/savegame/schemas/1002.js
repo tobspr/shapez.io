@@ -24,7 +24,7 @@ export class SavegameInterface_V1002 extends SavegameInterface_V1001 {
             return true;
         }
 
-        const entities = dump.entities;
+        const entities = Array.isArray(dump.entities) ? dump.entities : [...dump.entities.values()];
         for (let i = 0; i < entities.length; ++i) {
             const entity = entities[i];
             const beltComp = entity.components.Belt;

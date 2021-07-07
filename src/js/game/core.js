@@ -437,7 +437,7 @@ export class GameCore {
         this.overlayAlpha = lerp(this.overlayAlpha, desiredOverlayAlpha, 0.25);
 
         // On low performance, skip the fade
-        if (this.root.entityMgr.entities.length > 5000 || this.root.dynamicTickrate.averageFps < 50) {
+        if (this.root.entityMgr.entities.size > 5000 || this.root.dynamicTickrate.averageFps < 50) {
             this.overlayAlpha = desiredOverlayAlpha;
         }
 

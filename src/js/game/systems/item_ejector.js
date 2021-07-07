@@ -3,6 +3,7 @@ import { DrawParameters } from "../../core/draw_parameters";
 import { createLogger } from "../../core/logging";
 import { Rectangle } from "../../core/rectangle";
 import { StaleAreaDetector } from "../../core/stale_area_detector";
+import { dirInterval } from "../../core/utils";
 import { enumDirection, enumDirectionToVector } from "../../core/vector";
 import { ACHIEVEMENTS } from "../../platform/achievement_provider";
 import { BaseItem } from "../base_item";
@@ -61,8 +62,8 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
      */
     recomputeCacheFull() {
         logger.log("Full cache recompute in post load hook");
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const entity = this.allEntities[i];
+        for (let i = this.allEntitiesArray.length - 1; i >= 0; --i) {
+            const entity = this.allEntitiesArray[i];
             this.recomputeSingleEntityCache(entity);
         }
     }
@@ -147,8 +148,8 @@ export class ItemEjectorSystem extends GameSystemWithFilter {
         }
 
         // Go over all cache entries
-        for (let i = 0; i < this.allEntities.length; ++i) {
-            const sourceEntity = this.allEntities[i];
+        for (let i = this.allEntitiesArray.length - 1; i >= 0; --i) {
+            const sourceEntity = this.allEntitiesArray[i];
             const sourceEjectorComp = sourceEntity.components.ItemEjector;
 
             const slots = sourceEjectorComp.slots;

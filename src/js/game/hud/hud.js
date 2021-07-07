@@ -37,7 +37,7 @@ export class GameHUD {
             shapePinRequested: /** @type {TypedSignal<[ShapeDefinition]>} */ (new Signal()),
             shapeUnpinRequested: /** @type {TypedSignal<[string]>} */ (new Signal()),
             notification: /** @type {TypedSignal<[string, enumNotificationType]>} */ (new Signal()),
-            buildingsSelectedForCopy: /** @type {TypedSignal<[Array<number>]>} */ (new Signal()),
+            buildingsSelectedForCopy: /** @type {TypedSignal<[Array]>} */ (new Signal()),
             pasteBlueprintRequested: /** @type {TypedSignal<[]>} */ (new Signal()),
             viewShapeDetailsRequested: /** @type {TypedSignal<[ShapeDefinition]>} */ (new Signal()),
             unlockNotificationFinished: /** @type {TypedSignal<[]>} */ (new Signal()),

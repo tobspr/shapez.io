@@ -16,7 +16,7 @@
  *   hubGoals: any,
  *   pinnedShapes: any,
  *   waypoints: any,
- *   entities: Array<Entity>,
+ *   entities: Array<Entity>|Set<Entity>,
  *   beltPaths: Array<any>
  * }} SerializedGame
  *
