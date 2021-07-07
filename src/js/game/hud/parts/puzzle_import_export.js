@@ -83,6 +83,7 @@ export class HUDPuzzleImportExport extends BaseHUDPart {
 
                             mode.zoneWidth = gameData.bounds.w;
                             mode.zoneHeight = gameData.bounds.h;
+                            this.root.hud.parts.puzzleEditorSettings.updateZoneValues();
 
                             errorText = new PuzzleSerializer().deserializePuzzle(this.root, gameData);
                         } catch (ex) {
