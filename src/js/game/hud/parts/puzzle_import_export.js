@@ -3,6 +3,7 @@ import { ReadWriteProxy } from "../../../core/read_write_proxy";
 import { generateFileDownload, makeDiv, startFileChoose, waitNextFrame } from "../../../core/utils";
 import { PuzzleSerializer } from "../../../savegame/puzzle_serializer";
 import { T } from "../../../translations";
+import { GoalAcceptorComponent } from "../../components/goal_acceptor";
 import { StaticMapEntityComponent } from "../../components/static_map_entity";
 import { PuzzleGameMode } from "../../modes/puzzle";
 import { BaseHUDPart } from "../base_hud_part";
@@ -110,6 +111,18 @@ export class HUDPuzzleImportExport extends BaseHUDPart {
     }
 
     exportPuzzle() {
+        // Make sure all acceptors have an item
+        for (const entity of this.root.entityMgr.getAllWithComponent(GoalAcceptorComponent)) {
+            const goalComp = entity.components.GoalAcceptor;
+            if (!goalComp.item) {
+                this.root.hud.parts.dialogs.showWarning(
+                    T.puzzleMenu.validation.title,
+                    T.puzzleMenu.validation.goalAcceptorNoItem
+                );
+                return;
+            }
+        }
+
         const serialized = new PuzzleSerializer().generateDumpFromGameRoot(this.root);
 
         const data = ReadWriteProxy.serializeObject(serialized);
