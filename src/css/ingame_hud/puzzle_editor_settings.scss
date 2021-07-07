@@ -12,6 +12,17 @@
     @include S(border-radius, $globalBorderRadius);
 
     > .section {
+        .disabled {
+            transition: opacity 0.12s ease-in-out;
+            opacity: 0.3;
+            button {
+                pointer-events: none;
+            }
+        }
+        :not(.disabled) {
+            transition: opacity 0.12s ease-in-out;
+        }
+
         > label {
             text-transform: uppercase;
         }
@@ -45,12 +56,6 @@
         }
 
         > .mainButtons {
-            &.disabled {
-                button {
-                    pointer-events: none;
-                }
-            }
-
             > .buttonBar {
                 display: flex;
                 align-items: center;

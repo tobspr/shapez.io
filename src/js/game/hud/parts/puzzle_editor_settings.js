@@ -73,6 +73,7 @@ export class HUDPuzzleEditorSettings extends BaseHUDPart {
     toggleTestMode() {
         this.testMode = !this.testMode;
 
+        this.element.querySelector(".section > label").classList.toggle("disabled", this.testMode);
         this.element.querySelector(".mainButtons").classList.toggle("disabled", this.testMode);
         const testButton = this.element.querySelector(".testToggle > .testPuzzle");
         testButton.textContent = this.testMode
