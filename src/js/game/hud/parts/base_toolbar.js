@@ -302,8 +302,9 @@ export class HUDBaseToolbar extends BaseHUDPart {
 
     /**
      * @param {MetaBuilding} metaBuilding
+     * @param {boolean | null} force
      */
-    toggleBuildingLock(metaBuilding) {
+    toggleBuildingLock(metaBuilding, force = null) {
         if (!this.visibilityCondition()) {
             // Not active
             return;
@@ -315,7 +316,11 @@ export class HUDBaseToolbar extends BaseHUDPart {
         }
 
         const handle = this.buildingHandles[metaBuilding.getId()];
-        handle.puzzleLocked = !handle.puzzleLocked;
+        if (force != null) {
+            handle.puzzleLocked = force;
+        } else {
+            handle.puzzleLocked = !handle.puzzleLocked;
+        }
         handle.element.classList.toggle("unlocked", !handle.puzzleLocked);
 
         const entityManager = this.root.entityMgr;

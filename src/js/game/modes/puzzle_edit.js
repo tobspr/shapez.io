@@ -23,10 +23,7 @@ import { HUDPuzzleEditorControls } from "../hud/parts/puzzle_editor_controls";
 import { HUDPuzzleEditorReview } from "../hud/parts/puzzle_editor_review";
 import { HUDPuzzleEditorSettings } from "../hud/parts/puzzle_editor_settings";
 import { createLogger } from "../../core/logging";
-import { PuzzleSerializer } from "../../savegame/puzzle_serializer";
-import { T } from "../../translations";
-import { gMetaBuildingRegistry } from "../../core/global_registries";
-import { HUDPuzzleEditorDownload } from "../hud/parts/puzzle_editor_download";
+import { HUDPuzzleImportExport } from "../hud/parts/puzzle_import_export";
 
 const logger = createLogger("puzzle-edit");
 
@@ -41,11 +38,8 @@ export class PuzzleEditGameMode extends PuzzleGameMode {
 
     /**
      * @param {GameRoot} root
-     * @param {object} payload
-     * @param {import("../../savegame/savegame_typedefs").PuzzleGameData} payload.gameData
-     * @param {boolean} payload.startInTestMode
      */
-    constructor(root, { gameData = null, startInTestMode = false }) {
+    constructor(root) {
         super(root);
 
         this.hiddenBuildings = [
@@ -70,57 +64,7 @@ export class PuzzleEditGameMode extends PuzzleGameMode {
         this.additionalHudParts.puzzleEditorControls = HUDPuzzleEditorControls;
         this.additionalHudParts.puzzleEditorReview = HUDPuzzleEditorReview;
         this.additionalHudParts.puzzleEditorSettings = HUDPuzzleEditorSettings;
-        this.additionalHudParts.puzzleEditorDownload = HUDPuzzleEditorDownload;
-
-        this.gameData = gameData;
-
-        if (gameData) {
-            root.signals.postLoadHook.add(() => this.loadPuzzle(gameData), this);
-        }
-
-        this.startInTestMode = startInTestMode;
-    }
-
-    /**
-     * @param {import("../../savegame/savegame_typedefs").PuzzleGameData} puzzle
-     */
-    loadPuzzle(puzzle) {
-        let errorText;
-        logger.log("Loading puzzle", puzzle);
-
-        // set zone and add buildings
-        try {
-            this.zoneWidth = puzzle.bounds.w;
-            this.zoneHeight = puzzle.bounds.h;
-            errorText = new PuzzleSerializer().deserializePuzzle(this.root, puzzle);
-        } catch (ex) {
-            errorText = ex.message || ex;
-        }
-
-        if (errorText) {
-            this.root.gameState.moveToState("PuzzleMenuState", {
-                error: {
-                    title: T.dialogs.puzzleLoadError.title,
-                    desc: T.dialogs.puzzleLoadError.desc + " " + errorText,
-                },
-            });
-        }
-
-        const toolbar = this.root.hud.parts.buildingsToolbar;
-
-        // lock excluded buildings
-        for (let i = 0; i < this.gameData.excludedBuildings.length; ++i) {
-            const id = this.gameData.excludedBuildings[i];
-
-            if (!gMetaBuildingRegistry.hasId(id)) {
-                continue;
-            }
-            toolbar.toggleBuildingLock(gMetaBuildingRegistry.findById(id));
-        }
-
-        if (this.startInTestMode) {
-            this.root.hud.parts.puzzleEditorSettings.toggleTestMode();
-        }
+        this.additionalHudParts.puzzleEditorDownload = HUDPuzzleImportExport;
     }
 
     getIsEditor() {

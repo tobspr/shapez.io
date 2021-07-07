@@ -92,45 +92,50 @@ export class HUDPuzzleEditorSettings extends BaseHUDPart {
             testButton.classList.toggle("disabled", false);
         }, 140);
 
-        this.root.logic.performBulkOperation(() => {
+        if (this.testMode) {
             for (const entity of this.root.entityMgr.getAllWithComponent(StaticMapEntityComponent)) {
-                if (this.testMode) {
-                    this.storedSolution.push(entity.clone());
+                this.storedSolution.push(entity.clone());
 
-                    const metaBuilding = entity.components.StaticMapEntity.getMetaBuilding();
-                    const goalComp = entity.components.GoalAcceptor;
-                    if (goalComp) {
-                        goalComp.clear();
-                        continue;
-                    }
+                const metaBuilding = entity.components.StaticMapEntity.getMetaBuilding();
+                const goalComp = entity.components.GoalAcceptor;
+                if (goalComp) {
+                    goalComp.clear();
+                    continue;
+                }
 
-                    if (
-                        [MetaConstantProducerBuilding, MetaBlockBuilding]
-                            .map(metaClass => gMetaBuildingRegistry.findByClass(metaClass).id)
-                            .includes(metaBuilding.id)
-                    ) {
-                        continue;
-                    }
+                if (
+                    [MetaConstantProducerBuilding, MetaBlockBuilding]
+                        .map(metaClass => gMetaBuildingRegistry.findByClass(metaClass).id)
+                        .includes(metaBuilding.id)
+                ) {
+                    continue;
                 }
 
                 this.root.map.removeStaticEntity(entity);
                 this.root.entityMgr.destroyEntity(entity);
             }
             this.root.entityMgr.processDestroyList();
-
-            if (!this.testMode) {
-                for (const entity of this.storedSolution) {
-                    const placedEntity = this.root.logic.tryPlaceEntity(entity);
-
-                    for (const key in entity.components) {
-                        /** @type {import("../../../core/global_registries").Component} */ (entity.components[
-                            key
-                        ]).copyAdditionalStateTo(placedEntity.components[key]);
+        } else if (this.storedSolution.length) {
+            this.root.logic.performBulkOperation(() => {
+                this.root.logic.performImmutableOperation(() => {
+                    for (const entity of this.root.entityMgr.getAllWithComponent(StaticMapEntityComponent)) {
+                        this.root.map.removeStaticEntity(entity);
+                        this.root.entityMgr.destroyEntity(entity);
                     }
-                }
-                this.storedSolution = [];
-            }
-        });
+                    this.root.entityMgr.processDestroyList();
+
+                    for (const entity of this.storedSolution) {
+                        const placedEntity = this.root.logic.tryPlaceEntity(entity);
+
+                        for (const key in entity.components) {
+                            /** @type {import("../../../core/global_registries").Component} */ (entity
+                                .components[key]).copyAdditionalStateTo(placedEntity.components[key]);
+                        }
+                    }
+                    this.storedSolution = [];
+                });
+            });
+        }
     }
 
     trim() {

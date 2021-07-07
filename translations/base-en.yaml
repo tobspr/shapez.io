@@ -189,6 +189,8 @@ dialogs:
         retry: Retry
         continue: Continue
         playOffline: Play Offline
+        yes: Yes
+        no: No
 
     importSavegameError:
         title: Import Error
@@ -400,8 +402,13 @@ dialogs:
         desc: >-
             Are you sure you want to delete '<title>'? This can not be undone!
 
-    puzzleDownload:
-        title: Download Puzzle
+    puzzleImport:
+        title: Puzzle Imported
+        desc: >-
+            Your puzzle has been successfully imported.
+
+    puzzleExport:
+        title: Export Puzzle
         desc: >-
             Do you want to download this puzzle?
 

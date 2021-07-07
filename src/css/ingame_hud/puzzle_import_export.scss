@@ -1,4 +1,4 @@
-#ingame_HUD_PuzzleEditorDownload {
+#ingame_HUD_PuzzleImportExport {
     position: absolute;
     @include S(top, 35px);
     left: 50%;
@@ -17,12 +17,14 @@
         transition-property: opacity, transform;
         text-transform: uppercase;
         @include PlainText;
-        @include S(width, 30px);
-        @include S(height, 30px);
+        @include S(width, 20px);
+        @include S(height, 20px);
+        margin: 8px 5px;
 
         @include DarkThemeInvert;
 
         opacity: 1;
+
         &:hover {
             opacity: 0.9 !important;
         }
@@ -31,7 +33,13 @@
             transform: scale(0.95) !important;
         }
 
-        & {
+        &.import {
+            /* @load-async */
+            background: uiResource("icons/upload.png") center center / D(15px) no-repeat;
+            //transform: rotate(180deg);
+        }
+
+        &.export {
             /* @load-async */
             background: uiResource("icons/download.png") center center / D(15px) no-repeat;
         }

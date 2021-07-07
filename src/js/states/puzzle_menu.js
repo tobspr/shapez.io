@@ -43,7 +43,6 @@ export class PuzzleMenuState extends TextualGameState {
                 <h1><button class="backButton"></button> ${this.getStateHeaderTitle()}</h1>
 
                 <div class="actions">
-                    <button class="styledButton importPuzzle">Import</button>
                     <button class="styledButton loadPuzzle">${T.puzzleMenu.loadPuzzle}</button>
                     <button class="styledButton createPuzzle">+ ${T.puzzleMenu.createPuzzle}</button>
                 </div>
@@ -390,7 +389,6 @@ export class PuzzleMenuState extends TextualGameState {
 
         this.trackClicks(this.htmlElement.querySelector("button.createPuzzle"), () => this.createNewPuzzle());
         this.trackClicks(this.htmlElement.querySelector("button.loadPuzzle"), () => this.loadPuzzle());
-        this.trackClicks(this.htmlElement.querySelector("button.importPuzzle"), () => this.importPuzzle());
     }
 
     createEmptySavegame() {
