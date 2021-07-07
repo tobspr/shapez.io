@@ -76,12 +76,29 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
             const processorComp = entity.components.ItemProcessor;
             const ejectorComp = entity.components.ItemEjector;
 
-            const currentCharge = processorComp.ongoingCharges[0];
+            for (let chargeIndex = 0; ; chargeIndex++) {
+                // Check if we have an open queue spot and can start a new charge
+                if (processorComp.ongoingCharges.length < MAX_QUEUED_CHARGES) {
+                    if (this.canProcess(entity)) {
+                        this.startNewCharge(entity);
+                    }
+                }
 
-            if (currentCharge) {
+                if (chargeIndex >= processorComp.ongoingCharges.length) {
+                    break;
+                }
+
+                const currentCharge = processorComp.ongoingCharges[chargeIndex];
+
                 // Process next charge
                 if (currentCharge.remainingTime > 0.0) {
-                    currentCharge.remainingTime -= this.root.dynamicTickrate.deltaSeconds;
+                    const deltaTime = this.root.dynamicTickrate.deltaSeconds + processorComp.bonusTime;
+                    currentCharge.remainingTime -= deltaTime;
+                    processorComp.bonusTime = 0;
+                    if (currentCharge.remainingTime > 0.0) {
+                        // This charge is not finished, so don't process the next one
+                        break;
+                    }
                     if (currentCharge.remainingTime < 0.0) {
                         // Add bonus time, this is the time we spent too much
                         processorComp.bonusTime += -currentCharge.remainingTime;
@@ -89,7 +106,7 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
                 }
 
                 // Check if it finished
-                if (currentCharge.remainingTime <= 0.0) {
+                if (chargeIndex === 0 && currentCharge.remainingTime <= 0.0) {
                     const itemsToEject = currentCharge.items;
 
                     // Go over all items and try to eject them
@@ -130,14 +147,8 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
                     // If the charge was entirely emptied to the outputs, start the next charge
                     if (itemsToEject.length === 0) {
                         processorComp.ongoingCharges.shift();
+                        chargeIndex--;
                     }
-                }
-            }
-
-            // Check if we have an empty queue and can start a new charge
-            if (processorComp.ongoingCharges.length < MAX_QUEUED_CHARGES) {
-                if (this.canProcess(entity)) {
-                    this.startNewCharge(entity);
                 }
             }
         }
@@ -294,15 +305,10 @@ export class ItemProcessorSystem extends GameSystemWithFilter {
 
         // Queue Charge
         const baseSpeed = this.root.hubGoals.getProcessorBaseSpeed(processorComp.type);
-        const originalTime = 1 / baseSpeed;
 
-        const bonusTimeToApply = Math.min(originalTime, processorComp.bonusTime);
-        const timeToProcess = originalTime - bonusTimeToApply;
-
-        processorComp.bonusTime -= bonusTimeToApply;
         processorComp.ongoingCharges.push({
             items: outItems,
-            remainingTime: timeToProcess,
+            remainingTime: 1 / baseSpeed,
         });
     }
 
