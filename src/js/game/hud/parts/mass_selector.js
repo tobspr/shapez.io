@@ -19,6 +19,7 @@ import { enumHubGoalRewards } from "../../tutorial_goals";
 import { BaseHUDPart } from "../base_hud_part";
 
 const logger = createLogger("hud/mass_selector");
+var globalTileSizeAdjusted = 0;
 
 export class HUDMassSelector extends BaseHUDPart {
     createElements(parent) {}
@@ -45,6 +46,7 @@ export class HUDMassSelector extends BaseHUDPart {
 
         this.root.hud.signals.selectedPlacementBuildingChanged.add(this.clearSelection, this);
         this.root.signals.editModeChanged.add(this.clearSelection, this);
+        globalTileSizeAdjusted = globalConfig.tileSize - 2 * 2;
     }
 
     /**
@@ -221,16 +223,15 @@ export class HUDMassSelector extends BaseHUDPart {
      * @param {enumMouseButton} mouseButton
      */
     onMouseDown(pos, mouseButton) {
-        if (!this.root.keyMapper.getBinding(KEYMAPPINGS.massSelect.massSelectStart).pressed) {
-            return;
-        }
-
-        if (mouseButton !== enumMouseButton.left) {
+        if (
+        !this.root.keyMapper.getBinding(KEYMAPPINGS.massSelect.massSelectStart.pressed) ||
+            mouseButton !== enumMouseButton.left) {
             return;
         }
 
         if (!this.root.keyMapper.getBinding(KEYMAPPINGS.massSelect.massSelectSelectMultiple).pressed) {
             // Start new selection
+
             this.selectedUids = new Set();
         }
 
@@ -350,18 +351,19 @@ export class HUDMassSelector extends BaseHUDPart {
         }
 
         parameters.context.fillStyle = THEME.map.selectionOverlay;
+        parameters.context.beginPath();
         this.selectedUids.forEach(uid => {
+        	// Do not attempt to write this in one line, it will be much slower.
             const entity = this.root.entityMgr.findByUid(uid);
             const staticComp = entity.components.StaticMapEntity;
             const bounds = staticComp.getTileSpaceBounds();
-            parameters.context.beginRoundedRect(
+            parameters.context.fillRect(
                 bounds.x * globalConfig.tileSize + boundsBorder,
                 bounds.y * globalConfig.tileSize + boundsBorder,
-                bounds.w * globalConfig.tileSize - 2 * boundsBorder,
-                bounds.h * globalConfig.tileSize - 2 * boundsBorder,
-                2
+                bounds.w * globalTileSizeAdjusted,
+                bounds.h * globalTileSizeAdjusted // MICROOPTIMIZATION: Avoid computing inside loops.
             );
-            parameters.context.fill();
         });
+        parameters.context.closePath(); // +1 fps for some reason
     }
 }
