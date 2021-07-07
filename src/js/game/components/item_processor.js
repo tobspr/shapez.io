@@ -84,9 +84,15 @@ export class ItemProcessorComponent extends Component {
 
         /**
          * Our current inputs
-         * @type {Array<{ item: BaseItem, sourceSlot: number }>}
+         * @type {Array<BaseItem?>}
          */
         this.inputSlots = [];
+
+        /**
+         * Current input count
+         * @type {number}
+         */
+        this.inputCount = 0;
 
         /**
          * What we are currently processing, empty if we don't produce anything rn
@@ -115,19 +121,16 @@ export class ItemProcessorComponent extends Component {
             this.type === enumItemProcessorTypes.goal
         ) {
             // Hub has special logic .. not really nice but efficient.
-            this.inputSlots.push({ item, sourceSlot });
+            this.inputSlots.push(item);
+            this.inputCount++;
             return true;
         }
 
         // Check that we only take one item per slot
-        for (let i = 0; i < this.inputSlots.length; ++i) {
-            const slot = this.inputSlots[i];
-            if (slot.sourceSlot === sourceSlot) {
-                return false;
-            }
-        }
+        if (this.inputSlots[sourceSlot]) return false;
 
-        this.inputSlots.push({ item, sourceSlot });
+        this.inputSlots[sourceSlot] = item;
+        this.inputCount++;
         return true;
     }
 }
