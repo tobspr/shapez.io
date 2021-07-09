@@ -81,7 +81,7 @@ export class HUDPuzzleEditorReview extends BaseHUDPart {
             closeLoading();
 
             //if it took so little ticks that it must have autocompeted
-            if (simulatedTicks <= 300) {
+            if (simulatedTicks <= 500) {
                 this.root.hud.parts.dialogs.showWarning(
                     T.puzzleMenu.validation.title,
                     T.puzzleMenu.validation.autoComplete
