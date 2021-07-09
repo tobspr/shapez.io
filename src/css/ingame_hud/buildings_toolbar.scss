@@ -49,96 +49,100 @@
         }
 
         .building {
-            display: flex;
-            @include S(width, 40px);
-            position: relative;
-            @include S(height, 40px);
-            .icon {
-                color: $accentColorDark;
+            &:not(.hidden) {
                 display: flex;
-                flex-direction: column-reverse;
+                @include S(width, 40px);
                 position: relative;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                height: 100%;
-                padding: 0;
-                margin: 0;
-                @include S(border-radius, $globalBorderRadius);
-
-                background: center center / 70% no-repeat;
-            }
-
-            &:not(.unlocked) {
-                @include S(width, 25px);
+                @include S(height, 40px);
                 .icon {
-                    opacity: 0.15;
+                    color: $accentColorDark;
+                    display: flex;
+                    flex-direction: column-reverse;
+                    position: relative;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    margin: 0;
+                    @include S(border-radius, $globalBorderRadius);
+
+                    background: center center / 70% no-repeat;
                 }
-                &.editor {
+
+                &:not(.unlocked) {
+                    @include S(width, 25px);
                     .icon {
-                        pointer-events: all;
-                        cursor: pointer;
-                        &:hover {
-                            background-color: rgba(22, 30, 68, 0.1);
+                        opacity: 0.15;
+                    }
+                    &.editor {
+                        .icon {
+                            pointer-events: all;
+                            cursor: pointer;
+                            &:hover {
+                                background-color: rgba(22, 30, 68, 0.1);
+                            }
+                        }
+                    }
+                    &:not(.editor) {
+                        .icon {
+                            background-image: uiResource("locked_building.png") !important;
                         }
                     }
                 }
-                &:not(.editor) {
+
+                &.unlocked {
                     .icon {
-                        background-image: uiResource("locked_building.png") !important;
+                        pointer-events: all;
+                        transition: all 50ms ease-in-out;
+                        transition-property: background-color, transform;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: rgba(30, 40, 90, 0.1);
+                        }
+
+                        &.pressed {
+                            transform: scale(0.9) !important;
+                        }
                     }
-                }
-            }
+                    &.selected {
+                        // transform: scale(1.05);
+                        background-color: rgba(lighten($colorBlueBright, 9), 0.4);
+                        @include S(border-radius, 2px);
 
-            &.unlocked {
-                .icon {
-                    pointer-events: all;
-                    transition: all 50ms ease-in-out;
-                    transition-property: background-color, transform;
-                    cursor: pointer;
-
-                    &:hover {
-                        background-color: rgba(30, 40, 90, 0.1);
-                    }
-
-                    &.pressed {
-                        transform: scale(0.9) !important;
-                    }
-                }
-                &.selected {
-                    // transform: scale(1.05);
-                    background-color: rgba(lighten($colorBlueBright, 9), 0.4);
-                    @include S(border-radius, 2px);
-
-                    .keybinding {
-                        color: #111;
-                    }
-                }
-
-                .puzzle-lock {
-                    & {
-                        /* @load-async */
-                        background: uiResource("locked_building.png") center center / 90% no-repeat;
+                        .keybinding {
+                            color: #111;
+                        }
                     }
 
-                    display: grid;
-                    grid-auto-flow: column;
+                    .puzzle-lock {
+                        &.active {
+                            & {
+                                /* @load-async */
+                                background: uiResource("locked_building.png") center center / 90% no-repeat;
+                            }
 
-                    position: absolute;
-                    @include S(top, -15px);
-                    left: 50%;
-                    transform: translateX(-50%) !important;
-                    transition: all 0.12s ease-in-out;
-                    transition-property: opacity, transform;
+                            display: grid;
+                            grid-auto-flow: column;
 
-                    cursor: pointer;
-                    pointer-events: all;
+                            position: absolute;
+                            @include S(top, -15px);
+                            left: 50%;
+                            transform: translateX(-50%) !important;
+                            transition: all 0.12s ease-in-out;
+                            transition-property: opacity, transform;
 
-                    @include S(width, 12px);
-                    @include S(height, 12px);
+                            cursor: pointer;
+                            pointer-events: all;
 
-                    &:hover {
-                        opacity: 0.5;
+                            @include S(width, 12px);
+                            @include S(height, 12px);
+
+                            &:hover {
+                                opacity: 0.5;
+                            }
+                        }
                     }
                 }
             }

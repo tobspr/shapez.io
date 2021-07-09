@@ -8,9 +8,13 @@
             justify-self: start;
         }
 
+        button {
+            @include S(margin-right, 5px);
+        }
+
         .createPuzzle {
             background-color: $colorGreenBright;
-            @include S(margin-left, 5px);
+            @include S(margin-right, 0);
         }
     }
 

@@ -1,0 +1,46 @@
+#ingame_HUD_PuzzleImportExport {
+    position: absolute;
+    @include S(top, 35px);
+    left: 50%;
+
+    transform: translateX(-50%);
+    backdrop-filter: blur(D(1px));
+    padding: D(3px);
+
+    > .button {
+        @include PlainText;
+        pointer-events: all;
+        cursor: pointer;
+        position: relative;
+        color: #333438;
+        transition: all 0.12s ease-in-out;
+        transition-property: opacity, transform;
+        text-transform: uppercase;
+        @include PlainText;
+        @include S(width, 20px);
+        @include S(height, 20px);
+        margin: 8px 5px;
+
+        @include DarkThemeInvert;
+
+        opacity: 1;
+
+        &:hover {
+            opacity: 0.9 !important;
+        }
+
+        &.pressed {
+            transform: scale(0.95) !important;
+        }
+
+        &.import {
+            /* @load-async */
+            background: uiResource("icons/upload.png") center center / D(15px) no-repeat;
+        }
+
+        &.export {
+            /* @load-async */
+            background: uiResource("icons/download.png") center center / D(15px) no-repeat;
+        }
+    }
+}

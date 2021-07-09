@@ -22,6 +22,10 @@ import { MetaTransistorBuilding } from "../buildings/transistor";
 import { HUDPuzzleEditorControls } from "../hud/parts/puzzle_editor_controls";
 import { HUDPuzzleEditorReview } from "../hud/parts/puzzle_editor_review";
 import { HUDPuzzleEditorSettings } from "../hud/parts/puzzle_editor_settings";
+import { createLogger } from "../../core/logging";
+import { HUDPuzzleImportExport } from "../hud/parts/puzzle_import_export";
+
+const logger = createLogger("puzzle-edit");
 
 export class PuzzleEditGameMode extends PuzzleGameMode {
     static getId() {
@@ -32,7 +36,9 @@ export class PuzzleEditGameMode extends PuzzleGameMode {
         return {};
     }
 
-    /** @param {GameRoot} root */
+    /**
+     * @param {GameRoot} root
+     */
     constructor(root) {
         super(root);
 
@@ -58,9 +64,12 @@ export class PuzzleEditGameMode extends PuzzleGameMode {
         this.additionalHudParts.puzzleEditorControls = HUDPuzzleEditorControls;
         this.additionalHudParts.puzzleEditorReview = HUDPuzzleEditorReview;
         this.additionalHudParts.puzzleEditorSettings = HUDPuzzleEditorSettings;
+        this.additionalHudParts.puzzleEditorDownload = HUDPuzzleImportExport;
     }
 
     getIsEditor() {
-        return true;
+        /** @type {HUDPuzzleEditorSettings} */
+        const editSettings = this.root.hud.parts.puzzleEditorSettings;
+        return !editSettings.testMode;
     }
 }

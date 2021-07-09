@@ -131,6 +131,7 @@ export class HUDBuildingPlacerLogic extends BaseHUDPart {
         this.root.signals.storyGoalCompleted.add(() => this.currentMetaBuilding.set(null));
         this.root.signals.upgradePurchased.add(() => this.signals.variantChanged.dispatch());
         this.root.signals.editModeChanged.add(this.onEditModeChanged, this);
+        this.root.signals.testModeChanged.add(this.abortPlacement, this);
 
         // MOUSE BINDINGS
         this.root.camera.downPreHandler.add(this.onMouseDown, this);
@@ -385,8 +386,8 @@ export class HUDBuildingPlacerLogic extends BaseHUDPart {
         const buildingCode = contents.components.StaticMapEntity.code;
         const extracted = getBuildingDataFromCode(buildingCode);
 
-        // Disable pipetting the hub
-        if (extracted.metaInstance.getId() === gMetaBuildingRegistry.findByClass(MetaHubBuilding).getId()) {
+        // Disable pipetting a non removeable building
+        if (!extracted.metaInstance.getIsRemovable(this.root)) {
             this.currentMetaBuilding.set(null);
             return;
         }

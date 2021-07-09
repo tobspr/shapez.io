@@ -189,6 +189,8 @@ dialogs:
         retry: Retry
         continue: Continue
         playOffline: Play Offline
+        yes: Yes
+        no: No
 
     importSavegameError:
         title: Import Error
@@ -399,6 +401,16 @@ dialogs:
         title: Delete Puzzle?
         desc: >-
             Are you sure you want to delete '<title>'? This can not be undone!
+
+    puzzleImport:
+        title: Puzzle Imported
+        desc: >-
+            Your puzzle has been successfully imported.
+
+    puzzleExport:
+        title: Export Puzzle
+        desc: >-
+            Do you want to download this puzzle?
 
 ingame:
     # This is shown in the top left corner and displays useful keybindings in
@@ -634,6 +646,8 @@ ingame:
         clearItems: Clear Items
         clearBuildings: Clear Buildings
         resetPuzzle: Reset Puzzle
+        enableTestMode: Enable Test Mode
+        disableTestMode: Disable Test Mode
         share: Share
         report: Report
 

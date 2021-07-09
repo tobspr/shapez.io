@@ -33,6 +33,12 @@ export class HUDBaseToolbar extends BaseHUDPart {
         this.htmlElementId = htmlElementId;
         this.layer = layer;
 
+        this.requiredBuildings = [
+            gMetaBuildingRegistry.findByClass(MetaConstantProducerBuilding),
+            gMetaBuildingRegistry.findByClass(MetaGoalAcceptorBuilding),
+            gMetaBuildingRegistry.findByClass(MetaBlockBuilding),
+        ];
+
         /** @type {Object.<string, {
          * metaBuilding: MetaBuilding,
          * unlocked: boolean,
@@ -60,11 +66,9 @@ export class HUDBaseToolbar extends BaseHUDPart {
         const filtered = [];
 
         for (let i = 0; i < buildings.length; i++) {
-            if (this.root.gameMode.isBuildingExcluded(buildings[i])) {
-                continue;
+            if (!this.root.gameMode.isBuildingExcluded(buildings[i])) {
+                filtered.push(buildings[i]);
             }
-
-            filtered.push(buildings[i]);
         }
 
         return filtered;
@@ -119,13 +123,14 @@ export class HUDBaseToolbar extends BaseHUDPart {
             });
 
             //lock icon for puzzle editor
-            if (this.root.gameMode.getIsEditor() && !this.inRequiredBuildings(metaBuilding)) {
-                const puzzleLock = makeDiv(itemContainer, null, ["puzzle-lock"]);
-
+            if (this.root.gameMode.getIsEditor()) {
                 itemContainer.classList.toggle("editor", true);
-                this.trackClicks(puzzleLock, () => this.toggleBuildingLock(metaBuilding), {
-                    clickSound: null,
-                });
+                if (!this.inRequiredBuildings(metaBuilding)) {
+                    const puzzleLock = makeDiv(itemContainer, null, ["puzzle-lock"]);
+                    puzzleLock.classList.add("active");
+
+                    this.trackClicks(puzzleLock, () => this.toggleBuildingLock(metaBuilding));
+                }
             }
 
             this.buildingHandles[metaBuilding.id] = {
@@ -149,13 +154,15 @@ export class HUDBaseToolbar extends BaseHUDPart {
         });
         this.lastSelectedIndex = 0;
         actionMapper.getBinding(KEYMAPPINGS.placement.cycleBuildings).add(this.cycleBuildings, this);
+
+        this.switchingTestMode = false;
     }
 
     /**
      * Updates the toolbar
      */
     update() {
-        const visible = this.visibilityCondition();
+        const visible = this.visibilityCondition() && !this.switchingTestMode;
         this.domAttach.update(visible);
 
         if (visible) {
@@ -253,9 +260,11 @@ export class HUDBaseToolbar extends BaseHUDPart {
 
         const handle = this.buildingHandles[metaBuilding.getId()];
         if (handle.puzzleLocked) {
-            handle.puzzleLocked = false;
-            handle.element.classList.toggle("unlocked", false);
-            this.root.soundProxy.playUiClick();
+            if (this.root.gameMode.getIsEditor()) {
+                handle.puzzleLocked = false;
+                handle.element.classList.toggle("unlocked", false);
+                this.root.soundProxy.playUiClick();
+            }
             return;
         }
 
@@ -274,9 +283,28 @@ export class HUDBaseToolbar extends BaseHUDPart {
     }
 
     /**
-     * @param {MetaBuilding} metaBuilding
+     * @param {boolean} testMode
      */
-    toggleBuildingLock(metaBuilding) {
+    toggleTestMode(testMode) {
+        // toggle the puzzle lock buttons and the editor-only buildings
+
+        this.element.querySelectorAll(".building > .puzzle-lock").forEach(element => {
+            element.classList.toggle("active", !testMode);
+        });
+
+        for (let i = 0; i < this.requiredBuildings.length; ++i) {
+            const metaBuilding = this.requiredBuildings[i];
+            const handle = this.buildingHandles[metaBuilding.getId()];
+            handle.puzzleLocked = testMode;
+            handle.element.classList.toggle("hidden", testMode);
+        }
+    }
+
+    /**
+     * @param {MetaBuilding} metaBuilding
+     * @param {boolean | null} force
+     */
+    toggleBuildingLock(metaBuilding, force = null) {
         if (!this.visibilityCondition()) {
             // Not active
             return;
@@ -288,9 +316,12 @@ export class HUDBaseToolbar extends BaseHUDPart {
         }
 
         const handle = this.buildingHandles[metaBuilding.getId()];
-        handle.puzzleLocked = !handle.puzzleLocked;
+        if (force != null) {
+            handle.puzzleLocked = force;
+        } else {
+            handle.puzzleLocked = !handle.puzzleLocked;
+        }
         handle.element.classList.toggle("unlocked", !handle.puzzleLocked);
-        this.root.soundProxy.playUiClick();
 
         const entityManager = this.root.entityMgr;
         for (const entity of entityManager.getAllWithComponent(StaticMapEntityComponent)) {
@@ -312,11 +343,6 @@ export class HUDBaseToolbar extends BaseHUDPart {
      * @param {MetaBuilding} metaBuilding
      */
     inRequiredBuildings(metaBuilding) {
-        const requiredBuildings = [
-            gMetaBuildingRegistry.findByClass(MetaConstantProducerBuilding),
-            gMetaBuildingRegistry.findByClass(MetaGoalAcceptorBuilding),
-            gMetaBuildingRegistry.findByClass(MetaBlockBuilding),
-        ];
-        return requiredBuildings.includes(metaBuilding);
+        return this.requiredBuildings.includes(metaBuilding);
     }
 }

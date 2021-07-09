@@ -2,7 +2,7 @@
     position: absolute;
     background: $ingameHudBg;
     @include S(padding, 10px);
-    @include S(bottom, 60px);
+    @include S(bottom, 70px);
     @include S(left, 10px);
 
     @include SuperSmallText;
@@ -12,6 +12,17 @@
     @include S(border-radius, $globalBorderRadius);
 
     > .section {
+        .disabled {
+            transition: opacity 0.12s ease-in-out;
+            opacity: 0.6;
+            button {
+                pointer-events: none;
+            }
+        }
+        :not(.disabled) {
+            transition: opacity 0.12s ease-in-out;
+        }
+
         > label {
             text-transform: uppercase;
         }
@@ -44,7 +55,7 @@
             }
         }
 
-        > .buttons {
+        > .mainButtons {
             > .buttonBar {
                 display: flex;
                 align-items: center;
@@ -57,14 +68,17 @@
                     }
                 }
             }
+        }
 
-            > .buildingsButton {
-                display: grid;
-                align-items: center;
-                @include S(margin-top, 4px);
-                > button {
-                    @include SuperSmallText;
+        > .testToggle {
+            display: grid;
+            align-items: center;
+            @include S(margin-top, 4px);
+            > button {
+                &.disabled {
+                    pointer-events: none;
                 }
+                @include SuperSmallText;
             }
         }
     }

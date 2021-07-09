@@ -44,6 +44,7 @@ export class HUDBlueprintPlacer extends BaseHUDPart {
         this.root.camera.movePreHandler.add(this.onMouseMove, this);
 
         this.root.hud.signals.selectedPlacementBuildingChanged.add(this.abortPlacement, this);
+        this.root.signals.testModeChanged.add(this.abortPlacement, this);
         this.root.signals.editModeChanged.add(this.onEditModeChanged, this);
 
         this.domAttach = new DynamicDomAttach(this.root, this.costDisplayParent);

@@ -192,6 +192,7 @@ export class GameRoot {
 
             // Puzzle mode
             puzzleComplete: /** @type {TypedSignal<[]>} */ (new Signal()),
+            testModeChanged: /** @type {TypedSignal<[Boolean]>} */ (new Signal()),
         };
 
         // RNG's

@@ -64,6 +64,7 @@
 @import "ingame_hud/puzzle_play_settings";
 @import "ingame_hud/puzzle_play_metadata";
 @import "ingame_hud/puzzle_complete_notification";
+@import "ingame_hud/puzzle_import_export";
 
 // prettier-ignore
 $elements:
@@ -83,6 +84,7 @@ ingame_HUD_GameMenu,
 ingame_HUD_KeybindingOverlay,
 ingame_HUD_PuzzleBackToMenu,
 ingame_HUD_PuzzleEditorReview,
+ingame_HUD_PuzzleImportExport,
 ingame_HUD_PuzzleEditorControls,
 ingame_HUD_PuzzleEditorTitle,
 ingame_HUD_PuzzleEditorSettings,
@@ -132,8 +134,11 @@ body.uiHidden {
     #ingame_HUD_PlacementHints,
     #ingame_HUD_GameMenu,
     #ingame_HUD_PinnedShapes,
-    #ingame_HUD_PuzzleBackToMenu,
-    #ingame_HUD_PuzzleEditorReview,
+    #ingame_HUD_PuzzleEditorSettings,
+    #ingame_HUD_PuzzlePlaySettings,
+    #ingame_HUD_PuzzleEditorControls,
+    #ingame_HUD_PuzzleImportExport,
+    #ingame_HUD_PuzzlePlayMetadata,
     #ingame_HUD_Notifications,
     #ingame_HUD_TutorialHints,
     #ingame_HUD_Waypoints,
