@@ -32,6 +32,8 @@ export const KEYMAPPINGS = {
         toggleFPSInfo: { keyCode: 115 }, // F4
 
         switchLayers: { keyCode: key("E") },
+
+        showShapeTooltip: { keyCode: 18 }, // ALT
     },
 
     navigation: {
