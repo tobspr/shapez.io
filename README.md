@@ -22,12 +22,40 @@ Your goal is to produce shapes by cutting, rotating, merging and painting parts 
 
 ## Building
 
--   Make sure `ffmpeg` is on your path
--   Install Node.js and Yarn
--   Install Java (required for textures)
--   Run `yarn` in the root folder
--   Cd into `gulp` folder
--   Run `yarn` and then `yarn gulp` - it should now open in your browser
+Note that this process is for Windows. Use equivalent actions for other operating systems if they are apparent. This guide is also meant to be understandable by users with little to no knowledge of Git.
+
+(credit to Hyperion-21)
+
+**SETUP**
+1. Download FFmpeg at https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z
+2. Extract the .zip onto desktop, rename it to FFmpeg
+3. Move the folder into `C:\Program Files`, anywhere works but there is convenient
+4. Open the start menu and search for "env". Open the result that says "Edit enviornment variables for your account."
+5. Click on the listing that says `PATH` UNDER THE SECTION THAT SAYS 'SYSTEM VARIABLES" and click edit. 
+   - You should see a list. Click `New` then type in `C:\Program Files\FFmpeg\bin`
+   - If, instead, you see a singular text field, you should see a window that says `Edit User Variable.` In the text field that says "Variable value:" you want to type at the end `;C:\Program Files\FFmpeg\bin`. The semicolon is for separating the file path from the other file paths in that field.
+6. FFmpeg should now be installed. To test if you did this correctly, run `cmd.exe` as administrator and type `ffmpeg -version` and it should spit at you several lines of code. If it says something similar to "not recognized internal or external command," you messed up one of the previous steps.
+7. Install `Node.js`, `Yarn`, `Git`, and `GitHub CLI`. All four of these softwares use setup wizards, so installation should be easy. If you don't know what setting to put in, use the default. Also make sure you have `Java`, but it is very commom afaik. Run `cmd.exe` if you closed it earlier and run `java -version` and `git --version` (note the 2 dashes) to test if you already have them installed or not.
+8. Run `gh auth login` in `cmd.exe`. Login, selecting HTTPS over SSH.
+9. `cd %USERPROFILE%` to return to your user folder.
+10. It is recommended you create a new folder within your user folder for housing repos, but this is completely optional. Running `mkdir [name]` creates a new folder without having to open an explorer window. `cd` into it.
+11. `gh repo clone tobspr/shapez.io` to make sure the game's code is on your system. If you want to clone it into a different folder, `cd` into it.
+12. `git remote add upstream https://github.com/tobspr/shapez.io.git` for resetting branches to the current and official build on GitHub.
+13. Set up branches for development. If you just want to build and not make anything, skip this step. On your fork, you should create a new branch. Each unique pull request should have its own branch. Reserve the `master` branch to being level with `tobspr/master`. Run `git reset --hard upstream/(username)/master && git push --force` to reset your master to be level with the main one. Make sure all of your current work is on the branch you created.
+
+**EXECUTION**
+1. Start `cmd.exe`
+2. If you aren't already on `C:\Users\[Your user]`, type `cd %USERPROFILE%`
+3. `cd shapez.io`
+4. See below for switching builds. If you wish to perform any of those commands, run them at this step.
+5. `yarn && cd gulp && yarn && yarn gulp`. This will take a while, but afterwards shapez.io should be running in a browser tab (there may be an error at first, but it should quickly go away).
+   - Note that if both `yarn` commands respond with `Already up-to-date`, you only have to run `cd gulp && yarn gulp` in the future, as long as there are no changes to the dependencies.
+   - Also note that `cd gulp` takes you from the `shapez.io` directory to the `gulp` directory. If you are already in the `gulp` directory (current directory is by the prompt), skip the `cd gulp` command.
+
+**SWITCHING BUILD**
+- If you want to run a specific pull request, run `gh pr checkout [pr number]`
+- If you want to run a specific fork, run `git remote add [arbitrary name] [HTTPS url, click 'code' on the fork's page and copy the url here] & git fetch --all`. You now have the fork as a remote. This will allow you to select the branches of the fork (see below). You only have to do this once per fork, and you can check the remotes you currently have with `git remote`.
+- If you want to run a specific branch, run `git branch -a` and choose the branch you want to run. Run `git checkout [branch]`.
 
 **Notice**: This will produce a debug build with several debugging flags enabled. If you want to disable them, modify [`src/js/core/config.js`](src/js/core/config.js).
 
