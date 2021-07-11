@@ -3,7 +3,9 @@ import { globalConfig } from "../../../core/config";
 import { DrawParameters } from "../../../core/draw_parameters";
 import { Loader } from "../../../core/loader";
 import { lerp } from "../../../core/utils";
+import { enumDirectionToAngle, Vector } from "../../../core/vector";
 import { SOUNDS } from "../../../platform/sound";
+import { enumPinSlotType } from "../../components/wired_pins";
 import { KEYMAPPINGS } from "../../key_action_mapper";
 import { enumHubGoalRewards } from "../../tutorial_goals";
 import { BaseHUDPart } from "../base_hud_part";
@@ -96,10 +98,41 @@ export class HUDWiresOverlay extends BaseHUDPart {
             if (network && network.hasValue()) {
                 value = network.currentValue;
             }
-        }
-
-        if (contents.components.ConstantSignal) {
+        } else if (contents.components.ConstantSignal) {
             value = contents.components.ConstantSignal.signal;
+        } else if (contents.components.WiredPins) {
+            const pinComp = contents.components.WiredPins;
+            const staticComp = contents.components.StaticMapEntity;
+
+            const mouseTilePos = this.root.camera.screenToWorld(mousePos);
+
+            // Go over all slots and see if they are close to mouse or not
+            const pinSlots = pinComp.slots;
+            let minLength = Infinity;
+            for (let i = 0; i < pinSlots.length; ++i) {
+                const slot = pinSlots[i];
+
+                // Check if the type matches
+                if (slot.type != enumPinSlotType.logicalEjector) {
+                    continue;
+                }
+
+                // Check if slot is close to mouse
+                // Dirty math that I don't like the look of
+                const slotPos = staticComp.localTileToWorld(slot.pos).toWorldSpaceCenterOfTile();
+                const effectiveRotation = (staticComp.rotation + enumDirectionToAngle[slot.direction]) % 360;
+                // -9.1 comes from systems > wired_pins.js > line 207
+                const valueSpritePos = slotPos.add(
+                    new Vector(0, -9.1).rotateInplaceFastMultipleOf90(effectiveRotation)
+                );
+                const length = mouseTilePos.sub(valueSpritePos).length();
+
+                // If it is closer than current minimum length we can copy that value
+                if (length < minLength) {
+                    minLength = length;
+                    value = slot.value;
+                }
+            }
         }
 
         if (value) {
