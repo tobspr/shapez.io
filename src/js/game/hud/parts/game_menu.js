@@ -6,6 +6,7 @@ import { T } from "../../../translations";
 import { KEYMAPPINGS } from "../../key_action_mapper";
 import { DynamicDomAttach } from "../dynamic_dom_attach";
 import { TrackedState } from "../../../core/tracked_state";
+import { NoAchievementProvider } from "../../../platform/browser/no_achievement_provider";
 
 export class HUDGameMenu extends BaseHUDPart {
     createElements(parent) {
@@ -24,6 +25,7 @@ export class HUDGameMenu extends BaseHUDPart {
                 ]),
                 visible: () =>
                     !this.root.app.settings.getAllSettings().offerHints || this.root.hubGoals.level >= 3,
+                domAttachSettings: {},
             },
             {
                 id: "stats",
@@ -32,6 +34,15 @@ export class HUDGameMenu extends BaseHUDPart {
                 keybinding: KEYMAPPINGS.ingame.menuOpenStats,
                 visible: () =>
                     !this.root.app.settings.getAllSettings().offerHints || this.root.hubGoals.level >= 3,
+                domAttachSettings: { prepend: true },
+            },
+            {
+                id: "achievements",
+                label: "Achievements",
+                handler: () => this.root.hud.parts.achievements.show(),
+                keybinding: KEYMAPPINGS.ingame.menuOpenAchievements,
+                visible: () => !(this.root.achievementProxy.provider instanceof NoAchievementProvider),
+                domAttachSettings: {},
             },
         ];
 
@@ -52,37 +63,39 @@ export class HUDGameMenu extends BaseHUDPart {
          * }>} */
         this.visibilityToUpdate = [];
 
-        buttons.forEach(({ id, label, handler, keybinding, badge, notification, visible }) => {
-            const button = document.createElement("button");
-            button.classList.add(id);
-            this.element.appendChild(button);
-            this.trackClicks(button, handler);
+        buttons.forEach(
+            ({ id, label, handler, keybinding, badge, notification, visible, domAttachSettings }) => {
+                const button = document.createElement("button");
+                button.classList.add(id);
+                this.element.appendChild(button);
+                this.trackClicks(button, handler);
 
-            if (keybinding) {
-                const binding = this.root.keyMapper.getBinding(keybinding);
-                binding.add(handler);
-            }
+                if (keybinding) {
+                    const binding = this.root.keyMapper.getBinding(keybinding);
+                    binding.add(handler);
+                }
 
-            if (visible) {
-                this.visibilityToUpdate.push({
-                    button,
-                    condition: visible,
-                    domAttach: new DynamicDomAttach(this.root, button),
-                });
-            }
+                if (visible) {
+                    this.visibilityToUpdate.push({
+                        button,
+                        condition: visible,
+                        domAttach: new DynamicDomAttach(this.root, button, domAttachSettings),
+                    });
+                }
 
-            if (badge) {
-                const badgeElement = makeDiv(button, null, ["badge"]);
-                this.badgesToUpdate.push({
-                    badge,
-                    lastRenderAmount: 0,
-                    button,
-                    badgeElement,
-                    notification,
-                    condition: visible,
-                });
+                if (badge) {
+                    const badgeElement = makeDiv(button, null, ["badge"]);
+                    this.badgesToUpdate.push({
+                        badge,
+                        lastRenderAmount: 0,
+                        button,
+                        badgeElement,
+                        notification,
+                        condition: visible,
+                    });
+                }
             }
-        });
+        );
 
         this.saveButton = makeDiv(this.element, null, ["button", "save", "animEven"]);
         this.settingsButton = makeDiv(this.element, null, ["button", "settings"]);

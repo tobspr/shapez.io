@@ -104,6 +104,13 @@ export class PreloadState extends GameState {
                 return this.app.settings.initialize();
             })
 
+            .then(() => this.setStatus("Initializing achievement storage"))
+            .then(() => {
+                if (this.app.achievementProvider.storage)
+                    return this.app.achievementProvider.storage.initialize();
+                else return Promise.resolve();
+            })
+
             .then(() => {
                 // Initialize fullscreen
                 if (this.app.platformWrapper.getSupportsFullscreen()) {

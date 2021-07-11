@@ -20,4 +20,8 @@ export class NoAchievementProvider extends AchievementProviderInterface {
     activate() {
         return Promise.resolve();
     }
+
+    deactivate() {
+        return Promise.resolve();
+    }
 }

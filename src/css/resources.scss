@@ -61,11 +61,25 @@ $buildingsAndVariants: belt, balancer, underground_belt, underground_belt-tier2,
     background-image: uiResource("res/ui/building_tutorials/virtual_processor-cutter.png") !important;
 }
 
-$icons: notification_saved, notification_success, notification_upgrade;
+$icons: notification_saved, notification_success, notification_upgrade, notification_achievement;
 @each $icon in $icons {
     [data-icon="icons/#{$icon}.png"] {
         /* @load-async */
         background-image: uiResource("res/ui/icons/#{$icon}.png") !important;
+    }
+}
+
+$achievements: reset, hidden, belt500Tiles, blueprint100k, blueprint1m, completeLvl26, cutShape, darkMode,
+    destroy1000, irrelevantShape, level100, level50, logoBefore18, mam, mapMarkers15, noBeltUpgradesUntilBp,
+    noInverseRotater, oldLevel17, openWires, paintShape, place5000Wires, placeBlueprint, placeBp1000, play1h,
+    play10h, play20h, produceLogo, produceMsLogo, produceRocket, rotateShape, speedrunBp30, speedrunBp60,
+    speedrunBp120, stack4Layers, stackShape, store100Unique, storeShape, throughputBp25, throughputBp50,
+    throughputLogo25, throughputLogo50, throughputRocket10, throughputRocket20, trash1000, unlockWires,
+    upgradesTier5, upgradesTier8;
+@each $achievement in $achievements {
+    [data-icon="achievements/#{$achievement}.png"] {
+        /* @load-async */
+        background-image: uiResource("res/ui/achievements/#{$achievement}.png") !important;
     }
 }
 

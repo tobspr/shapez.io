@@ -55,6 +55,7 @@ export class MainMenuState extends GameState {
                         : `<button class="languageChoose" data-languageicon="${this.app.settings.getLanguage()}"></button>`
                 }
 
+                <button class="achievementsButton"></button>
                 <button class="settingsButton"></button>
             ${
                 G_IS_STANDALONE || G_IS_DEV
@@ -277,6 +278,7 @@ export class MainMenuState extends GameState {
         });
 
         this.trackClicks(qs(".settingsButton"), this.onSettingsButtonClicked);
+        this.trackClicks(qs(".achievementsButton"), this.onAchievementsButtonClicked);
 
         if (!G_CHINA_VERSION && !G_WEGAME_VERSION) {
             this.trackClicks(qs(".languageChoose"), this.onLanguageChooseClicked);
@@ -645,6 +647,10 @@ export class MainMenuState extends GameState {
 
     onSettingsButtonClicked() {
         this.moveToState("SettingsState");
+    }
+
+    onAchievementsButtonClicked() {
+        this.moveToState("AchievementsState");
     }
 
     onTranslationHelpLinkClicked() {

@@ -56,6 +56,7 @@
 @import "ingame_hud/sandbox_controller";
 @import "ingame_hud/standalone_advantages";
 @import "ingame_hud/cat_memes";
+@import "ingame_hud/achievements";
 @import "ingame_hud/puzzle_back_to_menu";
 @import "ingame_hud/puzzle_editor_review";
 @import "ingame_hud/puzzle_dlc_logo";
@@ -107,6 +108,7 @@ ingame_HUD_SandboxController,
 ingame_HUD_BetaOverlay,
 
 // Dialogs
+ingame_HUD_Achievements,
 ingame_HUD_Shop,
 ingame_HUD_Statistics,
 ingame_HUD_ShapeViewer,

@@ -8,6 +8,10 @@
 
     backdrop-filter: blur(D(1px));
 
+    .stats ~ .achievements {
+        grid-column: 1;
+    }
+
     > button,
     > .button {
         @include PlainText;
@@ -37,8 +41,16 @@
 
         @include DarkThemeInvert;
 
+        &.achievements {
+            grid-column: 3;
+            & {
+                /* @load-async */
+                background-image: uiResource("icons/achievements.png");
+            }
+        }
+
         &.shop {
-            grid-column: 1;
+            grid-column: 2;
             & {
                 /* @load-async */
                 background-image: uiResource("icons/shop.png");
@@ -46,7 +58,7 @@
         }
 
         &.stats {
-            grid-column: 2;
+            grid-column: 3;
             & {
                 /* @load-async */
                 background-image: uiResource("icons/statistics.png");
@@ -58,7 +70,7 @@
                 /* @load-async */
                 background-image: uiResource("icons/save.png");
             }
-            grid-column: 3;
+            grid-column: 4;
             @include MakeAnimationWrappedEvenOdd(0.5s ease-in-out) {
                 0% {
                     transform: scale(1, 1);
@@ -92,7 +104,7 @@
         }
 
         &.settings {
-            grid-column: 4;
+            grid-column: 5;
             & {
                 /* @load-async */
                 background-image: uiResource("icons/settings_menu_settings.png");

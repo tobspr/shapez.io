@@ -18,8 +18,13 @@ export class DynamicDomAttach {
      * @param {string=} param2.attachClass If set, attaches a class while the element is visible
      * @param {boolean=} param2.trackHover If set, attaches the 'hovered' class if the cursor is above the element. Useful
      *                                     for fading out the element if its below the cursor for example.
+     * @param {boolean=} param2.prepend If set, adds the element before other childs
      */
-    constructor(root, element, { timeToKeepSeconds = 0, attachClass = null, trackHover = false } = {}) {
+    constructor(
+        root,
+        element,
+        { timeToKeepSeconds = 0, attachClass = null, trackHover = false, prepend = false } = {}
+    ) {
         /** @type {GameRoot} */
         this.root = root;
 
@@ -33,6 +38,8 @@ export class DynamicDomAttach {
 
         this.timeToKeepSeconds = timeToKeepSeconds;
         this.lastVisibleTime = 0;
+
+        this.prepend = prepend;
 
         // We start attached, so detach the node first
         this.attached = true;
@@ -55,7 +62,8 @@ export class DynamicDomAttach {
      */
     internalAttach() {
         if (!this.attached) {
-            this.parent.appendChild(this.element);
+            if (this.prepend) this.parent.insertBefore(this.element, this.parent.firstChild);
+            else this.parent.appendChild(this.element);
             assert(this.element.parentElement === this.parent, "Invalid parent #1");
             this.attached = true;
         }

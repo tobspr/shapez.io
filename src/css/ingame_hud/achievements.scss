@@ -1,0 +1,137 @@
+#ingame_HUD_Achievements {
+    .content {
+        @include S(padding-right, 10px);
+        display: flex;
+        flex-direction: column;
+        @include S(width, 500px);
+
+        .achievement {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            background: #eee;
+            @include S(border-radius, $globalBorderRadius);
+            @include S(margin-bottom, 4px);
+            @include S(padding, 5px, 10px);
+            @include S(grid-row-gap, 1px);
+            @include S(height, 85px);
+            grid-template-rows: #{D(20px)} auto;
+
+            &.hidden {
+                display: none;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            @include DarkThemeOverride {
+                background: $darkModeControlsBackground;
+            }
+
+            .icon {
+                @include S(width, 70px);
+                @include S(height, 70px);
+                background: center center / 80% no-repeat;
+                align-self: center;
+                justify-self: center;
+                grid-column: 1;
+                grid-row: 1 / 4;
+            }
+
+            .info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                grid-column: 2;
+                grid-row: 2 / 3;
+                .title {
+                    @include PlainText;
+                    display: flex;
+                    align-items: center;
+                    flex-direction: row-reverse;
+                    justify-content: flex-end;
+                    color: $colorGreenBright;
+                }
+                .description {
+                    @include PlainText;
+                    color: lighten($colorGreenBright, 20);
+                    align-self: start;
+                    justify-self: end;
+                }
+            }
+
+            button.reset {
+                grid-column: 3;
+                grid-row: 2;
+                align-self: center;
+                justify-self: end;
+
+                transition: all 0.2s ease-in-out;
+                transition-property: background-color, opacity;
+
+                background-color: $colorGreenBright;
+                color: #fff;
+
+                &:hover {
+                    background-color: lighten($colorGreenBright, 10);
+                }
+            }
+
+            &.reset {
+                button.reset {
+                    background-color: $colorRedBright;
+
+                    &:hover {
+                        background-color: darken($colorRedBright, 10);
+                    }
+                }
+
+                .info {
+                    .title {
+                        font-weight: bold;
+                        color: $colorRedBright;
+                    }
+                    .description {
+                        color: lighten($colorRedBright, 10);
+                    }
+                }
+            }
+
+            &:not(.unlocked) {
+                button.reset {
+                    background-color: #aaa;
+                    cursor: default;
+                    pointer-events: none;
+                    opacity: 0.3;
+                }
+                .info {
+                    .title {
+                        color: black;
+                        @include DarkThemeOverride {
+                            color: #fff;
+                        }
+                    }
+                    .description {
+                        color: #aaa;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#state_AchievementsState {
+    #ingame_HUD_Achievements {
+        z-index: unset;
+        overflow-y: scroll;
+        position: relative;
+        background-color: unset;
+        max-height: 100%;
+        align-items: unset;
+
+        .content {
+            width: 100%;
+            display: block;
+        }
+    }
+}

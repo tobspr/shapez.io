@@ -4,8 +4,8 @@ import { queryParamOptions } from "../../core/query_parameters";
 import { clamp } from "../../core/utils";
 import { GamedistributionAdProvider } from "../ad_providers/gamedistribution";
 import { NoAdProvider } from "../ad_providers/no_ad_provider";
-import { SteamAchievementProvider } from "../electron/steam_achievement_provider";
 import { PlatformWrapperInterface } from "../wrapper";
+import { BrowserAchievementProvider } from "./browser_achievement_provider";
 import { NoAchievementProvider } from "./no_achievement_provider";
 import { StorageImplBrowser } from "./storage";
 import { StorageImplBrowserIndexedDB } from "./storage_indexed_db";
@@ -200,8 +200,8 @@ export class PlatformWrapperImplBrowser extends PlatformWrapperInterface {
     }
 
     initializeAchievementProvider() {
-        if (G_IS_DEV && globalConfig.debug.testAchievements) {
-            this.app.achievementProvider = new SteamAchievementProvider(this.app);
+        if (G_IS_DEV) {
+            this.app.achievementProvider = new BrowserAchievementProvider(this.app);
 
             return this.app.achievementProvider.initialize().catch(err => {
                 logger.error("Failed to initialize achievement provider, disabling:", err);

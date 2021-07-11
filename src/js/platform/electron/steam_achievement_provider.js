@@ -63,7 +63,7 @@ export class SteamAchievementProvider extends AchievementProviderInterface {
         super(app);
 
         this.initialized = false;
-        this.collection = new AchievementCollection(this.activate.bind(this));
+        this.collection = new AchievementCollection(this.activate.bind(this), this.deactivate.bind(this));
 
         if (G_IS_DEV) {
             for (let key in ACHIEVEMENT_IDS) {
@@ -87,11 +87,25 @@ export class SteamAchievementProvider extends AchievementProviderInterface {
         this.root = root;
 
         try {
-            this.collection = new AchievementCollection(this.activate.bind(this));
+            this.collection = new AchievementCollection(this.activate.bind(this), this.deactivate.bind(this));
             this.collection.initialize(root);
 
-            logger.log("Initialized", this.collection.map.size, "relevant achievements");
-            return Promise.resolve();
+            let promise = Promise.resolve();
+
+            //Unlock already unlocked
+            for (const id in ACHIEVEMENT_IDS) {
+                promise.then(() =>
+                    this.ipc.invoke("steam:get-achievement", ACHIEVEMENT_IDS[id]).then(is_achieved => {
+                        if (is_achieved) this.collection.unlock(id, null, true);
+                        return Promise.resolve();
+                    })
+                );
+            }
+
+            return promise.then(() => {
+                logger.log("Initialized", this.collection.map.size, "relevant achievements");
+                return Promise.resolve();
+            });
         } catch (err) {
             logger.error("Failed to initialize the collection");
             return Promise.reject(err);
@@ -122,6 +136,22 @@ export class SteamAchievementProvider extends AchievementProviderInterface {
         });
     }
 
+    unlockUnlocked() {
+        let promise = Promise.resolve();
+
+        //Unlock already unlocked
+        for (const id in ACHIEVEMENT_IDS) {
+            promise.then(() =>
+                this.ipc.invoke("steam:get-achievement", ACHIEVEMENT_IDS[id]).then(is_achieved => {
+                    if (is_achieved) this.collection.unlock(id, null, true);
+                    return Promise.resolve();
+                })
+            );
+        }
+
+        return promise;
+    }
+
     /**
      * @param {string} key
      * @returns {Promise<void>}
@@ -145,6 +175,29 @@ export class SteamAchievementProvider extends AchievementProviderInterface {
             })
             .catch(err => {
                 logger.error("Failed to activate achievement:", key, err);
+                throw err;
+            });
+    }
+
+    /**
+     * @param {string} key
+     * @returns {Promise<void>}
+     */
+    deactivate(key) {
+        let promise;
+
+        if (!this.initialized) {
+            promise = Promise.resolve();
+        } else {
+            promise = this.ipc.invoke("steam:deactivate-achievement", ACHIEVEMENT_IDS[key]);
+        }
+
+        return promise
+            .then(() => {
+                logger.log("Achievement deactivated:", key);
+            })
+            .catch(err => {
+                logger.error("Failed to deactivate achievement:", key, err);
                 throw err;
             });
     }

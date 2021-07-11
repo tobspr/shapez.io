@@ -31,6 +31,7 @@ import { PreloadState } from "./states/preload";
 import { SettingsState } from "./states/settings";
 import { ShapezGameAnalytics } from "./platform/browser/game_analytics";
 import { RestrictionManager } from "./core/restriction_manager";
+import { AchievementsState } from "./states/achievements";
 import { PuzzleMenuState } from "./states/puzzle_menu";
 import { ClientAPI } from "./platform/api";
 import { LoginState } from "./states/login";
@@ -163,6 +164,7 @@ export class Application {
             KeybindingsState,
             AboutState,
             ChangelogState,
+            AchievementsState,
             PuzzleMenuState,
             LoginState,
         ];

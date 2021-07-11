@@ -7,6 +7,7 @@ export const enumNotificationType = {
     saved: "saved",
     upgrade: "upgrade",
     success: "success",
+    achievement: "achievement",
 };
 
 const notificationDuration = 3;
@@ -25,6 +26,10 @@ export class HUDNotifications extends BaseHUDPart {
         // Automatic notifications
         this.root.signals.gameSaved.add(() =>
             this.onNotification(T.ingame.notifications.gameSaved, enumNotificationType.saved)
+        );
+
+        this.root.signals.achievementCompleted.add(key =>
+            this.onNotification(T.achievements[key].title, enumNotificationType.achievement)
         );
     }
 

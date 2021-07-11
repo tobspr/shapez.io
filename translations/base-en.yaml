@@ -315,6 +315,9 @@ dialogs:
         title: Tutorial Available
         desc: There is a tutorial video available for this level, but it is only available in English. Would you like to watch it?
 
+    resetAchievements:
+        title: Reset Achievements
+        description: Are you sure you want to reset all your achievements?
     puzzleLoadFailed:
         title: Puzzles failed to load
         desc: >-
@@ -503,6 +506,11 @@ ingame:
             minute: <shapes> / m
             hour: <shapes> / h
 
+    # The "Achievements window"
+    achievements:
+        title: Achievements
+        buttonReset: Reset
+
     # Settings menu, when you press "ESC"
     settingsMenu:
         playtime: Playtime
@@ -679,6 +687,150 @@ shopUpgrades:
     painting:
         name: Mixing & Painting
         description: Speed x<currentMult> → x<newMult>
+
+# All achievements
+achievements:
+    reset:
+        title: Reset achievements
+        description: Resets all your achievements!
+    hidden:
+        title: Hidden achievements
+        description: You have <amountHidden> hidden achievement(s)
+    belt500Tiles:
+        title: I need trains
+        description: Have a belt with a length of 500 tiles
+    blueprint100k:
+        title: It's piling up
+        description: Have 100k blueprint shapes stored in your hub
+    blueprint1m:
+        title: I'll use it later
+        description: Have 1 million blueprint shapes stored in your hub
+    completeLvl26:
+        title: Freedom
+        description: Complete level 26, unlocking the free play mode
+    cutShape:
+        title: Cutter
+        description: Cut a shape
+    darkMode:
+        title: My eyes no longer hurt
+        description:
+    destroy1000:
+        title: Perfectionist
+        description: Destroy more than 1000 objects at once
+    irrelevantShape:
+        title: Oops
+        description: Deliver a shape which is not the goal, nor relevant for any upgrade to the hub
+    level100:
+        title: Is this the end?
+        description: Reach level 100
+    level50:
+        title: Can't stop
+        description: Reach level 50
+    logoBefore18:
+        title: A bit early?
+        description: Create the logo shape before level 18
+    mam:
+        title: MAM (Make Anything Machine)
+        description: Complete any level (after level 26) without modifying your factory
+    mapMarkers15:
+        title: GPS
+        description: Have 15 map markers
+    noBeltUpgradesUntilBp:
+        title: It's so slow
+        description: Reach & Complete level 12 without upgrading your belts
+    noInverseRotater:
+        title: King of Inefficiency
+        description: Use no inverse rotator until level 14
+    oldLevel17:
+        title: Memories from the past
+        description: Deliver WrRgWrRg:CwCrCwCr:SgSgSgSg to the hub (Old level 17 shape)
+    openWires:
+        title: The next dimension
+        description: Open the wires layer
+    paintShape:
+        title: Painter
+        description: Paint a shape
+    place5000Wires:
+        title: Computer Guy
+        description: Have more than 5,000 wires
+    placeBlueprint:
+        title: Now it's easy
+        description: Place a blueprint
+    placeBp1000:
+        title: Copy-Pasta
+        description: Place a blueprint with 1000 or more buildings
+    play1h:
+        title: Getting into it
+        description: Play one savegame for more than 1 hour
+    play10h:
+        title: It's been a long time
+        description: Play one savegame for more than 10 hours
+    play20h:
+        title: Addicted
+        description: Play one savegame for more than 20 hours
+    produceLogo:
+        title: The logo!
+        description: Produce the shapez.io logo
+    produceMsLogo:
+        title: I've seen that before ..
+        description: Deliver RgRyRbRr to the hub
+    produceRocket:
+        title: To the moon
+        description: Produce the rocket shape
+    rotateShape:
+        title: Rotater
+        description: Rotate a shape
+    speedrunBp30:
+        title: Speedrun Master
+        description: Reach & complete level 12 in under 30 minutes
+    speedrunBp60:
+        title: Speedrun Novice
+        description: Reach & complete level 12 in under 60 minutes
+    speedrunBp120:
+        title: Not an idle game
+        description: Reach & complete level 12 in under 120 minutes
+    stack4Layers:
+        title: Stack overflow
+        description: Produce a shape with 4 layers
+    stackShape:
+        title: Wait, they stack?
+        description: Stack a shape
+    store100Unique:
+        title: It's a mess
+        description: Have 100 different shapes stored in your hub
+    storeShape:
+        title: Storage
+        description: Store a shape in the storage
+    throughputBp25:
+        title: Efficiency 1
+        description: Deliver 25 blueprints shapes / second to your hub
+    throughputBp50:
+        title: Efficiency 2
+        description: Deliver 50 blueprints shapes / second to your hub
+    throughputLogo25:
+        title: Branding specialist 1
+        description: Deliver 25 logo shapes / second to your hub
+    throughputLogo50:
+        title: Branding specialist 2
+        description: Deliver 50 logo shapes / second to your hub
+    throughputRocket10:
+        title: Preparing to launch
+        description: Deliver 10 rocket shapes / second to your hub
+    throughputRocket20:
+        title: SpaceY
+        description: Deliver 20 rocket shapes / second to your hub
+    trash1000:
+        title: Get rid of them
+        description: Have 1000 shapes trashed
+    unlockWires:
+        title: Wires
+        description: Complete level 20, unlocking the wires layer
+    upgradesTier5:
+        title: Faster
+        description: Have all upgades on tier 5 or higher
+    upgradesTier8:
+        title: Even faster
+        description: Have all upgrades on tier 8 or higher
 
 # Buildings and their name / description
 buildings:
@@ -1299,6 +1451,7 @@ keybindings:
 
         menuOpenShop: Upgrades
         menuOpenStats: Statistics
+        menuOpenAchievements: Achievements
         menuClose: Close Menu
 
         toggleHud: Toggle HUD
